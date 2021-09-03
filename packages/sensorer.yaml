@@ -1,0 +1,59 @@
+sensor:
+  - platform: template
+    sensors:
+      ### Sovrum
+      sensorer_sovrum:
+        friendly_name: "1 Sovrum"
+        value_template: "{{ states('sensor.time') }}"
+        attribute_templates:
+          temperature: "{{ states('sensor.netatmo_rosa_van_temperature') }}"
+          humidity: "{{ states('sensor.netatmo_rosa_van_humidity') }}"
+          co2: "{{ states('sensor.netatmo_rosa_van_co2') }}"
+          v: "{{ states('sensor.sovrum_v') }}"
+      ### Hall
+      sensorer_hall:
+        friendly_name: "0 Hall"
+        value_template: "{{ states('sensor.time') }}"
+        attribute_templates:
+          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_temperature') }}"
+          humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_humidity') }}"
+          co2: "{{ states('sensor.netatmo_sannesholma_weather_station_co2') }}"
+          v: "{{ states('sensor.indoor_v') }}"
+      ### Tvättstuga
+      sensorer_tvattstuga:
+        friendly_name: "0 Tvättstuga"
+        value_template: "{{ states('sensor.time') }}"
+        attribute_templates:
+          temperature: "{{ states('sensor.tvattstuga_temperatur') }}"
+          humidity: "{{ states('sensor.tvattstuga_humidity') | round(0) }}"
+          co2: "0"
+          v: "{{ states('sensor.tvattstuga_v') }}"
+      ### Badrum
+      sensorer_badrum:
+        friendly_name: "0 Badrum"
+        value_template: "{{ states('sensor.time') }}"
+        attribute_templates:
+          temperature: "{{ states('sensor.badrum_temperature') }}"
+          humidity: "{{ states('sensor.badrum_humidity') | round(0) }}"
+          co2: "0"
+          v: "{{ states('sensor.badrum_v') }}"
+      ### Allrum
+      sensorer_allrum:
+        friendly_name: "1 Allrum"
+        value_template: "{{ states('sensor.time') }}"
+        attribute_templates:
+          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') }}"
+          humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_humidity') | round(0) }}"
+          co2: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_co2') | round(0) }}" 
+          v: "{{ states('sensor.allrum_v') }}"
+      #
+      sensorer_ute:
+        friendly_name: "0 Utomhus"
+        value_template: "{{ states('sensor.time') }}"
+        attribute_templates:
+          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') }}"
+          humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_humidity') }}"
+          co2: "400"
+          v: "{{ states('sensor.utomhus_v') }}"
+          vs: "{{ state_attr('sensor.utomhus_v', 'vs') | float | round(2) }}"
+      #

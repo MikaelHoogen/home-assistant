@@ -1,0 +1,25 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+## Not used
+#group: !include groups.yaml
+#automation: !include automations.yaml
+#script: !include scripts.yaml
+#scene: !include scenes.yaml
+
+homeassistant:
+## This is where I store all configuration
+## The configuration is based on packages corresponding to a room or function
+  packages: !include_dir_named packages
+
+sensor:
+    ##################
+  - platform: time_date
+    display_options:
+      - 'time'
+      - 'time_utc'

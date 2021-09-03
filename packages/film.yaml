@@ -1,0 +1,44 @@
+input_boolean:
+  film:
+    name: Filmläge
+    icon: mdi:filmstrip
+  film_spelar:
+    name: Film spelar
+    icon: mdi:filmstrip
+#
+#
+automation:
+#################### Filmläge ###############################
+### Movie playing ###
+- alias: Film_play
+  trigger: 
+  - platform: state
+    entity_id: media_player.vardagsrum
+    to: 'playing'
+    for:
+      seconds: 10
+  condition:
+  - condition: state
+    entity_id: input_boolean.film
+    state: 'on'
+  action:
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.film_spelar
+#
+### Movie not playing ###
+- alias: Film_pause
+  trigger: 
+    # Chromecast
+  - platform: state
+    entity_id: media_player.vardagsrum
+    from: 'playing'
+    for:
+      seconds: 5
+  condition:
+    # Condition, movie mode active
+  - condition: state
+    entity_id: input_boolean.film
+    state: 'on'
+  action:
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.film_spelar

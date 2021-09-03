@@ -1,0 +1,36 @@
+utility_meter:
+  diskmaskin_timme:
+    source: sensor.diskmaskin_consumption
+    cycle: hourly
+  diskmaskin_dag:
+    source: sensor.diskmaskin_consumption
+    cycle: daily
+  diskmaskin_vecka:
+    source: sensor.diskmaskin_consumption
+    cycle: weekly
+  diskmaskin_manad:
+    source: sensor.diskmaskin_consumption
+    cycle: monthly
+  diskmaskin_ar:
+    source: sensor.diskmaskin_consumption
+    cycle: yearly
+#
+  diskmaskin_dag_kostnad:
+    source: sensor.diskmaskin_timme_kostnad
+    cycle: daily
+  diskmaskin_manad_kostnad:
+    source: sensor.diskmaskin_timme_kostnad
+    cycle: monthly
+  diskmaskin_ar_kostnad:
+    source: sensor.diskmaskin_timme_kostnad
+    cycle: yearly
+#
+sensor:
+  - platform: template
+    sensors:
+      ###
+      diskmaskin_timme_kostnad:
+        friendly_name: "Kostnad"
+        unit_of_measurement: "SEK"
+#        device_class: "humidity"
+        value_template: "{{ ( states('sensor.diskmaskin_timme') | float * states('sensor.elpris_totalt_sek') | float ) | round(3) }}"

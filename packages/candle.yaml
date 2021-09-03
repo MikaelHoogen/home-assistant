@@ -1,0 +1,4 @@
+input_boolean:
+  candle:
+    name: Levande ljus
+    icon: mdi:candle

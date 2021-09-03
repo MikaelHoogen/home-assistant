@@ -1,0 +1,132 @@
+sensor:
+  - platform: template
+    sensors:
+      ###
+      indoor_ps:
+        friendly_name: "Ånghalt inomhus ps"
+        device_class: "humidity"
+        value_template: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_temperature') | float / 100 ) ** 8.02 }}"
+      #
+      indoor_vs:
+        friendly_name: "Ånghalt inomhus ps"
+        device_class: "humidity"
+        value_template: "{{ states('sensor.indoor_ps') | float / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_temperature') | float + 273.2 ) ) * 1000 }}"
+      #
+      indoor_v:
+        friendly_name: "Ånghalt inomhus v"
+        unit_of_measurement: "g/m3"
+        device_class: "humidity"
+        value_template: "{{ ( states('sensor.indoor_vs') | float * ( states('sensor.netatmo_sannesholma_weather_station_humidity') | float / 100 ) ) | round(2) }}"
+        attribute_templates:
+          ps: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_temperature') | float / 100 ) ** 8.02 }}"
+          vs: "{{ state_attr('sensor.indoor_v', 'ps') | float / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_temperature') | float + 273.2 ) ) * 1000 }}"
+      #
+      ### Utomhus
+      utomhus_ps:
+        friendly_name: "Ånghalt utomhus ps"
+        device_class: "humidity"
+        value_template: >
+          {% if states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float >= 0.0 %}
+          {{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float / 100 ) ** 8.02 }}
+          {% else %}
+          {{ 4.689 * ( 1.486 + states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float / 100 ) ** 12.3 }}
+          {% endif %}
+      #
+      utomhus_vs:
+        friendly_name: "Ånghalt utomhus vs"
+        device_class: "humidity"
+        value_template: "{{ states('sensor.utomhus_ps') | float / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float + 273.2 ) ) * 1000 }}"
+      #
+      utomhus_v:
+        friendly_name: "Ånghalt utomhus v"
+        unit_of_measurement: "g/m3"
+        device_class: "humidity"
+        value_template: "{{ ( states('sensor.utomhus_vs') | float * ( states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_humidity') | float / 100 ) ) | round(2) }}"
+        attribute_templates:
+          ps: >
+            {% if states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float >= 0.0 %}
+            {{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float / 100 ) ** 8.02 }}
+            {% else %}
+            {{ 4.689 * ( 1.486 + states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float / 100 ) ** 12.3 }}
+            {% endif %}
+          vs: "{{ state_attr('sensor.utomhus_v', 'ps') | float / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float + 273.2 ) ) * 1000 }}"
+      #
+      ### Tvättstuga
+      tvattstuga_ps:
+        friendly_name: "Ånghalt tvättstuga ps"
+        device_class: "humidity"
+        value_template: "{{ 288.68 * ( 1.098 + states('sensor.tvattstuga_temperatur') | float / 100 ) ** 8.02 }}"
+      #
+      tvattstuga_vs:
+        friendly_name: "Ånghalt tvättstuga vs"
+        device_class: "humidity"
+        value_template: "{{ states('sensor.tvattstuga_ps') | float / ( 461.4 * ( states('sensor.tvattstuga_temperatur') | float + 273.2 ) ) * 1000 }}"
+      #
+      tvattstuga_v:
+        friendly_name: "Ånghalt tvättstuga v"
+        unit_of_measurement: "g/m3"
+        device_class: "humidity"
+        value_template: "{{ ( states('sensor.tvattstuga_vs') | float * ( states('sensor.tvattstuga_humidity') | float / 100 ) ) | round(2) }}"
+        attribute_templates:
+          ps: "{{ 288.68 * ( 1.098 + states('sensor.tvattstuga_temperatur') | float / 100 ) ** 8.02 }}"
+          vs: "{{ state_attr('sensor.tvattstuga_v', 'ps') | float / ( 461.4 * ( states('sensor.tvattstuga_temperatur') | float + 273.2 ) ) * 1000 }}"
+      #
+      ### Sovrum
+      sovrum_ps:
+        friendly_name: "Ånghalt sovrum ps"
+        device_class: "humidity"
+        value_template: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_rosa_van_temperature') | float / 100 ) ** 8.02 }}"
+      #
+      sovrum_vs:
+        friendly_name: "Ånghalt sovrum vs"
+        device_class: "humidity"
+        value_template: "{{ states('sensor.sovrum_ps') | float / ( 461.4 * ( states('sensor.netatmo_rosa_van_temperature') | float + 273.2 ) ) * 1000 }}"
+      #
+      sovrum_v:
+        friendly_name: "Ånghalt sovrum v"
+        unit_of_measurement: "g/m3"
+        device_class: "humidity"
+        value_template: "{{ ( states('sensor.sovrum_vs') | float * ( states('sensor.netatmo_rosa_van_humidity') | float / 100 ) ) | round(2) }}"
+        attribute_templates:
+          ps: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_rosa_van_temperature') | float / 100 ) ** 8.02 }}"
+          vs: "{{ state_attr('sensor.sovrum_v', 'ps') | float / ( 461.4 * ( states('sensor.netatmo_rosa_van_temperature') | float + 273.2 ) ) * 1000 }}"
+      #
+      ### Allrum
+      allrum_ps:
+        friendly_name: "Ånghalt allrum ps"
+        device_class: "humidity"
+        value_template: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | float / 100 ) ** 8.02 }}"
+      #
+      allrum_vs:
+        friendly_name: "Ånghalt allrum vs"
+        device_class: "humidity"
+        value_template: "{{ states('sensor.allrum_ps') | float / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | float + 273.2 ) ) * 1000 }}"
+      #
+      allrum_v:
+        friendly_name: "Ånghalt allrum v"
+        unit_of_measurement: "g/m3"
+        device_class: "humidity"
+        value_template: "{{ ( states('sensor.allrum_vs') | float * ( states('sensor.netatmo_sannesholma_weather_station_allrum_humidity') | float / 100 ) ) | round(2) }}"
+        attribute_templates:
+          ps: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | float / 100 ) ** 8.02 }}"
+          vs: "{{ state_attr('sensor.allrum_v', 'ps') | float / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | float + 273.2 ) ) * 1000 }}"
+
+      ### Allrum
+      badrum_ps:
+        friendly_name: "Ånghalt badrum ps"
+        device_class: "humidity"
+        value_template: "{{ 288.68 * ( 1.098 + states('sensor.badrum_temperature') | float / 100 ) ** 8.02 }}"
+      #
+      badrum_vs:
+        friendly_name: "Ånghalt badrum vs"
+        device_class: "humidity"
+        value_template: "{{ states('sensor.allrum_ps') | float / ( 461.4 * ( states('sensor.badrum_temperature') | float + 273.2 ) ) * 1000 }}"
+      #
+      badrum_v:
+        friendly_name: "Ånghalt badrum v"
+        unit_of_measurement: "g/m3"
+        device_class: "humidity"
+        value_template: "{{ ( states('sensor.allrum_vs') | float * ( states('sensor.badrum_humidity') | float / 100 ) ) | round(2) }}"
+        attribute_templates:
+          ps: "{{ 288.68 * ( 1.098 + states('sensor.badrum_temperature') | float / 100 ) ** 8.02 }}"
+          vs: "{{ state_attr('sensor.allrum_v', 'ps') | float / ( 461.4 * ( states('sensor.badrum_temperature') | float + 273.2 ) ) * 1000 }}"

@@ -1,0 +1,107 @@
+################# Circadian ##############################################
+adaptive_lighting:
+  - name: Kök
+    lights:
+    - light.kok_bankbelysning
+    - light.kok_koksbord
+    prefer_rgb_color: false
+    transition: 30
+    initial_transition: 5
+    interval: 90
+    min_brightness: 20
+    max_brightness: 100
+    min_color_temp: 2100
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_color_temp: 2000
+#    sunrise_time: "08:00:00"  # override the sunrise time
+#    sunrise_offset:
+    sunset_time: "20:00:00"
+#    sunset_offset: 1800  # in seconds or '00:15:00'
+    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+    take_over_control: true
+    detect_non_ha_changes: true
+    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+    only_once: false
+    separate_turn_on_commands: false
+#
+  - name: Kök skafferi
+    lights:
+    - light.kok_skafferi
+    prefer_rgb_color: false
+    transition: 30
+    initial_transition: 5
+    interval: 90
+    min_brightness: 20
+    max_brightness: 100
+    min_color_temp: 2100
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_color_temp: 2000
+#    sunrise_time: "08:00:00"  # override the sunrise time
+#    sunrise_offset:
+    sunset_time: "20:00:00"
+#    sunset_offset: 1800  # in seconds or '00:15:00'
+    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+    take_over_control: false
+    detect_non_ha_changes: false
+    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+    only_once: false
+    separate_turn_on_commands: false
+#
+  - name: Kök fönster
+    lights:
+      - light.kok_fonsterbelysning
+    prefer_rgb_color: false
+    transition: 45
+    initial_transition: 5
+    interval: 90
+    min_brightness: 1
+    max_brightness: 45
+    min_color_temp: 2100
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_color_temp: 2000
+#    sunrise_time: "08:00:00"  # override the sunrise time
+#    sunrise_offset: -00:05:00
+    sunset_time: '20:00'
+#    sunset_offset: 1800  # in seconds or '00:15:00'
+    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+    take_over_control: true
+    detect_non_ha_changes: true
+    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+    only_once: false
+#
+#
+binary_sensor:
+#
+  - platform: template
+    sensors:
+      kok_belysning_filament_lightlevel:
+        friendly_name: Kök
+        delay_off:
+          minutes: 30
+        value_template: >-
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < 400 }}
+      kok_belysning_filament_automation_control:
+        friendly_name: Kök
+        value_template: >-
+          {{ is_state('binary_sensor.vardagsrum_belysning_filament_lightlevel', 'on') }}
+#
+automation:
+#
+- alias: Kök belysning filament
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.kok_belysning_filament_automation_control
+  - platform: homeassistant
+    event: start
+  action:
+  - service: >
+      {% if is_state('binary_sensor.kok_belysning_filament_automation_control', 'on') %}
+      light.turn_on
+      {% elif is_state('binary_sensor.kok_belysning_filament_automation_control', 'off') %}
+      light.turn_off
+      {% endif %}
+    entity_id:
+    - light.kok_fonsterbelysning

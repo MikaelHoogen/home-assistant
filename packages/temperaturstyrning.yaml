@@ -1,0 +1,106 @@
+binary_sensor:
+#########################################################################
+############## Närvaro ##################################################
+  - platform: template
+    sensors:
+#      climate_home:
+#        device_class: presence
+#        friendly_name: Närvaro
+#        delay_off:
+#          hours: 6
+#        value_template: >-
+#          {{ is_state('device_tracker.galaxy_s9_2', 'home')
+#            or is_state('device_tracker.galaxy_note10_2', 'home') }}
+### Forecast
+      climate_heat:
+        device_class: heat
+        friendly_name: Varmt
+#        delay_on:
+#          minutes: 1
+        value_template: >-
+          {{ state_attr('weather.smhi_home', 'forecast')[0]['temperature'] | int >= 20
+            or state_attr('weather.smhi_home', 'forecast')[1]['temperature'] | int >= 20
+            or is_state('binary_sensor.hot_outside', 'on') }}
+#          {{ ( state_attr('weather.smhi_home', 'forecast')[0]['temperature'] | int >= 20 and state_attr('weather.smhi_home', 'forecast')[0]['condition'] == 'sunny' )
+#            or ( state_attr('weather.smhi_home', 'forecast')[1]['temperature'] | int >= 20 and state_attr('weather.smhi_home', 'forecast')[1]['condition'] == 'sunny' )
+#            or is_state('binary_sensor.hot_outside', 'on') }}
+###
+      climate_schedule:
+#        device_class: presence
+#        friendly_name: Närvaro
+        value_template: >-
+          {{ is_state('binary_sensor.climate_home', 'on')
+            and is_state('binary_sensor.climate_heat', 'off') }}
+###
+      climate_away:
+#        device_class: presence
+#        friendly_name: Närvaro
+        value_template: >-
+          {{ is_state('binary_sensor.climate_home', 'off')
+            and is_state('binary_sensor.climate_heat', 'off') }}
+### Frost Guard
+      climate_frost:
+#        device_class: presence
+#        friendly_name: Närvaro
+        value_template: >-
+          {{ is_state('binary_sensor.climate_heat', 'on') }}
+# 
+### 
+      hot_outside:
+        device_class: heat
+        friendly_name: Varmt ute
+        value_template: >-
+          {{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') > states('sensor.netatmo_sannesholma_weather_station_temperature') }}
+#
+automation:
+##############  ############################################################################################################
+##############  ###################################################
+- alias: Climate schedule
+  trigger:
+    platform: state
+    entity_id: binary_sensor.climate_schedule
+    to: 'on'
+  action:
+  - service: climate.set_preset_mode
+    data:
+      entity_id:
+      - climate.netatmo_barnrum
+      - climate.netatmo_kontor
+      preset_mode: 'Schedule'
+##############  ####################################################
+- alias: Climate away
+  trigger:
+    platform: state
+    entity_id: binary_sensor.climate_away
+    to: 'on'
+  action:
+  - service: climate.set_preset_mode
+    data:
+      entity_id:
+      - climate.netatmo_barnrum
+      - climate.netatmo_kontor
+      preset_mode: 'away'
+##############  ####################################################
+- alias: Climate frost
+  trigger:
+    platform: state
+    entity_id: binary_sensor.climate_frost
+    to: 'on'
+  action:
+  - service: climate.set_preset_mode
+    data:
+      entity_id:
+      - climate.netatmo_barnrum
+      - climate.netatmo_kontor
+      preset_mode: 'Frost Guard'
+#
+- alias: Hot outside
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.hot_outside
+    to: 'on'
+  action:
+    service: notify.mobile_app_sm_n975f
+    data_template:
+      message: "Det är varmare utomhus än på éntreplanet"
+      title: "Varmt ute"

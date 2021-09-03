@@ -1,0 +1,16 @@
+utility_meter:
+  netatmo_sannesholma_weather_station_rain_sum_timme:
+    source: sensor.netatmo_sannesholma_weather_station_rain_rain_today
+    cycle: hourly
+  netatmo_sannesholma_weather_station_rain_sum_dag:
+    source: sensor.netatmo_sannesholma_weather_station_rain_rain_today
+    cycle: daily
+  netatmo_sannesholma_weather_station_rain_sum_vecka:
+    source: sensor.netatmo_sannesholma_weather_station_rain_rain_today
+    cycle: weekly
+  netatmo_sannesholma_weather_station_rain_sum_manad:
+    source: sensor.netatmo_sannesholma_weather_station_rain_rain_today
+    cycle: monthly
+  netatmo_sannesholma_weather_station_rain_sum_ar:
+    source: sensor.netatmo_sannesholma_weather_station_rain_rain_today
+    cycle: yearly

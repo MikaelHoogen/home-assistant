@@ -1,0 +1,15 @@
+### Switch ###
+switch:
+#
+  - platform: wake_on_lan
+    name: Sonata
+    mac: !secret sonata_mac
+    host: sonata
+  - platform: wake_on_lan
+    name: Antec
+    mac: !secret antec_mac
+#
+  - platform: wake_on_lan
+    name: "WS-White"
+    mac: !secret ws_white_mac
+#

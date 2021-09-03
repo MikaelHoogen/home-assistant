@@ -1,0 +1,36 @@
+utility_meter:
+  torktumlare_timme:
+    source: sensor.torktumlare_consumption
+    cycle: hourly
+  torktumlare_dag:
+    source: sensor.torktumlare_consumption
+    cycle: daily
+  torktumlare_vecka:
+    source: sensor.torktumlare_consumption
+    cycle: weekly
+  torktumlare_manad:
+    source: sensor.torktumlare_consumption
+    cycle: monthly
+  torktumlare_ar:
+    source: sensor.torktumlare_consumption
+    cycle: yearly
+  #
+  torktumlare_dag_kostnad:
+    source: sensor.torktumlare_timme_kostnad
+    cycle: daily
+  torktumlare_manad_kostnad:
+    source: sensor.torktumlare_timme_kostnad
+    cycle: monthly
+  torktumlare_ar_kostnad:
+    source: sensor.torktumlare_timme_kostnad
+    cycle: yearly
+#
+sensor:
+  - platform: template
+    sensors:
+      ###
+      torktumlare_timme_kostnad:
+        friendly_name: "Kostnad"
+        unit_of_measurement: "SEK"
+        #        device_class: "humidity"
+        value_template: "{{ ( states('sensor.torktumlare_timme') | float * states('sensor.elpris_totalt_sek') | float ) | round(3) }}"

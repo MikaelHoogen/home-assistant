@@ -1,0 +1,65 @@
+input_boolean:
+  sovdags:
+    name: Sovdags
+    icon: mdi:sleep
+#
+#
+automation:
+#######################################################################################
+################ Sovdags ############################
+- alias: Sovdags
+  trigger:
+    platform: state
+    entity_id: input_boolean.sovdags
+    to: "on"
+  action:
+#
+  - delay:
+      seconds: 10
+  - service: light.turn_off
+    data:
+      entity_id:
+      # Sovrum
+      - light.sovrum
+  - delay:
+      seconds: 5
+  - service: switch.turn_on
+    data:
+      entity_id:
+      - switch.adaptive_lighting_sleep_mode_allrum
+      - switch.adaptive_lighting_sleep_mode_allrum_belysning_filament
+#
+      - switch.adaptive_lighting_sleep_mode_badrum
+#
+      - switch.adaptive_lighting_sleep_mode_barnrum
+#
+      - switch.adaptive_lighting_sleep_mode_kok
+      - switch.adaptive_lighting_sleep_mode_kok_fonster
+#
+      - switch.adaptive_lighting_sleep_mode_sovrum
+#
+      - switch.adaptive_lighting_sleep_mode_vardagsrum_belysning_filament
+#
+- alias: Sovdags off
+  trigger:
+    platform: state
+    entity_id: input_boolean.sovdags
+    to: "off"
+  action:
+#
+  - service: switch.turn_off
+    data:
+      entity_id:
+      - switch.adaptive_lighting_sleep_mode_allrum
+      - switch.adaptive_lighting_sleep_mode_allrum_belysning_filament
+#
+      - switch.adaptive_lighting_sleep_mode_badrum
+#
+      - switch.adaptive_lighting_sleep_mode_barnrum
+#
+      - switch.adaptive_lighting_sleep_mode_kok
+      - switch.adaptive_lighting_sleep_mode_kok_fonster
+#
+      - switch.adaptive_lighting_sleep_mode_sovrum
+#
+      - switch.adaptive_lighting_sleep_mode_vardagsrum_belysning_filament

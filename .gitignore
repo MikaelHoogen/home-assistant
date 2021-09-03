@@ -1,0 +1,68 @@
+# Example .gitignore file for your config dir.
+# An * ensures that everything will be ignored.
+*
+#
+# exclude everything except whitelist
+/*
+# You can whitelist files/folders with !, these will not be ignored.
+!*.yaml
+!.gitignore
+!*.md
+!/packages*
+
+## Below ignores are for safety
+# Generic ignores
+*.pid
+*.xml
+*.csr
+*.crt
+*.key
+*.conf
+*.pickle
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite
+*.log
+*.db
+*.db-shm
+*.db-wal
+*.pyc
+._*
+__pycache__
+
+# Ignore folders.
+.storage
+.cloud
+.google.token
+.uuid
+config/deps
+
+# Files
+ip_bans.yaml
+secrets.yaml
+known_devices.yaml
+
+
+core.*
+core
+OZW_Log.txt
+home-assistant.log
+home-assistant_v2.db
+deps
+icloud
+hacs
+alexa_media
+custom_components
+image
+tts
+secrets
+.homekit.state
+phue.conf
+ios.conf
+pyozw.sqlite
+nest.conf
+ipchange.yaml
+ip_bans.yaml
+production_auth.json

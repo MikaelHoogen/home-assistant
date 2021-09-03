@@ -1,0 +1,137 @@
+utility_meter:
+  tvattmaskin_timme:
+    source: sensor.tvattmaskin_consumption
+    cycle: hourly
+  tvattmaskin_dag:
+    source: sensor.tvattmaskin_consumption
+    cycle: daily
+  tvattmaskin_vecka:
+    source: sensor.tvattmaskin_consumption
+    cycle: weekly
+  tvattmaskin_manad:
+    source: sensor.tvattmaskin_consumption
+    cycle: monthly
+  tvattmaskin_ar:
+    source: sensor.tvattmaskin_consumption
+    cycle: yearly
+  #
+  tvattmaskin_dag_kostnad:
+    source: sensor.tvattmaskin_timme_kostnad
+    cycle: daily
+  tvattmaskin_manad_kostnad:
+    source: sensor.tvattmaskin_timme_kostnad
+    cycle: monthly
+  tvattmaskin_ar_kostnad:
+    source: sensor.tvattmaskin_timme_kostnad
+    cycle: yearly
+#
+sensor:
+  - platform: template
+    sensors:
+      ###
+      tvattmaskin_timme_kostnad:
+        friendly_name: "Kostnad"
+        unit_of_measurement: "SEK"
+        #        device_class: "humidity"
+        value_template: "{{ ( states('sensor.tvattmaskin_timme') | float * states('sensor.elpris_totalt_sek') | float ) | round(3) }}"
+#
+#
+variable:
+### Tvättmaskin #######################
+  tvattmaskin_consumption:
+    value: 0.0
+    restore: true
+    attributes:
+      friendly_name: "Tvättmaskin energiförbrukning"
+      icon: mdi:power-plug
+      unit_of_measurement: "kWh"
+#      history_1:
+#      history_2:
+#      history_3:
+#      history_4: 
+  tvattmaskin_cost:
+    value: 0.0
+    restore: true
+    attributes:
+      friendly_name: "Tvättmaskin kostnad"
+      icon: mdi:cash-multiple
+      unit_of_measurement: "SEK"
+#      history_1:
+#      history_2:
+#      history_3:
+#      history_4: 
+#
+binary_sensor:
+# Determine when the washing machine has a load running.
+  - platform: template
+    sensors:
+      tvattmaskin:
+        friendly_name: "Tvättmaskin"
+        delay_on:
+          seconds: 10
+        delay_off:
+          minutes: 2
+        value_template: >-
+          {{ states('sensor.tvattmaskin_effekt')|float > 5 }}
+        icon_template: mdi:washing-machine
+#
+automation:
+############## Tvättmaskin ######################################################
+- alias: Energimätning tvättmaskin
+  trigger:
+    platform: state
+    entity_id: sensor.tvattmaskin_consumption
+  condition:
+  - condition: state
+    entity_id: binary_sensor.tvattmaskin
+    state: 'on'
+  action:
+    - service: variable.set_variable
+      data_template:
+        variable: tvattmaskin_consumption
+        value: '{{ ((states.variable.tvattmaskin_consumption.state | float) + (trigger.to_state.state | float - trigger.from_state.state | float)) | round(2) }}'
+    - service: variable.set_variable
+      data_template:
+        variable: tvattmaskin_cost
+        value: "{{ ((states.variable.tvattmaskin_cost.state | float) + ((trigger.to_state.state | float - trigger.from_state.state | float) * states('sensor.elpris_totalt') | float / 100.0 | float )) | round(3)}}"
+- alias: Energimätning tvättmaskin flytta värden
+  trigger:
+    platform: state
+    entity_id: binary_sensor.tvattmaskin
+    to: "on"
+    from: "off"
+  action:
+    - service: variable.set_variable
+      data_template:
+        variable: tvattmaskin_consumption
+        value: 0.0
+    - service: variable.set_variable
+      data_template:
+        variable: tvattmaskin_cost
+        value: 0.0
+- alias: Tvättmaskin klar
+  trigger:
+    platform: state
+    entity_id: binary_sensor.tvattmaskin
+    from: "on"
+    to: "off"
+  action:
+  - service: persistent_notification.create
+    data_template:
+      message: "Tvättmaskin"
+      title: "Tvätten är klar. Energiförbrukningen blev {{ states('variable.tvattmaskin_consumption') }} kWh och kostnaden {{ states('variable.tvattmaskin_cost') | round(2) }} kronor."
+  - service: notify.mobile_app_sm_n975f
+    data_template:
+      message: "Tvättmaskin klar"
+      title: "Tvätten är klar. Energiförbrukningen blev {{ states('variable.tvattmaskin_consumption') }} kWh och kostnaden {{ states('variable.tvattmaskin_cost') | round(2) }} kronor."
+      #  - service: notify.pushbullet_lina
+#    data_template:
+#      message: "Tvättmaskin"
+#      title: "Tvätten är klar. Energiförbrukningen blev {{ states('variable.tvattmaskin_consumption') }} kWh och kostnaden {{ states('variable.tvattmaskin_cost') | round(2) }} kronor."
+#  - delay:
+#      minutes: 30
+#  - condition: state
+#    entity_id: binary_sensor.tvattmaskin
+#    state: 'off'
+#  - service: homeassistant.turn_off
+#    entity_id: switch.tvattmaskin
