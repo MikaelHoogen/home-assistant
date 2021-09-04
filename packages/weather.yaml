@@ -5,7 +5,7 @@ sensor:
   - platform: trafikverket_weatherstation
     name: Trafikverket Markaryd
     api_key: !secret trafikverket_api_key
-    station: Väg 4, Markaryd
+    station: Markaryd
     monitored_conditions:
       - air_temp
       - road_temp
