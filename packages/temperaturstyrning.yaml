@@ -18,30 +18,25 @@ binary_sensor:
 #        delay_on:
 #          minutes: 1
         value_template: >-
-          {{ state_attr('weather.smhi_home', 'forecast')[0]['temperature'] | int >= 20
-            or state_attr('weather.smhi_home', 'forecast')[1]['temperature'] | int >= 20
+          {{ state_attr('weather.smhi_sannesholma', 'forecast')[0]['temperature'] | int >= 20
+            or state_attr('weather.smhi_sannesholma', 'forecast')[1]['temperature'] | int >= 20
             or is_state('binary_sensor.hot_outside', 'on') }}
 #          {{ ( state_attr('weather.smhi_home', 'forecast')[0]['temperature'] | int >= 20 and state_attr('weather.smhi_home', 'forecast')[0]['condition'] == 'sunny' )
 #            or ( state_attr('weather.smhi_home', 'forecast')[1]['temperature'] | int >= 20 and state_attr('weather.smhi_home', 'forecast')[1]['condition'] == 'sunny' )
 #            or is_state('binary_sensor.hot_outside', 'on') }}
 ###
       climate_schedule:
-#        device_class: presence
-#        friendly_name: Närvaro
         value_template: >-
-          {{ is_state('binary_sensor.climate_home', 'on')
-            and is_state('binary_sensor.climate_heat', 'off') }}
+          {{ is_state('binary_sensor.climate_heat', 'off') }}
+#          {{ is_state('binary_sensor.climate_home', 'on')
+#            and is_state('binary_sensor.climate_heat', 'off') }}
 ###
       climate_away:
-#        device_class: presence
-#        friendly_name: Närvaro
         value_template: >-
           {{ is_state('binary_sensor.climate_home', 'off')
             and is_state('binary_sensor.climate_heat', 'off') }}
 ### Frost Guard
       climate_frost:
-#        device_class: presence
-#        friendly_name: Närvaro
         value_template: >-
           {{ is_state('binary_sensor.climate_heat', 'on') }}
 # 
@@ -50,7 +45,7 @@ binary_sensor:
         device_class: heat
         friendly_name: Varmt ute
         value_template: >-
-          {{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') > states('sensor.netatmo_sannesholma_weather_station_temperature') }}
+          {{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float > states('sensor.netatmo_sannesholma_weather_station_temperature') | float }}
 #
 automation:
 ##############  ############################################################################################################
@@ -64,8 +59,7 @@ automation:
   - service: climate.set_preset_mode
     data:
       entity_id:
-      - climate.netatmo_barnrum
-      - climate.netatmo_kontor
+      - climate.netatmo_allrum
       preset_mode: 'Schedule'
 ##############  ####################################################
 - alias: Climate away
@@ -77,8 +71,7 @@ automation:
   - service: climate.set_preset_mode
     data:
       entity_id:
-      - climate.netatmo_barnrum
-      - climate.netatmo_kontor
+      - climate.netatmo_allrum
       preset_mode: 'away'
 ##############  ####################################################
 - alias: Climate frost
@@ -90,8 +83,7 @@ automation:
   - service: climate.set_preset_mode
     data:
       entity_id:
-      - climate.netatmo_barnrum
-      - climate.netatmo_kontor
+      - climate.netatmo_allrum
       preset_mode: 'Frost Guard'
 #
 - alias: Hot outside
