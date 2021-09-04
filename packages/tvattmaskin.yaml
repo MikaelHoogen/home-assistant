@@ -45,10 +45,7 @@ variable:
       friendly_name: "Tvättmaskin energiförbrukning"
       icon: mdi:power-plug
       unit_of_measurement: "kWh"
-#      history_1:
-#      history_2:
-#      history_3:
-#      history_4: 
+#
   tvattmaskin_cost:
     value: 0.0
     restore: true
@@ -56,10 +53,6 @@ variable:
       friendly_name: "Tvättmaskin kostnad"
       icon: mdi:cash-multiple
       unit_of_measurement: "SEK"
-#      history_1:
-#      history_2:
-#      history_3:
-#      history_4: 
 #
 binary_sensor:
 # Determine when the washing machine has a load running.
