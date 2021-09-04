@@ -39,7 +39,7 @@ binary_sensor:
 # Determine when the washing machine has a load running.
   - platform: template
     sensors:
-      tvattmaskin:
+      torktumlare:
         friendly_name: Torktumlare
         delay_on:
           seconds: 10
