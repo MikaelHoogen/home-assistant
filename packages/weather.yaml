@@ -1,0 +1,18 @@
+### Sensor ###
+sensor:
+
+### Trafikverket ###
+  - platform: trafikverket_weatherstation
+    name: Trafikverket Markaryd
+    api_key: !secret trafikverket_api_key
+    station: Väg 4, Markaryd
+    monitored_conditions:
+      - air_temp
+      - road_temp
+      - precipitation
+      - wind_direction
+      - wind_direction_text
+      - wind_speed
+      - wind_speed_max
+      - precipitation_amount
+      - precipitation_amountname
