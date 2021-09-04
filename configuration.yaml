@@ -24,3 +24,8 @@ sensor:
     display_options:
       - 'time'
       - 'time_utc'
+#
+# Discover some devices automatically
+discovery:
+  enable:
+  - dlna_dmr
