@@ -1,5 +1,23 @@
 ### Sensor ###
 sensor:
+  #
+  - platform: statistics
+    entity_id: sensor.netatmo_indoor_pressure
+    name: netatmo_sannesholma_weather_station_pressure_statistics
+    sampling_size: 144
+    max_age:
+      minutes: 1440
+    #
+  - platform: template
+    sensors:
+      netatmo_indoor_pressure_max:
+        unit_of_measurement: "mbar"
+        friendly_name: Pressure Max
+        value_template: "{{ state_attr('sensor.netatmo_sannesholma_weather_station_pressure_statistics', 'max_value') }}"
+      netatmo_indoor_pressure_min:
+        unit_of_measurement: "mbar"
+        friendly_name: Pressure Min
+        value_template: "{{ state_attr('sensor.netatmo_sannesholma_weather_station_pressure_statistics', 'min_value') }}"
 
 ### Trafikverket ###
   - platform: trafikverket_weatherstation
