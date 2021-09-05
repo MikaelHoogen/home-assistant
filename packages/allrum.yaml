@@ -19,7 +19,7 @@ adaptive_lighting:
     sleep_color_temp: 2000
 #    sunrise_time: "08:00:00"  # override the sunrise time
 #    sunrise_offset:
-    sunset_time: "20:00:00"
+#    sunset_time: "20:00:00"
 #    sunset_offset: 1800  # in seconds or '00:15:00'
     # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
     take_over_control: true
@@ -43,7 +43,7 @@ adaptive_lighting:
     sleep_color_temp: 2000
 #    sunrise_time: "08:00:00"  # override the sunrise time
 #    sunrise_offset: -00:05:00
-    sunset_time: '20:00'
+#    sunset_time: '20:00'
 #    sunset_offset: 1800  # in seconds or '00:15:00'
     # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
     take_over_control: true
