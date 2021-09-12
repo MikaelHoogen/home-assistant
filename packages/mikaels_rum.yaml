@@ -37,7 +37,7 @@ binary_sensor:
         delay_off:
           minutes: 30
         value_template: >-
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < 400 }}
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
       mikaels_rum_belysning_automation_control:
         friendly_name: Mikaels rum
         value_template: >-

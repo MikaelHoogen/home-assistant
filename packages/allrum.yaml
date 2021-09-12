@@ -73,11 +73,11 @@ binary_sensor:
         delay_off:
           minutes: 30
         value_template: >-
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < 400 }}
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
       allrum_belysning_filament_automation_control:
         friendly_name: Vardagsrum
-        delay_off:
-          minutes: 30
+#        delay_off:
+#          minutes: 30
         value_template: >-
           {{ is_state('binary_sensor.allrum_belysning_filament_lightlevel', 'on')
             and is_state('input_boolean.film_spelar', 'off')
