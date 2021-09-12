@@ -1,0 +1,7 @@
+input_number:
+  fonsterbelysning_light_level:
+    name: Ljusstyrka för fönsterbelysning
+    min: 0
+    max: 2000
+    step: 50
+    unit_of_measurement: lux
