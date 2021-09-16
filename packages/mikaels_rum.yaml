@@ -28,6 +28,15 @@ adaptive_lighting:
     only_once: false
     separate_turn_on_commands: false
 #
+sensor:
+  - platform: template
+    sensors:
+############# Temperatur #########################
+      netatmo_mikaels_rum_temperature:
+        unit_of_measurement: "°C"
+        friendly_name: Mikaels rum termostat temperatur
+        value_template: "{{ state_attr('climate.netatmo_mikaels_rum', 'current_temperature') }}"
+#
 binary_sensor:
 #
   - platform: template
