@@ -59,4 +59,4 @@ automation:
       light.turn_off
       {% endif %}
     entity_id:
-    - light.mikaels_rum_fonster
+    - light.kontor_fonster
