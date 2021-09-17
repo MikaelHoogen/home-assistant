@@ -1,0 +1,63 @@
+##################### Brandvarnare #####################################
+automation:
+- alias: Kontroll av brandvarnare med push till Pushbullet
+  trigger:
+  - platform: event
+    event_type: rfxtrx_event
+    event_data:
+      packet_type: 32
+      sub_type: 3
+      id_string: "b38d00:32"
+      values:
+        Sensor Status: "Panic"
+  - platform: state
+    entity_id:
+      - binary_sensor.kd101_smoke_detector_b38d00_32
+    to: 'on'
+  action:
+  - service: notify.pushbullet
+    data_template:
+      message: "Brandvarnare aktiv"
+      title: "Rök detekterad"
+  - service: notify.mobile_app_sm_n975f
+    data_template:
+      message: "Brandvarnare aktiv"
+      title: "Rök detekterad"
+  - service: notify.mobile_app_sm_g960f
+    data_template:
+      message: "Brandvarnare aktiv"
+      title: "Rök detekterad"
+  - service: notify.pushbullet_lina
+    data_template:
+      message: "Brandvarnare aktiv"
+      title: "Rök detekterad"
+#
+template:
+  trigger:
+  - platform: event
+    event_type: rfxtrx_event
+    event_data:
+      packet_type: 32
+      sub_type: 3
+      id_string: "b38d00:32"
+      values:
+        Sensor Status: "Panic"
+  binary_sensor:
+    - name: Brandvarnare
+      auto_off: 300
+      state: "true"
+alert:
+  fire:
+    name: Brandvarnare utlöst, risk för brand!
+    done_message: Brandvarnare är återställd
+    entity_id: binary_sensor.brandvarnare
+    state: 'on'
+    repeat: 5
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - pushbullet
+      - mobile_app_sm_n975f
+      - notify.mobile_app_sm_g960f
+      - pushbullet_lina
+      - notify.persistent_notification
