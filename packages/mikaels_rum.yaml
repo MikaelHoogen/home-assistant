@@ -7,6 +7,7 @@ adaptive_lighting:
     - light.kontor_fonster
     - light.vardagsrum_liten_laslampa
     - light.datorrum_skrivbord
+    - light.mikaels_rum_tak
     prefer_rgb_color: false
     transition: 30
     initial_transition: 5
