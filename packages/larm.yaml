@@ -31,7 +31,11 @@ automation:
     data_template:
       message: "Brandvarnare aktiv"
       title: "Rök detekterad"
-#
+  - service: persistent_notification.create
+    data_template:
+      message: "Brandvarnare aktiv"
+      title: "Rök detekterad"
+      #
 template:
   trigger:
   - platform: event
