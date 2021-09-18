@@ -1,3 +1,4 @@
+#
 input_boolean:
   sovdags:
     name: Sovdags
@@ -21,6 +22,10 @@ automation:
       entity_id:
       # Sovrum
       - light.sovrum
+      # Mikaels rum
+      - light.mikaels_rum_tak
+      - light.mikaels_dator_hue_play
+      - light.vardagsrum_liten_laslampa
   - delay:
       seconds: 5
   - service: switch.turn_on
@@ -35,10 +40,15 @@ automation:
 #
       - switch.adaptive_lighting_sleep_mode_kok
       - switch.adaptive_lighting_sleep_mode_kok_fonster
+      - switch.adaptive_lighting_sleep_mode_kok_skafferi
 #
       - switch.adaptive_lighting_sleep_mode_sovrum
 #
+      - switch.adaptive_lighting_sleep_mode_tvattstuga
+#
       - switch.adaptive_lighting_sleep_mode_vardagsrum_belysning_filament
+#
+      - switch.adaptive_lighting_sleep_mode_walk_in_closet
 #
 - alias: Sovdags off
   trigger:
@@ -59,7 +69,13 @@ automation:
 #
       - switch.adaptive_lighting_sleep_mode_kok
       - switch.adaptive_lighting_sleep_mode_kok_fonster
+      - switch.adaptive_lighting_sleep_mode_kok_skafferi
 #
       - switch.adaptive_lighting_sleep_mode_sovrum
 #
+      - switch.adaptive_lighting_sleep_mode_tvattstuga
+#
       - switch.adaptive_lighting_sleep_mode_vardagsrum_belysning_filament
+#
+      - switch.adaptive_lighting_sleep_mode_walk_in_closet
+#
