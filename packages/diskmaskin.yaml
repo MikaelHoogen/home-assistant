@@ -34,3 +34,17 @@ sensor:
         unit_of_measurement: "SEK"
 #        device_class: "humidity"
         value_template: "{{ ( states('sensor.diskmaskin_timme') | float * states('sensor.elpris_totalt_sek') | float ) | round(3) }}"
+#
+binary_sensor:
+# Determine when the dishwasher has a load running.
+  - platform: template
+    sensors:
+      diskmaskin:
+        friendly_name: "Diskmaskin"
+        delay_off:
+          minutes: 5
+        delay_on:
+          seconds: 30
+        value_template: >-
+          {{ states('sensor.diskmaskin_power')|float > 3 }}
+        icon_template: mdi:dishwasher
