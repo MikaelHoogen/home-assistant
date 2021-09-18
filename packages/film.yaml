@@ -42,3 +42,14 @@ automation:
   action:
   - service: input_boolean.turn_off
     entity_id: input_boolean.film_spelar
+#
+### Movie not playing ###
+- alias: Film_off
+  trigger: 
+    # Chromecast
+  - platform: state
+    entity_id: input_boolean.film
+    to: 'off'
+  action:
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.film_spelar
