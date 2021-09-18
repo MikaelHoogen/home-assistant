@@ -10,10 +10,10 @@ automation:
       id_string: "b38d00:32"
       values:
         Sensor Status: "Panic"
-  - platform: state
-    entity_id:
-      - binary_sensor.kd101_smoke_detector_b38d00_32
-    to: 'on'
+#  - platform: state
+#    entity_id:
+#      - binary_sensor.kd101_smoke_detector_b38d00_32
+#    to: 'on'
   action:
   - service: notify.pushbullet
     data_template:
