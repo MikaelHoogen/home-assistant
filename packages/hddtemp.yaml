@@ -1,0 +1,7 @@
+sensor:
+  - platform: hddtemp
+    name: Antec
+    host: !secret antec_ip
+    disks:
+      - /dev/sda
+      - /dev/sdb

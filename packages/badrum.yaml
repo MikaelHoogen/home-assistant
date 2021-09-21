@@ -5,7 +5,7 @@ adaptive_lighting:
     - light.badrum
     prefer_rgb_color: false
     transition: 30
-    initial_transition: 5
+    initial_transition: 3
     interval: 90
     min_brightness: 20
     max_brightness: 100
