@@ -17,6 +17,8 @@ homeassistant:
 ## This is where I store all configuration
 ## The configuration is based on packages corresponding to a room or function
   packages: !include_dir_named packages
+#
+  customize: !include customize.yaml
 
 sensor:
     ##################
