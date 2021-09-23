@@ -4,10 +4,11 @@ switch:
   - platform: wake_on_lan
     name: Sonata
     mac: !secret sonata_mac
-    host: sonata
+    host: !secret sonata_ip
   - platform: wake_on_lan
     name: Antec
     mac: !secret antec_mac
+    host: !secret antec_ip
 #
   - platform: wake_on_lan
     name: "WS-White"
