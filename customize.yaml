@@ -1,0 +1,14 @@
+light.mikaels_rum_tak:
+  icon: mdi:track-light
+light.mikaels_dator_hue_play:
+  icon: mdi:wall-sconce-flat-variant-outline
+light.datorrum_skrivbord:
+  supported_color_modes:
+  - color_temp
+  - hs
+  - xy
+  min_mireds: '150'
+  max_mireds: '500'
+light.koksentre_dorr:
+  min_mireds: 250
+  max_mireds: 455
