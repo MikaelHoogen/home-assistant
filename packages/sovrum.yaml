@@ -2,9 +2,7 @@
 adaptive_lighting:
   - name: Sovrum
     lights:
-    - light.walk_in_closet_1
-    - light.walk_in_closet_2
-    - light.walk_in_closet_3
+    - light.walk_in_closet
     - light.sovrum_fonster
     - light.sovrum_byra
     - light.sovrum_sang_mikael
