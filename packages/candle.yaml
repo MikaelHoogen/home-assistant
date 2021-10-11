@@ -2,3 +2,35 @@ input_boolean:
   candle:
     name: Levande ljus
     icon: mdi:candle
+#
+automation:
+########## Levande ljus ######################
+- alias: Candle
+  trigger:
+  - platform: state
+    entity_id: input_boolean.candle
+    to: 'on'
+  action:
+  - service: switch.turn_off
+    entity_id:
+    - switch.adaptive_lighting_kok
+  - service: light.turn_on
+    data:
+      brightness_pct: 2
+      entity_id:
+      - light.kok_fonsterbelysning
+  - service: light.turn_on
+    data:
+      entity_id:
+      - light.kok_koksbord
+      profile: 'candle'
+#
+- alias: Candle off
+  trigger:
+  - platform: state
+    entity_id: input_boolean.candle
+    to: 'off'
+  action:
+  - service: switch.turn_on
+    entity_id:
+    - switch.adaptive_lighting_kok
