@@ -97,6 +97,9 @@ binary_sensor:
           {{ is_state('binary_sensor.allrum_rorelsesensor', 'on')
           or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
           or is_state('media_player.vardagsrum', 'playing') }}
+# TODO
+# Läsning
+##################
       allrum_presence_long:
         value_template: >-
           {{ ( is_state('binary_sensor.allrum_rorelsesensor', 'on')
