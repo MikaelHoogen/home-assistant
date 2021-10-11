@@ -57,3 +57,12 @@ sensor:
           v: "{{ states('sensor.utomhus_v') }}"
           vs: "{{ state_attr('sensor.utomhus_v', 'vs') | float | round(2) }}"
       #
+      ### Snickarboa
+      sensorer_snickarboa:
+        friendly_name: "0 Snickarboa"
+        value_template: "{{ states('sensor.time') }}"
+        attribute_templates:
+          temperature: "{{ states('sensor.snickarboa_temperature') }}"
+          humidity: "{{ states('sensor.snickarboa_humidity') | round(0) }}"
+          co2: "0"
+          v: "{{ states('sensor.snickarboa_v') }}"
