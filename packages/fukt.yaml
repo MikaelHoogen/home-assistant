@@ -111,7 +111,7 @@ sensor:
           ps: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | float / 100 ) ** 8.02 }}"
           vs: "{{ state_attr('sensor.allrum_v', 'ps') | float / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | float + 273.2 ) ) * 1000 }}"
 
-      ### Allrum
+      ### Badrum
       badrum_ps:
         friendly_name: "Ånghalt badrum ps"
         device_class: "humidity"
@@ -120,13 +120,34 @@ sensor:
       badrum_vs:
         friendly_name: "Ånghalt badrum vs"
         device_class: "humidity"
-        value_template: "{{ states('sensor.allrum_ps') | float / ( 461.4 * ( states('sensor.badrum_temperature') | float + 273.2 ) ) * 1000 }}"
+        value_template: "{{ states('sensor.badrum_ps') | float / ( 461.4 * ( states('sensor.badrum_temperature') | float + 273.2 ) ) * 1000 }}"
       #
       badrum_v:
         friendly_name: "Ånghalt badrum v"
         unit_of_measurement: "g/m3"
         device_class: "humidity"
-        value_template: "{{ ( states('sensor.allrum_vs') | float * ( states('sensor.badrum_humidity') | float / 100 ) ) | round(2) }}"
+        value_template: "{{ ( states('sensor.badrum_vs') | float * ( states('sensor.badrum_humidity') | float / 100 ) ) | round(2) }}"
         attribute_templates:
           ps: "{{ 288.68 * ( 1.098 + states('sensor.badrum_temperature') | float / 100 ) ** 8.02 }}"
-          vs: "{{ state_attr('sensor.allrum_v', 'ps') | float / ( 461.4 * ( states('sensor.badrum_temperature') | float + 273.2 ) ) * 1000 }}"
+          vs: "{{ state_attr('sensor.badrum_v', 'ps') | float / ( 461.4 * ( states('sensor.badrum_temperature') | float + 273.2 ) ) * 1000 }}"
+#
+      ### Snickarboa
+      snickarboa_ps:
+        friendly_name: "Ånghalt snickarboa ps"
+        device_class: "humidity"
+        value_template: "{{ 288.68 * ( 1.098 + states('sensor.snickarboa_temperature') | float / 100 ) ** 8.02 }}"
+      #
+      snickarboa_vs:
+        friendly_name: "Ånghalt snickarboa vs"
+        device_class: "humidity"
+        value_template: "{{ states('sensor.snickarboa_ps') | float / ( 461.4 * ( states('sensor.snickarboa_temperature') | float + 273.2 ) ) * 1000 }}"
+      #
+      snickarboa_v:
+        friendly_name: "Ånghalt snickarboa v"
+        unit_of_measurement: "g/m3"
+        device_class: "humidity"
+        value_template: "{{ ( states('sensor.snickarboa_vs') | float * ( states('sensor.snickarboa_humidity') | float / 100 ) ) | round(2) }}"
+        attribute_templates:
+          ps: "{{ 288.68 * ( 1.098 + states('sensor.snickarboa_temperature') | float / 100 ) ** 8.02 }}"
+          vs: "{{ state_attr('sensor.snickarboa_v', 'ps') | float / ( 461.4 * ( states('sensor.snickarboa_temperature') | float + 273.2 ) ) * 1000 }}"
+
