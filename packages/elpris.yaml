@@ -500,7 +500,7 @@ sensor:
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
             {{ state_attr('sensor.elpris', 'tomorrow')[0] }}
           {% else %}
-          Pris saknas
+          -
           {% endif %}
         attribute_templates:
           timme: "00:00 - 01:00"
