@@ -13,6 +13,9 @@ tts:
 #script: !include scripts.yaml
 #scene: !include scenes.yaml
 
+recorder:
+  db_url: !secret maria
+
 homeassistant:
 ## This is where I store all configuration
 ## The configuration is based on packages corresponding to a room or function
