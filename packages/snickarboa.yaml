@@ -1,0 +1,13 @@
+#
+generic_hygrostat:
+  - name: Snickarboa
+    humidifier: switch.motorvarmare
+    target_sensor: sensor.snickarboa_humidity
+    device_class: "dehumidifier"
+#    max_humidity: 75
+#
+climate:
+  - platform: generic_thermostat
+    name: Snickarboa
+    heater: switch.motorvarmare
+    target_sensor: sensor.snickarboa_temperature
