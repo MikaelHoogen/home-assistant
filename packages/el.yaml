@@ -1,0 +1,29 @@
+utility_meter:
+  accumulated_consumption_day_sannesholma_2181:
+    source: sensor.accumulated_consumption_sannesholma_2181
+    cycle: daily
+  accumulated_consumption_week_sannesholma_2181:
+    source: sensor.accumulated_consumption_sannesholma_2181
+    cycle: weekly
+  accumulated_consumption_month_sannesholma_2181:
+    source: sensor.accumulated_consumption_sannesholma_2181
+    cycle: monthly
+  accumulated_consumption_year_sannesholma_2181:
+    source: sensor.accumulated_consumption_sannesholma_2181
+    cycle: yearly
+#
+  accumulated_cost_hour_sannesholma_2181:
+    source: sensor.accumulated_cost_sannesholma_2181
+    cycle: hourly
+  accumulated_cost_day_sannesholma_2181:
+    source: sensor.accumulated_cost_sannesholma_2181
+    cycle: daily
+  accumulated_cost_week_sannesholma_2181:
+    source: sensor.accumulated_cost_sannesholma_2181
+    cycle: weekly
+  accumulated_cost_month_sannesholma_2181:
+    source: sensor.accumulated_cost_sannesholma_2181
+    cycle: monthly
+  accumulated_cost_year_sannesholma_2181:
+    source: sensor.accumulated_cost_sannesholma_2181
+    cycle: yearly
