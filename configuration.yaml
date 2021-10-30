@@ -32,5 +32,6 @@ sensor:
 #
 # Discover some devices automatically
 discovery:
-  enable:
-  - dlna_dmr
+# Please remove dlna_dmr from your discovery.enable configuration as it is now enabled by default
+#  enable:
+#  - dlna_dmr
