@@ -460,7 +460,7 @@ sensor:
             Under medel
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'today')[22] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'today')[23] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[0] <= state_attr('sensor.elpris', 'average') %}
@@ -483,7 +483,7 @@ sensor:
             Under medel
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'today')[23] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[0] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[1] <= state_attr('sensor.elpris', 'average') %}
@@ -497,7 +497,7 @@ sensor:
       #
       elpris_imorgon_00:
         value_template: >
-          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {{ state_attr('sensor.elpris', 'tomorrow')[0] }}
           {% else %}
           -
@@ -505,7 +505,7 @@ sensor:
         attribute_templates:
           timme: "00:00 - 01:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[0] == state_attr('sensor.elpris', 'max') %}
               Högsta pris
               {% elif state_attr('sensor.elpris', 'tomorrow')[0] < state_attr('sensor.elpris', 'average') %}
@@ -515,7 +515,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[0] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[1] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[2] <= state_attr('sensor.elpris', 'average') %}
@@ -532,7 +532,7 @@ sensor:
         attribute_templates:
           timme: "01:00 - 02:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[1] == state_attr('sensor.elpris', 'max') %}
               Högsta pris
               {% elif state_attr('sensor.elpris', 'tomorrow')[1] < state_attr('sensor.elpris', 'average') %}
@@ -542,7 +542,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[1] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[2] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[3] <= state_attr('sensor.elpris', 'average') %}
@@ -559,7 +559,7 @@ sensor:
         attribute_templates:
           timme: "02:00 - 03:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[2] == state_attr('sensor.elpris', 'max') %}
               Högsta pris
               {% elif state_attr('sensor.elpris', 'tomorrow')[2] < state_attr('sensor.elpris', 'average') %}
@@ -569,7 +569,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[2] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[3] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[4] <= state_attr('sensor.elpris', 'average') %}
@@ -586,7 +586,7 @@ sensor:
         attribute_templates:
           timme: "03:00 - 04:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[3] == state_attr('sensor.elpris', 'max') %}
               Högsta pris
               {% elif state_attr('sensor.elpris', 'tomorrow')[3] < state_attr('sensor.elpris', 'average') %}
@@ -596,7 +596,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[3] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[4] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[5] <= state_attr('sensor.elpris', 'average') %}
@@ -613,7 +613,7 @@ sensor:
         attribute_templates:
           timme: "04:00 - 05:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[4] == state_attr('sensor.elpris', 'max') %}
               Högsta pris
               {% elif state_attr('sensor.elpris', 'tomorrow')[4] < state_attr('sensor.elpris', 'average') %}
@@ -623,7 +623,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[4] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[5] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[6] <= state_attr('sensor.elpris', 'average') %}
@@ -640,7 +640,7 @@ sensor:
         attribute_templates:
           timme: "05:00 - 06:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[5] == state_attr('sensor.elpris', 'max') %}
               Högsta pris
               {% elif state_attr('sensor.elpris', 'tomorrow')[5] < state_attr('sensor.elpris', 'average') %}
@@ -650,7 +650,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[5] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[6] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[7] <= state_attr('sensor.elpris', 'average') %}
@@ -667,7 +667,7 @@ sensor:
         attribute_templates:
           timme: "06:00 - 07:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[6] == state_attr('sensor.elpris', 'max') %}
               Högsta pris
               {% elif state_attr('sensor.elpris', 'tomorrow')[6] < state_attr('sensor.elpris', 'average') %}
@@ -677,7 +677,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[6] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[7] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[8] <= state_attr('sensor.elpris', 'average') %}
@@ -694,7 +694,7 @@ sensor:
         attribute_templates:
           timme: "07:00 - 08:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[7] == state_attr('sensor.elpris', 'max') %}
               Högsta pris
               {% elif state_attr('sensor.elpris', 'tomorrow')[7] < state_attr('sensor.elpris', 'average') %}
@@ -704,7 +704,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[7] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[8] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[9] <= state_attr('sensor.elpris', 'average') %}
@@ -723,7 +723,7 @@ sensor:
         attribute_templates:
           timme: "08:00 - 09:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[8] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -734,7 +734,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {% if state_attr('sensor.elpris', 'tomorrow')[8] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[8 + 1] <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[8 + 2] <= state_attr('sensor.elpris', 'average') %}
@@ -753,7 +753,7 @@ sensor:
         attribute_templates:
           timme: "09:00 - 10:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[9] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -764,7 +764,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[9] %}
               {% if price <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[9 + 1] <= state_attr('sensor.elpris', 'average')
@@ -784,7 +784,7 @@ sensor:
         attribute_templates:
           timme: "10:00 - 11:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[10] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -795,7 +795,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[10] %}
               {% if price <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[10 + 1] <= state_attr('sensor.elpris', 'average')
@@ -815,7 +815,7 @@ sensor:
         attribute_templates:
           timme: "11:00 - 11:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[11] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -826,7 +826,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[11] %}
               {% if price <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[11 + 1] <= state_attr('sensor.elpris', 'average')
@@ -846,7 +846,7 @@ sensor:
         attribute_templates:
           timme: "12:00 - 13:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[12] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -857,7 +857,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[12] %}
               {% if price <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[12 + 1] <= state_attr('sensor.elpris', 'average')
@@ -877,7 +877,7 @@ sensor:
         attribute_templates:
           timme: "13:00 - 14:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[13] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -888,7 +888,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[13] %}
               {% if price <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[13 + 1] <= state_attr('sensor.elpris', 'average')
@@ -908,7 +908,7 @@ sensor:
         attribute_templates:
           timme: "14:00 - 15:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[14] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -919,7 +919,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[14] %}
               {% if price <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[14 + 1] <= state_attr('sensor.elpris', 'average')
@@ -939,7 +939,7 @@ sensor:
         attribute_templates:
           timme: "15:00 - 16:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[15] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -950,7 +950,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[15] %}
               {% if price <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[15 + 1] <= state_attr('sensor.elpris', 'average')
@@ -970,7 +970,7 @@ sensor:
         attribute_templates:
           timme: "16:00 - 17:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[16] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -981,7 +981,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[16] %}
               {% if price <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[16 + 1] <= state_attr('sensor.elpris', 'average')
@@ -1001,7 +1001,7 @@ sensor:
         attribute_templates:
           timme: "17:00 - 18:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[17] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -1012,7 +1012,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[17] %}
               {% if price <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[17 + 1] <= state_attr('sensor.elpris', 'average')
@@ -1025,7 +1025,7 @@ sensor:
             Pris saknas
             {% endif %}
           medel_3h: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
               {{ ( state_attr('sensor.elpris', 'tomorrow')[17] + state_attr('sensor.elpris', 'tomorrow')[17 + 1] + state_attr('sensor.elpris', 'tomorrow')[17 + 2] ) / 3 | round(2) }}
             {% else %}
             Pris saknas
@@ -1036,7 +1036,7 @@ sensor:
         attribute_templates:
           timme: "18:00 - 19:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[18] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -1047,7 +1047,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[19] %}
               {% if price <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[18 + 1] <= state_attr('sensor.elpris', 'average')
@@ -1067,7 +1067,7 @@ sensor:
         attribute_templates:
           timme: "19:00 - 20:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[19] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -1078,7 +1078,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[19] %}
               {% if price <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[19 + 1] <= state_attr('sensor.elpris', 'average')
@@ -1098,7 +1098,7 @@ sensor:
         attribute_templates:
           timme: "20:00 - 21:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[20] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -1109,7 +1109,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[20] %}
               {% if price <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[20 + 1] <= state_attr('sensor.elpris', 'average')
@@ -1129,7 +1129,7 @@ sensor:
         attribute_templates:
           timme: "21:00 - 22:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[21] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -1140,7 +1140,7 @@ sensor:
             Pris saknas
             {% endif %}
           disk: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[21] %}
               {% if price <= state_attr('sensor.elpris', 'average')
                   and state_attr('sensor.elpris', 'tomorrow')[21 + 1] <= state_attr('sensor.elpris', 'average')
@@ -1160,7 +1160,7 @@ sensor:
         attribute_templates:
           timme: "22:00 - 23:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[22] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
@@ -1180,7 +1180,7 @@ sensor:
         attribute_templates:
           timme: "23:00 - 00:00"
           kommentar: >
-            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) %}
+            {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[23] %}
               {% if price == state_attr('sensor.elpris', 'max') %}
               Högsta pris
