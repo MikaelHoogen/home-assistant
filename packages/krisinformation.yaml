@@ -24,22 +24,22 @@ alert:
       - pushbullet_lina
 #
 automation:
-  - alias: Krisinformation blink
-    trigger:
-      platform: time_pattern
-      minutes: "/5"
-    condition:
-    - condition: state
-      entity_id: binary_sensor.krisinformation_alert
-      state: 'on'
-    - condition: state
-      entity_id: input_boolean.sovdags
-      state: 'on'
-    action:
-    - service: light.turn_on
-      entity_id: light.sovrum
-      data:
-        flash: long
+#  - alias: Krisinformation blink
+#    trigger:
+#      platform: time_pattern
+#      minutes: "/5"
+#    condition:
+#    - condition: state
+#      entity_id: binary_sensor.krisinformation_alert
+#      state: 'on'
+#    - condition: state
+#      entity_id: input_boolean.sovdags
+#      state: 'on'
+#    action:
+#    - service: light.turn_on
+#      entity_id: light.sovrum
+#      data:
+#        flash: long
 #
   - alias: 'Krisinformation Alert'
     initial_state: on
