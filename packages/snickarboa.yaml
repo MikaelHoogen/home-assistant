@@ -9,5 +9,6 @@ generic_hygrostat:
 climate:
   - platform: generic_thermostat
     name: Snickarboa
+    precision: 0.1
     heater: switch.motorvarmare
     target_sensor: sensor.snickarboa_temperature
