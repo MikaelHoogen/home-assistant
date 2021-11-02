@@ -42,20 +42,21 @@ binary_sensor:
       delay_off:
         minutes: 30
       value_template: >-
-        {{ states('sensor.badrum_hue_motion_sensor_light_level') | float < states('input_number.badrum_light_level') | float }}
+        {{ states('sensor.badrum_hue_motion_sensor_light_level') | float > states('input_number.badrum_light_level') | float }}
     ### Närvaro
     badrum_presence:
       device_class: motion
       friendly_name: Badrum
       delay_off:
-        minutes: 5
+        minutes: 10
       value_template: >-
         {{ is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'on') }}
     ### Närvarostyrd belysning
     badrum_presence_light_automation_control:
       friendly_name: badrum
       value_template: >-
-        {{ is_state('binary_sensor.badrum_presence', 'on') }}
+        {{ is_state('binary_sensor.badrum_presence', 'on') 
+            and is_state('binary_sensor.badrum_lightlevel', 'off') }}
 #
 automation:
 #
