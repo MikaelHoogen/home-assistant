@@ -36,9 +36,9 @@ sensor:
       - precipitation_amountname
 
 ### SMHI Alert
-  - platform: smhialert
-    district: '017'
-    language: 'sv'
+#  - platform: smhialert
+#    district: '017'
+#    language: 'sv'
 ### Vädervarningar
 automation:
   - alias: 'SMHI Alert'
