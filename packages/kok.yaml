@@ -5,7 +5,7 @@ adaptive_lighting:
     - light.kok_bankbelysning
     - light.kok_koksbord
     - light.kok_kokso_2
-    - light.kok_tak_1
+    - light.kok_tak
     prefer_rgb_color: false
     transition: 30
     initial_transition: 2
@@ -75,7 +75,7 @@ adaptive_lighting:
     only_once: false
 #
 input_number:
-  kok_lightlevel:
+  kok_light_level:
     name: Ljusstyrka kök för belysning
     min: 0
     max: 200
@@ -91,7 +91,7 @@ binary_sensor:
     kok_belysning_filament_lightlevel:
       friendly_name: Kök
       delay_off:
-        minutes: 30
+        minutes: 10
       value_template: >-
         {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
     ### Light level
@@ -100,7 +100,7 @@ binary_sensor:
       delay_off:
         minutes: 15
       value_template: >-
-        {{ states('sensor.kok_hue_motion_sensorlight_level') | float > states('input_number.kok_light_level') | float }}
+        {{ states('sensor.kok_hue_motion_sensor_light_level') | float > states('input_number.kok_light_level') | float }}
     ### Närvaro
     kok_presence:
       device_class: motion
@@ -113,13 +113,21 @@ binary_sensor:
     kok_belysning_filament_automation_control:
       friendly_name: Kök
       value_template: >-
-        {{ is_state('binary_sensor.vardagsrum_belysning_filament_lightlevel', 'on') }}
+        {{ is_state('binary_sensor.vardagsrum_belysning_filament_lightlevel', 'on') 
+          and ( state_attr('switch.adaptive_lighting_kok', 'color_temp_kelvin') <= 2200 | float ) }}
       ### Närvarostyrd belysning
     kok_presence_light_automation_control:
       friendly_name: Kök
       value_template: >-
         {{ is_state('binary_sensor.kok_presence', 'on')
           and is_state('binary_sensor.kok_lightlevel', 'off') }}
+    kok_bank_presence_light_automation_control:
+      friendly_name: Kök bänkbelysning
+      value_template: >-
+        {{ is_state('binary_sensor.kok_presence', 'on')
+          and ( state_attr('switch.adaptive_lighting_kok', 'color_temp_kelvin') >= 2200 | float )
+          and is_state('binary_sensor.kok_lightlevel', 'off') }}
+#
 #
 automation:
 #
@@ -142,6 +150,22 @@ automation:
 - alias: Kök bänkbelysning
   trigger:
   - platform: state
+    entity_id: binary_sensor.kok_bank_presence_light_automation_control
+  - platform: homeassistant
+    event: start
+  action:
+  - service: >
+      {% if is_state('binary_sensor.kok_bank_presence_light_automation_control', 'on') %}
+      light.turn_on
+      {% elif is_state('binary_sensor.kok_bank_presence_light_automation_control', 'off') %}
+      light.turn_off
+      {% endif %}
+    entity_id:
+    - light.kok_bankbelysning
+#
+- alias: Kök takbelysning
+  trigger:
+  - platform: state
     entity_id: binary_sensor.kok_presence_light_automation_control
   - platform: homeassistant
     event: start
@@ -153,5 +177,7 @@ automation:
       light.turn_off
       {% endif %}
     entity_id:
-    - light.kok_bank_skafferi_och_bord
+    - light.kok_tak
+    - light.kok_koksbord
     - light.kok_kokso_2
+    - light.kok_skafferi
