@@ -7,7 +7,7 @@ adaptive_lighting:
     transition: 30
     initial_transition: 5
     interval: 90
-    min_brightness: 20
+    min_brightness: 10
     max_brightness: 100
     min_color_temp: 2100
     max_color_temp: 4000
@@ -38,7 +38,8 @@ binary_sensor:
       barnrum_belysning_automation_control:
         friendly_name: Barnrum
         value_template: >-
-          {{ is_state('binary_sensor.barnrum_belysning_lightlevel', 'on') }}
+          {{ is_state('binary_sensor.barnrum_belysning_lightlevel', 'on') 
+            and is_state('input_boolean.sovdags', 'off')}}
 #
 automation:
 #
