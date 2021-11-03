@@ -1,0 +1,83 @@
+################# Circadian ##############################################
+adaptive_lighting:
+  - name: Hall
+    lights:
+    - light.hall
+    prefer_rgb_color: false
+    transition: 30
+    initial_transition: 2
+    interval: 90
+    min_brightness: 10
+    max_brightness: 100
+    min_color_temp: 2100
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_color_temp: 2000
+#    sunrise_time: "08:00:00"  # override the sunrise time
+#    sunrise_offset:
+#    sunset_time: "20:00:00"
+#    sunset_offset: 1800  # in seconds or '00:15:00'
+    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+    take_over_control: true
+    detect_non_ha_changes: true
+    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+    only_once: false
+    separate_turn_on_commands: false
+#
+# Example configuration.yaml entry
+input_boolean:
+  hall_dorr_trigger:
+    name: Dörr trigger
+#
+binary_sensor:
+#
+- platform: template
+  sensors:
+    ### Närvaro
+    hall_presence:
+      device_class: motion
+      friendly_name: Hall
+      delay_off:
+        minutes: 10
+      value_template: >-
+        {{ is_state('binary_sensor.kok_hue_motion_sensor_motion', 'on')
+          or is_state('binary_sensor.hall_hue_motion_sensor_motion', 'on')
+          or is_state('input_boolean.hall_dorr_trigger', 'on') }}
+      ### Närvarostyrd belysning
+    hall_presence_light_automation_control:
+      friendly_name: Hall
+      value_template: >-
+        {{ is_state('binary_sensor.hall_presence', 'on') }}
+#
+automation:
+#
+- alias: Hall takbelysning
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.hall_presence_light_automation_control
+  - platform: homeassistant
+    event: start
+  action:
+  - service: >
+      {% if is_state('binary_sensor.hall_presence_light_automation_control', 'on') %}
+      light.turn_on
+      {% elif is_state('binary_sensor.hall_presence_light_automation_control', 'off') %}
+      light.turn_off
+      {% endif %}
+    entity_id:
+    - light.hall
+#
+- alias: Hall dörrtrigger
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.entre_dorrbrytare
+  action:
+  - service:
+      input_boolean.turn_on
+    entity_id:
+    - input_boolean.hall_dorr_trigger
+  - delay: 1
+  - service:
+      input_boolean.turn_off
+    entity_id:
+    - input_boolean.hall_dorr_trigger
