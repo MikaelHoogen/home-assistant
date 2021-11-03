@@ -55,7 +55,7 @@ sensor:
           humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_humidity') }}"
           co2: "400"
           v: "{{ states('sensor.utomhus_v') }}"
-          vs: "{{ state_attr('sensor.utomhus_v', 'vs') | float | round(2) }}"
+          vs: "{{ states('sensor.utomhus_vs') | float | round(2) }}"
       #
       ### Snickarboa
       sensorer_snickarboa:
