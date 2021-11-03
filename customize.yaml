@@ -14,3 +14,5 @@ light.koksentre_dorr:
   max_mireds: 455
 sensor.elpris_totalt_sek:
   icon: mdi:cash-multiple
+light.kok_tak:
+  icon: mdi:lightbulb-spot
