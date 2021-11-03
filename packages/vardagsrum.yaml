@@ -36,7 +36,7 @@ binary_sensor:
       vardagsrum_belysning_filament_lightlevel:
         friendly_name: Vardagsrum
         delay_off:
-          minutes: 30
+          minutes: 10
         value_template: >-
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
       vardagsrum_belysning_filament_automation_control:
