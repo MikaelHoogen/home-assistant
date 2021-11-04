@@ -14,7 +14,7 @@ automation:
         - sat
         - sun
     action:
-      service: auto_backup.snapshot_full
+      service: auto_backup.backup_full
       data_template:
         name: "DailyBackup: {{ now().strftime('%A, %B %-d, %Y') }}"
         keep_days: 7
@@ -28,17 +28,17 @@ automation:
       weekday:
         - mon
     action:
-      service: auto_backup.snapshot_full
+      service: auto_backup.backup_full
       data_template:
         name: "WeeklyBackup: {{ now().strftime('%A, %B %-d, %Y') }}"
         keep_days: 56
 #
-  - alias: "Notify Snapshot Failure"
+  - alias: "Notify backup Failure"
     trigger:
       platform: event
-      event_type: auto_backup.snapshot_failed
+      event_type: auto_backup.backup_failed
     action:
       service: persistent_notification.create
       data_template:
-        title: "Snapshot Failed."
+        title: "Backup Failed."
         message: "Name: {{ trigger.event.data.name }}\nError: {{ trigger.event.data.error }}"
