@@ -1,7 +1,7 @@
 light.mikaels_rum_tak:
   icon: mdi:track-light
 light.mikaels_dator_hue_play:
-  icon: mdi:wall-sconce-flat-variant-outline
+  icon: hue:play-bar
 light.datorrum_skrivbord:
   supported_color_modes:
   - color_temp
