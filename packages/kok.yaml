@@ -96,8 +96,9 @@ binary_sensor:
         {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
     ### Light level
     kok_lightlevel:
+      device_class: light
       friendly_name: Kök
-      delay_off:
+      delay_on:
         minutes: 15
       value_template: >-
         {{ states('sensor.kok_hue_motion_sensor_light_level') | float > states('input_number.kok_light_level') | float }}
