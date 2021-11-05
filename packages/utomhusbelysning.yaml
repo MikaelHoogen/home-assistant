@@ -8,7 +8,7 @@ adaptive_lighting:
     transition: 0
     initial_transition: 0
     interval: 90
-    min_brightness: 20
+    min_brightness: 10
     max_brightness: 90
     min_color_temp: 2200
     max_color_temp: 4000
