@@ -35,3 +35,7 @@ discovery:
 # Please remove dlna_dmr from your discovery.enable configuration as it is now enabled by default
 #  enable:
 #  - dlna_dmr
+#
+frontend:
+  extra_module_url:
+    - /hacsfiles/hass-hue-icons/hass-hue-icons.js
