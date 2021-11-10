@@ -53,7 +53,9 @@ adaptive_lighting:
 #
   - name: Kök fönster
     lights:
-      - light.kok_fonsterbelysning
+    - light.kok_fonster_1
+    - light.kok_fonster_2
+    - light.kok_fonster_3
     prefer_rgb_color: false
     transition: 45
     initial_transition: 5
@@ -73,6 +75,21 @@ adaptive_lighting:
     detect_non_ha_changes: true
     # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
     only_once: false
+#
+group:
+  kok_group:
+    name: Kök
+    entities:
+      - light.kok
+      - light.kok_fonsterbelysning
+#
+light:
+  - platform: group
+    name: Kök grupp
+    unique_id: kok_grupp
+    entities:
+      - light.kok
+      - light.kok_fonsterbelysning
 #
 input_number:
   kok_light_level:
@@ -114,8 +131,13 @@ binary_sensor:
     kok_belysning_filament_automation_control:
       friendly_name: Kök
       value_template: >-
+        {{ is_state('binary_sensor.vardagsrum_belysning_filament_lightlevel', 'on') }}
+    ### Fönsterbelysning
+    kok_belysning_litet_fonster_automation_control:
+      friendly_name: Kök
+      value_template: >-
         {{ is_state('binary_sensor.vardagsrum_belysning_filament_lightlevel', 'on') 
-          and ( state_attr('switch.adaptive_lighting_kok', 'color_temp_kelvin') <= 2200 | float ) }}
+          and ( state_attr('switch.adaptive_lighting_kok', 'color_temp_kelvin') <= 2300 | float ) }}
       ### Närvarostyrd belysning
     kok_presence_light_automation_control:
       friendly_name: Kök
@@ -132,7 +154,7 @@ binary_sensor:
 #
 automation:
 #
-- alias: Kök belysning filament
+- alias: Kök belysning stora fönster 
   trigger:
   - platform: state
     entity_id: binary_sensor.kok_belysning_filament_automation_control
@@ -146,7 +168,24 @@ automation:
       light.turn_off
       {% endif %}
     entity_id:
-    - light.kok_fonsterbelysning
+    - light.kok_fonster_1
+    - light.kok_fonster_2
+#
+- alias: Kök belysning litet fönster
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.kok_belysning_litet_fonster_automation_control
+  - platform: homeassistant
+    event: start
+  action:
+  - service: >
+      {% if is_state('binary_sensor.kok_belysning_litet_fonster_automation_control', 'on') %}
+      light.turn_on
+      {% elif is_state('binary_sensor.kok_belysning_litet_fonster_automation_control', 'off') %}
+      light.turn_off
+      {% endif %}
+    entity_id:
+    - light.kok_fonster_3
 #
 - alias: Kök bänkbelysning
   trigger:
