@@ -49,6 +49,17 @@ adaptive_lighting:
     only_once: false
     separate_turn_on_commands: false
 #
+light:
+  - platform: group
+    name: Utomhusbelysning grupp
+    unique_id: utomhusbelysning_grupp
+    entities:
+    - light.entre_dorr
+    - light.groventre_dorr
+    - light.koksentre_dorr
+    - light.entre_ljusslinga
+    - light.koksentre_ljusslinga
+#
 binary_sensor:
   - platform: template
     sensors:
@@ -116,3 +127,4 @@ automation:
       {% endif %}
     entity_id:
     - light.entre_ljusslinga
+    - light.koksentre_ljusslinga
