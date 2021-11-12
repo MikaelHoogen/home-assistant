@@ -14,6 +14,8 @@ automation:
   - service: switch.turn_off
     entity_id:
     - switch.adaptive_lighting_kok
+    - switch.adaptive_lighting_kok_fonster
+    - switch.adaptive_lighting_hall
   - service: light.turn_on
     data:
       brightness_pct: 2
@@ -23,6 +25,9 @@ automation:
     data:
       entity_id:
       - light.kok_koksbord
+      - light.kok_tak
+      - light.kok_kokso_2
+      - light.hall
       profile: 'candle'
 #
 - alias: Candle off
@@ -34,3 +39,5 @@ automation:
   - service: switch.turn_on
     entity_id:
     - switch.adaptive_lighting_kok
+    - switch.adaptive_lighting_kok_fonster
+    - switch.adaptive_lighting_hall
