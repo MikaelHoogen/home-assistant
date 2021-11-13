@@ -3,7 +3,8 @@ adaptive_lighting:
   #
 - name: Vardagsrum belysning filament
   lights:
-    - light.vardagsrum
+    - light.vardagsrum_fonster_hangande
+    - light.vardagsrum_huslampa
   prefer_rgb_color: false
   transition: 45
   initial_transition: 5
@@ -62,5 +63,6 @@ automation:
           light.turn_off
           {% endif %}
         entity_id:
-          - light.vardagsrum
+          - light.vardagsrum_fonster_hangande
+          - light.vardagsrum_huslampa
           - light.vardagsrum_fonster_fotogen
