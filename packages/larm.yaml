@@ -62,6 +62,23 @@ alert:
     notifiers:
       - pushbullet
       - mobile_app_sm_n975f
-      - notify.mobile_app_sm_g960f
+      - mobile_app_sm_g960f
       - pushbullet_lina
-      - notify.persistent_notification
+      - persistent_notification
+#
+#
+  kok_lackagevakt:
+    name: Läckagevakt i kök
+    title: Läckagevakt i kök utlöst!
+    message: Kontrollera under diskho
+    done_message: Läckagevakt är återställd
+    entity_id: binary_sensor.kok_lackagevakt
+    state: 'on'
+    repeat: 10
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - pushbullet
+      - mobile_app_sm_n975f
+      - mobile_app_sm_g960f
+      - persistent_notification
