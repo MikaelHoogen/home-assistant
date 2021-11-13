@@ -16,11 +16,14 @@ automation:
     - switch.adaptive_lighting_kok
     - switch.adaptive_lighting_kok_fonster
     - switch.adaptive_lighting_hall
+    - switch.adaptive_lighting_badrum
+    - switch.adaptive_lighting_vardagsrum_belysning_filament
   - service: light.turn_on
     data:
       brightness_pct: 2
       entity_id:
       - light.kok_fonsterbelysning
+      - light.vardagsrum
   - service: light.turn_on
     data:
       entity_id:
@@ -28,6 +31,7 @@ automation:
       - light.kok_tak
       - light.kok_kokso_2
       - light.hall
+      - light.badrum
       profile: 'candle'
 #
 - alias: Candle off
@@ -41,3 +45,5 @@ automation:
     - switch.adaptive_lighting_kok
     - switch.adaptive_lighting_kok_fonster
     - switch.adaptive_lighting_hall
+    - switch.adaptive_lighting_badrum
+    - switch.adaptive_lighting_vardagsrum_belysning_filament
