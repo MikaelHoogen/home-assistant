@@ -1,55 +1,55 @@
 ################# Circadian ##############################################
 adaptive_lighting:
-  - name: Allrum
-    lights:
+- name: Allrum
+  lights:
     - light.allrum_tak_1
     - light.allrum_tak_2
     - light.allrum_tak_3
     - light.allrum_stor_laslampa
     - light.allrum_klotlampa
-    prefer_rgb_color: false
-    transition: 30
-    initial_transition: 3
-    interval: 90
-    min_brightness: 10
-    max_brightness: 100
-    min_color_temp: 2100
-    max_color_temp: 4000
-    sleep_brightness: 1
-    sleep_color_temp: 2000
-#    sunrise_time: "08:00:00"  # override the sunrise time
-#    sunrise_offset:
-#    sunset_time: "20:00:00"
-#    sunset_offset: 1800  # in seconds or '00:15:00'
-    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
-    take_over_control: true
-    detect_non_ha_changes: true
-    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-    only_once: false
-    separate_turn_on_commands: false
+  prefer_rgb_color: false
+  transition: 30
+  initial_transition: 3
+  interval: 90
+  min_brightness: 10
+  max_brightness: 100
+  min_color_temp: 2100
+  max_color_temp: 4000
+  sleep_brightness: 1
+  sleep_color_temp: 2000
+  sunrise_time: "07:00:00" # override the sunrise time
+  #    sunrise_offset:
+  #    sunset_time: "20:00:00"
+  #    sunset_offset: 1800  # in seconds or '00:15:00'
+  # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+  take_over_control: true
+  detect_non_ha_changes: true
+  # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+  only_once: false
+  separate_turn_on_commands: false
 #
-  - name: Allrum belysning filament
-    lights:
-      - light.allrum_fonster_betong
-    prefer_rgb_color: false
-    transition: 45
-    initial_transition: 5
-    interval: 90
-    min_brightness: 1
-    max_brightness: 45
-    min_color_temp: 2100
-    max_color_temp: 4000
-    sleep_brightness: 1
-    sleep_color_temp: 2000
-#    sunrise_time: "08:00:00"  # override the sunrise time
-#    sunrise_offset: -00:05:00
-#    sunset_time: '20:00'
-#    sunset_offset: 1800  # in seconds or '00:15:00'
-    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
-    take_over_control: true
-    detect_non_ha_changes: true
-    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-    only_once: false
+- name: Allrum belysning filament
+  lights:
+    - light.allrum_fonster_betong
+  prefer_rgb_color: false
+  transition: 45
+  initial_transition: 5
+  interval: 90
+  min_brightness: 1
+  max_brightness: 45
+  min_color_temp: 2100
+  max_color_temp: 4000
+  sleep_brightness: 1
+  sleep_color_temp: 2000
+  sunrise_time: "07:00:00" # override the sunrise time
+  #    sunrise_offset: -00:05:00
+  #    sunset_time: '20:00'
+  #    sunset_offset: 1800  # in seconds or '00:15:00'
+  # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+  take_over_control: true
+  detect_non_ha_changes: true
+  # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+  only_once: false
 #
 input_boolean:
   allrum_presence_flagga:
@@ -58,14 +58,14 @@ input_boolean:
 sensor:
   - platform: template
     sensors:
-############# Temperatur #########################
+      ############# Temperatur #########################
       netatmo_allrum_temperature:
         unit_of_measurement: "°C"
         friendly_name: Allrum termostat temperatur
         value_template: "{{ state_attr('climate.netatmo_allrum', 'current_temperature') }}"
 #
 binary_sensor:
-#
+  #
   - platform: template
     sensors:
       allrum_belysning_filament_lightlevel:
@@ -76,8 +76,8 @@ binary_sensor:
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
       allrum_belysning_filament_automation_control:
         friendly_name: Vardagsrum
-#        delay_off:
-#          minutes: 30
+        #        delay_off:
+        #          minutes: 30
         value_template: >-
           {{ is_state('binary_sensor.allrum_belysning_filament_lightlevel', 'on')
             and is_state('input_boolean.film_spelar', 'off')
@@ -89,7 +89,7 @@ binary_sensor:
           {{ is_state('binary_sensor.allrum_presence', 'on')
             and is_state_attr('sensor.allrum_hue_motion_sensor_light_level', 'daylight', false)
             and is_state('input_boolean.film_spelar', 'off') }}
-# binary_sensor.allrum_rorelsesensor
+      # binary_sensor.allrum_rorelsesensor
       allrum_presence_short:
         delay_off:
           minutes: 15
@@ -97,9 +97,9 @@ binary_sensor:
           {{ is_state('binary_sensor.allrum_rorelsesensor', 'on')
           or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
           or is_state('media_player.vardagsrum', 'playing') }}
-# TODO
-# Läsning
-##################
+      # TODO
+      # Läsning
+      ##################
       allrum_presence_long:
         value_template: >-
           {{ ( is_state('binary_sensor.allrum_rorelsesensor', 'on')
@@ -121,35 +121,35 @@ binary_sensor:
 #            or is_state('input_boolean.presence_flagga_vardagsrum', 'on') }}
 #
 automation:
-#
-- alias: Allrum belysning fönster
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.allrum_belysning_filament_automation_control
-  - platform: homeassistant
-    event: start
-  action:
-  - service: >
-      {% if is_state('binary_sensor.allrum_belysning_filament_automation_control', 'on') %}
-      light.turn_on
-      {% elif is_state('binary_sensor.allrum_belysning_filament_automation_control', 'off') %}
-      light.turn_off
-      {% endif %}
-    entity_id:
-    - light.allrum_fonster_betong
-#
-- alias: Allrum belysning
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.allrum_presence_light_automation_control
-  - platform: homeassistant
-    event: start
-  action:
-  - service: >
-      {% if is_state('binary_sensor.allrum_presence_light_automation_control', 'on') %}
-      light.turn_on
-      {% elif is_state('binary_sensor.allrum_presence_light_automation_control', 'off') %}
-      light.turn_off
-      {% endif %}
-    entity_id:
-      - light.allrum_color
+  #
+  - alias: Allrum belysning fönster
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.allrum_belysning_filament_automation_control
+      - platform: homeassistant
+        event: start
+    action:
+      - service: >
+          {% if is_state('binary_sensor.allrum_belysning_filament_automation_control', 'on') %}
+          light.turn_on
+          {% elif is_state('binary_sensor.allrum_belysning_filament_automation_control', 'off') %}
+          light.turn_off
+          {% endif %}
+        entity_id:
+          - light.allrum_fonster_betong
+  #
+  - alias: Allrum belysning
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.allrum_presence_light_automation_control
+      - platform: homeassistant
+        event: start
+    action:
+      - service: >
+          {% if is_state('binary_sensor.allrum_presence_light_automation_control', 'on') %}
+          light.turn_on
+          {% elif is_state('binary_sensor.allrum_presence_light_automation_control', 'off') %}
+          light.turn_off
+          {% endif %}
+        entity_id:
+          - light.allrum_color

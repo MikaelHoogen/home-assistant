@@ -1,31 +1,31 @@
 ################# Circadian ##############################################
 adaptive_lighting:
-  - name: Tvättstuga
-    lights:
+- name: Tvättstuga
+  lights:
     - light.tvattstuga_fonster
-    prefer_rgb_color: false
-    transition: 0
-    initial_transition: 0
-    interval: 90
-    min_brightness: 15
-    max_brightness: 90
-#    min_color_temp: 2200
-#    max_color_temp: 4000
-    sleep_brightness: 2
-#    sleep_color_temp: 2200
-#    sunrise_time: "08:00:00"  # override the sunrise time
-#    sunrise_offset:
-#    sunset_time:
-#    sunset_offset: 1800  # in seconds or '00:15:00'
-    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
-    take_over_control: true
-    detect_non_ha_changes: false
-    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-    only_once: false
+  prefer_rgb_color: false
+  transition: 0
+  initial_transition: 0
+  interval: 90
+  min_brightness: 15
+  max_brightness: 90
+  #    min_color_temp: 2200
+  #    max_color_temp: 4000
+  sleep_brightness: 2
+  #    sleep_color_temp: 2200
+  sunrise_time: "07:00:00" # override the sunrise time
+  #    sunrise_offset:
+  #    sunset_time:
+  #    sunset_offset: 1800  # in seconds or '00:15:00'
+  # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+  take_over_control: true
+  detect_non_ha_changes: false
+  # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+  only_once: false
 #    separate_turn_on_commands: true
 #
 binary_sensor:
-#
+  #
   - platform: template
     sensors:
       tvattstuga_belysning_lightlevel:
@@ -40,19 +40,19 @@ binary_sensor:
           {{ is_state('binary_sensor.tvattstuga_belysning_lightlevel', 'on') }}
 #
 automation:
-#
-- alias: Tvättstuga belysning
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.tvattstuga_belysning_automation_control
-  - platform: homeassistant
-    event: start
-  action:
-  - service: >
-      {% if is_state('binary_sensor.tvattstuga_belysning_automation_control', 'on') %}
-      light.turn_on
-      {% elif is_state('binary_sensor.tvattstuga_belysning_automation_control', 'off') %}
-      light.turn_off
-      {% endif %}
-    entity_id:
-    - light.tvattstuga_fonster
+  #
+  - alias: Tvättstuga belysning
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.tvattstuga_belysning_automation_control
+      - platform: homeassistant
+        event: start
+    action:
+      - service: >
+          {% if is_state('binary_sensor.tvattstuga_belysning_automation_control', 'on') %}
+          light.turn_on
+          {% elif is_state('binary_sensor.tvattstuga_belysning_automation_control', 'off') %}
+          light.turn_off
+          {% endif %}
+        entity_id:
+          - light.tvattstuga_fonster

@@ -1,28 +1,28 @@
 ################# Circadian ##############################################
 adaptive_lighting:
-#
-  - name: Vardagsrum belysning filament
-    lights:
-      - light.vardagsrum
-    prefer_rgb_color: false
-    transition: 45
-    initial_transition: 5
-    interval: 90
-    min_brightness: 1
-    max_brightness: 45
-    min_color_temp: 2100
-    max_color_temp: 4000
-    sleep_brightness: 1
-    sleep_color_temp: 2000
-#    sunrise_time: "08:00:00"  # override the sunrise time
-#    sunrise_offset: -00:05:00
-#    sunset_time: '20:00'
-#    sunset_offset: 1800  # in seconds or '00:15:00'
-    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
-    take_over_control: true
-    detect_non_ha_changes: true
-    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-    only_once: false
+  #
+- name: Vardagsrum belysning filament
+  lights:
+    - light.vardagsrum
+  prefer_rgb_color: false
+  transition: 45
+  initial_transition: 5
+  interval: 90
+  min_brightness: 1
+  max_brightness: 45
+  min_color_temp: 2100
+  max_color_temp: 4000
+  sleep_brightness: 1
+  sleep_color_temp: 2000
+  sunrise_time: "07:00:00" # override the sunrise time
+  #    sunrise_offset: -00:05:00
+  #    sunset_time: '20:00'
+  #    sunset_offset: 1800  # in seconds or '00:15:00'
+  # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+  take_over_control: true
+  detect_non_ha_changes: true
+  # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+  only_once: false
 #
 light:
   - platform: switch
@@ -30,7 +30,7 @@ light:
     entity_id: switch.vardagsrum_fonster_fotogen
 #
 binary_sensor:
-#
+  #
   - platform: template
     sensors:
       vardagsrum_belysning_filament_lightlevel:
@@ -47,20 +47,20 @@ binary_sensor:
             and is_state('input_boolean.sovdags', 'off') }}
 #
 automation:
-#
-- alias: Vardagsrum belysning
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.vardagsrum_belysning_filament_automation_control
-  - platform: homeassistant
-    event: start
-  action:
-  - service: >
-      {% if is_state('binary_sensor.vardagsrum_belysning_filament_automation_control', 'on') %}
-      light.turn_on
-      {% elif is_state('binary_sensor.vardagsrum_belysning_filament_automation_control', 'off') %}
-      light.turn_off
-      {% endif %}
-    entity_id:
-    - light.vardagsrum
-    - light.vardagsrum_fonster_fotogen
+  #
+  - alias: Vardagsrum belysning
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.vardagsrum_belysning_filament_automation_control
+      - platform: homeassistant
+        event: start
+    action:
+      - service: >
+          {% if is_state('binary_sensor.vardagsrum_belysning_filament_automation_control', 'on') %}
+          light.turn_on
+          {% elif is_state('binary_sensor.vardagsrum_belysning_filament_automation_control', 'off') %}
+          light.turn_off
+          {% endif %}
+        entity_id:
+          - light.vardagsrum
+          - light.vardagsrum_fonster_fotogen
