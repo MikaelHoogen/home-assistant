@@ -1,32 +1,32 @@
 ################# Circadian ##############################################
 adaptive_lighting:
-- name: Sovrum
-  lights:
-    - light.walk_in_closet
-    - light.sovrum_fonster
-    - light.sovrum_byra
-    - light.sovrum_sang_mikael
-    - light.sovrum_sang_lina
-  prefer_rgb_color: false
-  transition: 30
-  initial_transition: 3
-  interval: 90
-  min_brightness: 10
-  max_brightness: 100
-  min_color_temp: 2100
-  max_color_temp: 4000
-  sleep_brightness: 1
-  sleep_color_temp: 2000
-  sunrise_time: "07:00:00" # override the sunrise time
-  #    sunrise_offset:
-  #    sunset_time: "20:00:00"
-  #    sunset_offset: 1800  # in seconds or '00:15:00'
-  # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
-  take_over_control: true
-  detect_non_ha_changes: true
-  # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-  only_once: false
-  separate_turn_on_commands: false
+  - name: Sovrum
+    lights:
+      - light.walk_in_closet
+      - light.sovrum_fonster
+      - light.sovrum_byra
+      - light.sovrum_sang_mikael
+      - light.sovrum_sang_lina
+    prefer_rgb_color: false
+    transition: 30
+    initial_transition: 3
+    interval: 90
+    min_brightness: 10
+    max_brightness: 100
+    min_color_temp: 2100
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_color_temp: 2000
+    sunrise_time: "07:00:00" # override the sunrise time
+    #    sunrise_offset:
+    #    sunset_time: "20:00:00"
+    #    sunset_offset: 1800  # in seconds or '00:15:00'
+    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+    take_over_control: true
+    detect_non_ha_changes: true
+    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+    only_once: false
+    separate_turn_on_commands: false
 #
 sensor:
   - platform: template
@@ -72,3 +72,27 @@ automation:
         entity_id:
           - light.sovrum_fonster
           - light.sovrum_byra
+#
+  - alias: Sovrum Säng Mikael Knapp 1 klick
+    trigger:
+      - platform: event
+        event_type: deconz_event
+        event_data:
+          id: sovrum_sang_mikael_smart_switch
+          event: 1002
+    action:
+      - service: input_boolean.toggle
+        target:
+          entity_id: input_boolean.sovdags
+#
+  - alias: Sovrum Säng Mikael Knapp 2 klick
+    trigger:
+      - platform: event
+        event_type: deconz_event
+        event_data:
+          id: sovrum_sang_mikael_smart_switch
+          event: 1004
+    action:
+      - service: light.toggle
+        target:
+          entity_id: light.sovrum_sang_mikael
