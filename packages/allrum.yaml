@@ -51,6 +51,18 @@ adaptive_lighting:
     # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
     only_once: false
 #
+light:
+  - platform: group
+    name: Allrum grupp
+    unique_id: allrum_grupp
+    entities:
+      - light.allrum_tak_1
+      - light.allrum_tak_2
+      - light.allrum_tak_3
+      - light.allrum_stor_laslampa
+      - light.allrum_klotlampa
+      - light.allrum_fonster_betong
+#
 input_boolean:
   allrum_presence_flagga:
     name: Flagga för närvaro i allrum
