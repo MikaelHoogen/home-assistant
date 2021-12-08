@@ -1,7 +1,7 @@
 #
 generic_hygrostat:
   - name: Snickarboa
-    humidifier: switch.motorvarmare
+    humidifier: switch.avfuktare
     target_sensor: sensor.snickarboa_humidity
     device_class: "dehumidifier"
 #    max_humidity: 75
@@ -12,3 +12,11 @@ climate:
     precision: 0.1
     heater: switch.motorvarmare
     target_sensor: sensor.snickarboa_temperature
+    min_temp: 0
+#
+sensor:
+  - platform: integration
+    source: sensor.avfuktare_power
+    name: Avfuktare_consumption
+    unit_prefix: k
+    round: 2
