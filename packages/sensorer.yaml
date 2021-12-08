@@ -66,3 +66,33 @@ sensor:
           humidity: "{{ states('sensor.snickarboa_humidity') | round(0) }}"
           co2: "0"
           v: "{{ states('sensor.snickarboa_v') }}"
+      #
+      ### Vardagsrum
+      sensorer_vardagsrum:
+        friendly_name: "0 Vardagsrum"
+        value_template: "{{ states('sensor.time') }}"
+        attribute_templates:
+          temperature: "{{ states('sensor.vardagsrum_temperature') }}"
+          humidity: "{{ states('sensor.vardagsrum_humidity') | round(0) }}"
+          co2: "0"
+          v: "{{ states('sensor.vardagsrum_v') }}"
+#
+          ### barnrum
+      sensorer_barnrum:
+        friendly_name: "0 Barnrum"
+        value_template: "{{ states('sensor.time') }}"
+        attribute_templates:
+          temperature: "{{ states('sensor.barnrum_temperature') }}"
+          humidity: "{{ states('sensor.barnrum_humidity') | round(0) }}"
+          co2: "0"
+          v: "{{ states('sensor.barnrum_v') }}"
+#
+          ### gastrum
+      sensorer_gastrum:
+        friendly_name: "0 Gästrum"
+        value_template: "{{ states('sensor.time') }}"
+        attribute_templates:
+          temperature: "{{ states('sensor.gastrum_temperature') }}"
+          humidity: "{{ states('sensor.gastrum_humidity') | round(0) }}"
+          co2: "0"
+          v: "{{ states('sensor.gastrum_v') }}"
