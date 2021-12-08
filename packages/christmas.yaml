@@ -1,0 +1,141 @@
+#
+################# Circadian ##############################################
+adaptive_lighting:
+- name: Ljusstakar
+  lights:
+    # Mikaels rum
+    - light.ac_000000a_1
+    # Kök
+    - light.ac_0000001_3
+  prefer_rgb_color: false
+  transition: 30
+  initial_transition: 5
+  interval: 90
+  min_brightness: 60
+  max_brightness: 100
+#  min_color_temp: 2100
+#  max_color_temp: 4000
+  sleep_brightness: 1
+#  sleep_color_temp: 2000
+  sunrise_time: "07:00:00" # override the sunrise time
+  #    sunrise_offset:
+  #    sunset_time: "20:00:00"
+  #    sunset_offset: 1800  # in seconds or '00:15:00'
+  # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+  take_over_control: true
+  detect_non_ha_changes: false
+  # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+  only_once: false
+  separate_turn_on_commands: false
+#
+light:
+  - platform: group
+    name: Ljusstakar
+    unique_id: ljusstakar
+    entities:
+      # Allrum
+      - light.ac_0000001_2
+      - light.ac_0000002_4
+      # Vardagsrum
+      - light.ac_0000002_3
+      - light.ac_0ccc4aa_6
+      # Mikaels rum
+      - light.ac_000000a_1
+      # Kök
+      - light.ac_0000001_3
+      # Barnrum
+      - light.barnrum_ljusstake
+      # Gästrum
+      - light.gastrum_ljusstake
+  #
+  - platform: switch
+    name: Barnrum ljusstake
+    entity_id: switch.vardagsrum_fonster_ikea
+  #
+  - platform: switch
+    name: Gästrum ljusstake
+    entity_id: switch.on_off_plug_in_unit_16
+#
+input_number:
+  ljusstakar_light_level:
+    name: Ljusstyrka utomhus för ljusstakar
+    min: 0
+    max: 400
+    step: 10
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
+#
+binary_sensor:
+  #
+  - platform: template
+    sensors:
+      ### Light level
+      ljusstakar_belysning_lightlevel:
+        friendly_name: Ljusstakar
+        delay_off:
+          minutes: 10
+        value_template: >-
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.ljusstakar_light_level') | float }}
+      ### Belysning
+      ljusstakar_belysning_automation_control:
+        friendly_name: Ljusstakar
+        value_template: >-
+          {{ is_state('binary_sensor.ljusstakar_belysning_lightlevel', 'on')
+            and is_state('input_boolean.film_spelar', 'off')
+            and is_state('input_boolean.sovdags', 'off') }}
+      # Gästrum
+      gastrum_ljusstakar_belysning_automation_control:
+        friendly_name: Ljusstakar
+        value_template: >-
+          {{ is_state('binary_sensor.ljusstakar_belysning_lightlevel', 'on')
+            and is_state('input_boolean.film_spelar', 'off')
+            and is_state('input_boolean.sovdags', 'off')
+            and is_state('input_boolean.sovdags_gastrum', 'off') }}
+#
+automation:
+  #
+  ### Ljusstakar
+  - alias: Ljusstakar
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.ljusstakar_belysning_automation_control
+      - platform: homeassistant
+        event: start
+    action:
+      - service: >
+          {% if is_state('binary_sensor.ljusstakar_belysning_automation_control', 'on') %}
+          light.turn_on
+          {% elif is_state('binary_sensor.ljusstakar_belysning_automation_control', 'off') %}
+          light.turn_off
+          {% endif %}
+        entity_id:
+          # Allrum
+          - light.ac_0000001_2
+          - light.ac_0000002_4
+          # Vardagsrum
+          - light.ac_0000002_3
+          - light.ac_0ccc4aa_6
+          # Mikaels rum
+          - light.ac_000000a_1
+          # Kök
+          - light.ac_0000001_3
+          # Barnrum
+          - light.barnrum_ljusstake
+#
+  ### Ljusstakar
+  - alias: Gästrum Ljusstakar
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.gastrum_ljusstakar_belysning_automation_control
+      - platform: homeassistant
+        event: start
+    action:
+      - service: >
+          {% if is_state('binary_sensor.gastrum_ljusstakar_belysning_automation_control', 'on') %}
+          light.turn_on
+          {% elif is_state('binary_sensor.gastrum_ljusstakar_belysning_automation_control', 'off') %}
+          light.turn_off
+          {% endif %}
+        entity_id:
+          # Gästrum
+          - light.gastrum_ljusstake
