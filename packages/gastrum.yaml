@@ -46,7 +46,8 @@ binary_sensor:
       gastrum_belysning_automation_control:
         friendly_name: Gästrum
         value_template: >-
-          {{ is_state('binary_sensor.gastrum_belysning_lightlevel', 'on') }}
+          {{ is_state('binary_sensor.gastrum_belysning_lightlevel', 'on') 
+            and is_state('input_boolean.sovdags_gastrum', 'off') }}
 #
 automation:
 #
@@ -65,3 +66,16 @@ automation:
         {% endif %}
       entity_id:
       - light.gastrum_fonster
+#
+#
+  - alias: Gästrum Knapp 1 klick
+    trigger:
+      - platform: event
+        event_type: deconz_event
+        event_data:
+          id: sovrum_knapp
+          event: 1002
+    action:
+      - service: input_boolean.toggle
+        target:
+          entity_id: input_boolean.sovdags_gastrum
