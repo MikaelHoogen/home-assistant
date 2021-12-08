@@ -28,12 +28,11 @@ adaptive_lighting:
   - name: Utomhusbelysning hue
     lights:
       - light.entre_dorr
-      - light.snickarboa_entre
     prefer_rgb_color: false
     transition: 30
     initial_transition: 5
     interval: 90
-    min_brightness: 30
+    min_brightness: 20
     max_brightness: 100
     min_color_temp: 2400
     max_color_temp: 4000
@@ -49,7 +48,34 @@ adaptive_lighting:
     # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
     only_once: false
     separate_turn_on_commands: false
-#
+  #
+  - name: Utomhusbelysning filament
+    lights:
+      - light.snickarboa_entre
+      - light.stall_entre
+      - light.carport_entre
+      - light.kackorna_entre
+    prefer_rgb_color: false
+    transition: 30
+    initial_transition: 5
+    interval: 90
+    min_brightness: 50
+    max_brightness: 100
+    min_color_temp: 2400
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_color_temp: 2200
+    sunrise_time: "07:00:00" # override the sunrise time
+    #    sunrise_offset:
+    #    sunset_time:
+    #    sunset_offset: 1800  # in seconds or '00:15:00'
+    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+    take_over_control: true
+    detect_non_ha_changes: false
+    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+    only_once: false
+    separate_turn_on_commands: false
+    #
 light:
   - platform: group
     name: Utomhusbelysning grupp
@@ -61,6 +87,9 @@ light:
       - light.entre_ljusslinga
       - light.koksentre_ljusslinga
       - light.snickarboa_entre
+      - light.stall_entre
+      - light.carport_entre
+      - light.kackorna_entre
 #
 input_number:
   utomhusbelysning_light_level:
@@ -70,6 +99,16 @@ input_number:
     step: 10
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
+  # 40
+  ljusslingor_light_level:
+    name: Ljusstyrka för ljusslingor
+    min: 0
+    max: 400
+    step: 10
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
+#
+
 #
 binary_sensor:
   - platform: template
@@ -94,7 +133,7 @@ binary_sensor:
         delay_off:
           minutes: 10
         value_template: >-
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < 40 }}
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.ljusslingor_light_level') | float }}
       utomhusbelysning_ljusslingor_automation_control:
         friendly_name: Utomhusbelysning ljusslingor
         value_template: >-
@@ -122,9 +161,12 @@ automation:
           - light.groventre_dorr
           - light.koksentre_dorr
           - light.snickarboa_entre
+          - light.stall_entre
+          - light.carport_entre
+          - light.kackorna_entre
   #
   ### Ljusslingor
-  - alias: ljusslingor
+  - alias: Ljusslingor
     trigger:
       - platform: state
         entity_id: binary_sensor.utomhusbelysning_ljusslingor_automation_control
