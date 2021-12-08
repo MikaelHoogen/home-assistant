@@ -21,9 +21,9 @@ sensor:
 
 ### Trafikverket ###
   - platform: trafikverket_weatherstation
-    name: Trafikverket Markaryd
+    name: Trafikverket Brokhult
     api_key: !secret trafikverket_api_key
-    station: Markaryd
+    station: Brokhult
     monitored_conditions:
       - air_temp
       - road_temp
