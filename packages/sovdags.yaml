@@ -4,6 +4,9 @@ input_boolean:
     name: Sovdags
     icon: mdi:sleep
 #
+  sovdags_gastrum:
+    name: Sovdags gästrum
+    icon: mdi:sleep
 #
 automation:
   #######################################################################################
@@ -40,7 +43,6 @@ automation:
             #
             - switch.adaptive_lighting_sleep_mode_kok
             - switch.adaptive_lighting_sleep_mode_kok_fonster
-            - switch.adaptive_lighting_sleep_mode_kok_skafferi
             #
             - switch.adaptive_lighting_sleep_mode_sovrum
             #
@@ -49,6 +51,14 @@ automation:
             - switch.adaptive_lighting_sleep_mode_vardagsrum_belysning_filament
             #
             - switch.adaptive_lighting_sleep_mode_hall
+            #
+            - switch.adaptive_lighting_sleep_mode_gastrum
+      #
+      - service: select.select_option
+        target:
+          entity_id: select.netatmo_sannesholma
+        data:
+          option: "Vinter natt"
   #
   - alias: Sovdags off
     trigger:
@@ -69,7 +79,6 @@ automation:
             #
             - switch.adaptive_lighting_sleep_mode_kok
             - switch.adaptive_lighting_sleep_mode_kok_fonster
-            - switch.adaptive_lighting_sleep_mode_kok_skafferi
             #
             - switch.adaptive_lighting_sleep_mode_sovrum
             #
@@ -78,4 +87,11 @@ automation:
             - switch.adaptive_lighting_sleep_mode_vardagsrum_belysning_filament
             #
             - switch.adaptive_lighting_sleep_mode_hall
-#
+            #
+            - switch.adaptive_lighting_sleep_mode_gastrum
+      #
+      - service: select.select_option
+        target:
+          entity_id: select.netatmo_sannesholma
+        data:
+          option: "Vinter"
