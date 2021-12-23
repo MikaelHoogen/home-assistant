@@ -32,7 +32,6 @@ sensor:
       diskmaskin_timme_kostnad:
         friendly_name: "Kostnad"
         unit_of_measurement: "SEK"
-#        device_class: "humidity"
         value_template: "{{ ( states('sensor.diskmaskin_timme') | float * states('sensor.elpris_totalt_sek') | float ) | round(3) }}"
 #
 binary_sensor:
