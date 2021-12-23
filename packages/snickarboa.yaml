@@ -1,7 +1,7 @@
 #
 generic_hygrostat:
   - name: Snickarboa
-    humidifier: switch.avfuktare
+    humidifier: input_boolean.avfuktare
     target_sensor: sensor.snickarboa_humidity
     device_class: "dehumidifier"
 #    max_humidity: 75
@@ -10,9 +10,17 @@ climate:
   - platform: generic_thermostat
     name: Snickarboa
     precision: 0.1
-    heater: switch.motorvarmare
+    heater: input_boolean.snickarboa_heater
     target_sensor: sensor.snickarboa_temperature
     min_temp: 0
+#
+#switch.avfuktare
+input_boolean:
+  avfuktare:
+    name: Avfuktare
+    #
+  snickarboa_heater:
+    name: Snickarboa värmare
 #
 sensor:
   - platform: integration
@@ -20,3 +28,88 @@ sensor:
     name: Avfuktare_consumption
     unit_prefix: k
     round: 2
+  - platform: template
+    sensors:
+      ###
+      avfuktare_timme_kostnad:
+        friendly_name: "Kostnad"
+        unit_of_measurement: "SEK"
+        value_template: "{{ ( states('sensor.avfuktare_timme') | float * states('sensor.elpris_totalt_sek') | float ) | round(3) }}"
+#
+utility_meter:
+  avfuktare_timme:
+    source: sensor.avfuktare_consumption
+    cycle: hourly
+  avfuktare_dag:
+    source: sensor.avfuktare_consumption
+    cycle: daily
+  avfuktare_vecka:
+    source: sensor.avfuktare_consumption
+    cycle: weekly
+  avfuktare_manad:
+    source: sensor.avfuktare_consumption
+    cycle: monthly
+  avfuktare_ar:
+    source: sensor.avfuktare_consumption
+    cycle: yearly
+  #
+  avfuktare_dag_kostnad:
+    source: sensor.avfuktare_timme_kostnad
+    cycle: daily
+  avfuktare_manad_kostnad:
+    source: sensor.avfuktare_timme_kostnad
+    cycle: monthly
+  avfuktare_ar_kostnad:
+    source: sensor.avfuktare_timme_kostnad
+    cycle: yearly
+#
+
+#
+template:
+  - binary_sensor:
+      - name: "Avfuktare"
+        unique_id: avfuktare
+        state: >
+          {{ is_state('input_boolean.avfuktare', 'on')
+          and is_state('binary_sensor.elpris_cheap', 'on') }}
+#
+  - binary_sensor:
+      - name: snickarboa_heater
+        unique_id: snickarboa_heater
+        state: >
+          {{ is_state('input_boolean.snickarboa_heater', 'on')
+          and is_state('binary_sensor.electricity_price_sannesholma_2181_max', 'off') }}
+#
+automation:
+  #
+  - alias: Avfuktare
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.avfuktare
+      - platform: homeassistant
+        event: start
+    action:
+      - service: >
+          {% if is_state('binary_sensor.avfuktare', 'on') %}
+          switch.turn_on
+          {% elif is_state('binary_sensor.avfuktare', 'off') %}
+          switch.turn_off
+          {% endif %}
+        entity_id:
+          - switch.avfuktare
+  #
+  - alias: Snickarboa värmare
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.snickarboa_heater
+      - platform: homeassistant
+        event: start
+    action:
+      - service: >
+          {% if is_state('binary_sensor.snickarboa_heater', 'on') %}
+          switch.turn_on
+          {% elif is_state('binary_sensor.snickarboa_heater', 'off') %}
+          switch.turn_off
+          {% endif %}
+        entity_id:
+          - switch.motorvarmare
