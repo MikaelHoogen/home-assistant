@@ -2,7 +2,7 @@
 variable:
   ### Priser elnät och elcertifikat ###############
   avgift_elnat:
-    value: 60.3
+    value: 22.05
     restore: true
     attributes:
       friendly_name: "Elnätsavgift"
@@ -15,6 +15,61 @@ variable:
       friendly_name: "Energiskatt"
       icon: mdi:cash-multiple
       unit_of_measurement: "Öre/kWh"
+#
+template:
+  - binary_sensor:
+      - name: "Elpris cheap"
+        unique_id: electricity_price_sannesholma_2181_cheap
+        state: >
+          {{ is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'VERY_CHEAP')
+            or is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'CHEAP')
+            or states('sensor.elpris') | float <= 0.2 }}
+#
+      - name: "Elpris normal"
+        unique_id: electricity_price_sannesholma_2181_normal
+        state: >
+          {{ is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'VERY_CHEAP')
+            or is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'CHEAP')
+            or is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'NORMAL')
+            or states('sensor.elpris') | float <= 0.2 }}
+#
+      - name: "Elpris expensive"
+        unique_id: electricity_price_sannesholma_2181_expensive
+        state: >
+          {{ is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'VERY_CHEAP')
+            or is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'CHEAP')
+            or is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'NORMAL')
+            or is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'EXPENSIVE') }}
+#
+      - name: electricity_price_sannesholma_2181_max
+        unique_id: electricity_price_sannesholma_2181_max
+        delay_on:
+          minutes: 1
+        state: >-
+          {{ states('sensor.elpris') | float(0.0) == state_attr('sensor.elpris', 'max') | float(0.1) }}
+#
+  - sensor:
+      # Elförbrukning prognos
+      # Estimated annual consumption
+      - name: electricity_estimated_annual_consumption
+        unique_id: electricity_estimated_annual_consumption
+        unit_of_measurement: "kWh"
+        state_class: measurement
+        device_class: energy
+        state: >
+          {{ state_attr('sensor.electricity_price_sannesholma_2181', 'estimated_annual_consumption') }}
+#
+binary_sensor:
+  - platform: trend
+    sensors:
+      electricity_consumption_trend_higher:
+        entity_id: sensor.electricity_price_sannesholma_2181
+        attribute: estimated_annual_consumption
+      electricity_consumption_trend_lower:
+        entity_id: sensor.electricity_price_sannesholma_2181
+        attribute: estimated_annual_consumption
+        invert: true
+#
 #
 sensor:
   - platform: template
@@ -528,7 +583,12 @@ sensor:
             {% endif %}
       #
       elpris_imorgon_01:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[1] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[1] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[1] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "01:00 - 02:00"
           kommentar: >
