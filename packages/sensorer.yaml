@@ -48,7 +48,7 @@ sensor:
           v: "{{ states('sensor.allrum_v') }}"
       #
       sensorer_ute:
-        friendly_name: "0 Utomhus"
+        friendly_name: "Utomhus"
         value_template: "{{ states('sensor.time') }}"
         attribute_templates:
           temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') }}"
@@ -59,7 +59,7 @@ sensor:
       #
       ### Snickarboa
       sensorer_snickarboa:
-        friendly_name: "0 Snickarboa"
+        friendly_name: "Snickarboa"
         value_template: "{{ states('sensor.time') }}"
         attribute_templates:
           temperature: "{{ states('sensor.snickarboa_temperature') }}"
