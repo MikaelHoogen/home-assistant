@@ -27,3 +27,76 @@ utility_meter:
   accumulated_cost_year_sannesholma_2181:
     source: sensor.accumulated_cost_sannesholma_2181
     cycle: yearly
+#
+  accumulated_cost_total_hour_sannesholma_2181:
+    source: sensor.accumulated_total_cost_hour
+    cycle: hourly
+  accumulated_cost_total_day_sannesholma_2181:
+    source: sensor.accumulated_total_cost_hour
+    cycle: daily
+  accumulated_cost_total_week_sannesholma_2181:
+    source: sensor.accumulated_total_cost_hour
+    cycle: weekly
+  accumulated_cost_total_month_sannesholma_2181:
+    source: sensor.accumulated_total_cost_hour
+    cycle: monthly
+  accumulated_cost_total_year_sannesholma_2181:
+    source: sensor.accumulated_total_cost_hour
+    cycle: yearly
+#
+  accumulated_cost_ex_moms_hour_sannesholma_2181:
+    source: sensor.accumulated_total_cost_hour
+    cycle: hourly
+  accumulated_cost_ex_moms_day_sannesholma_2181:
+    source: sensor.accumulated_total_cost_hour
+    cycle: daily
+  accumulated_cost_ex_moms_week_sannesholma_2181:
+    source: sensor.accumulated_total_cost_hour
+    cycle: weekly
+  accumulated_cost_ex_moms_month_sannesholma_2181:
+    source: sensor.accumulated_total_cost_hour
+    cycle: monthly
+  accumulated_cost_ex_moms_year_sannesholma_2181:
+    source: sensor.accumulated_total_cost_hour
+    cycle: yearly
+#
+  ehl75l9h_timme_kostnad:
+    source: sensor.ehl75l9h_accumulated_total_cost_hour
+    cycle: hourly
+  ehl75l9h_dag_kostnad:
+    source: sensor.ehl75l9h_accumulated_total_cost_hour
+    cycle: daily
+  ehl75l9h_vecka_kostnad:
+    source: sensor.ehl75l9h_accumulated_total_cost_hour
+    cycle: weekly
+  ehl75l9h_manad_kostnad:
+    source: sensor.ehl75l9h_accumulated_total_cost_hour
+    cycle: monthly
+  ehl75l9h_ar_kostnad:
+    source: sensor.ehl75l9h_accumulated_total_cost_hour
+    cycle: yearly
+#
+sensor:
+  - platform: template
+    sensors:
+      ###
+      accumulated_total_cost_hour:
+        friendly_name: "Kostnad"
+        unit_of_measurement: "SEK"
+        value_template: "{{ ( states('sensor.accumulated_consumption_current_hour_sannesholma_2181') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+      ###
+      accumulated_cost_ex_moms_hour:
+        friendly_name: "Kostnad exl moms och påslag"
+        unit_of_measurement: "SEK"
+        value_template: "{{ ( states('sensor.accumulated_consumption_current_hour_sannesholma_2181') | float(0.0) * states('sensor.elpris') | float(0.0) ) | round(3) }}"
+      ###
+      average_price_ex_moms_last_month:
+        friendly_name: "Medel exl moms och påslag"
+        unit_of_measurement: "SEK"
+        value_template: "{{ ( state_attr('sensor.accumulated_cost_ex_moms_month_sannesholma_2181', 'last_period') | float(0.0) * state_attr('sensor.accumulated_consumption_month_sannesholma_2181', 'last_period') | float(0.0) ) | round(3) }}"
+      ###
+      ehl75l9h_accumulated_total_cost_hour:
+        friendly_name: "Kostnad"
+        unit_of_measurement: "SEK"
+        value_template: "{{ ( states('sensor.ehl75l9h_energy_per_hour') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+      ###
