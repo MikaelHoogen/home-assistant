@@ -1,0 +1,247 @@
+# Easyserv värmepump REST API
+#
+sensor:
+  - platform: rest
+    resource: !secret easyserv
+    verify_ssl: false
+    name: heatpump
+    json_attributes:
+      - HotwaterTemp1
+      - HotwaterTemp2
+      - IndoorTemp
+      - OutdoorTemp
+      - RadiatorForwardTemp
+      - RadiatorReturnTemp
+      - HeatCarrierInTemp
+      - HeatCarrierOutTemp
+      - BrineInTemp
+      - BrineOutTemp
+      - HotGasTemp
+      - CompressorState
+      - ColdCircuitPumpState
+      - HeatCircuitPumpState
+      - RadiatorPumpState
+      - AddHeat2State
+      - AddHeat1State
+      - SwitchValve1State
+      - HeatingSetpointTemp
+      - HotwaterSetpointTemp
+      - AddHeatLevelPercent
+      - SumAlarm
+      - LoadL1
+      - LoadL2
+      - LoadL3
+    value_template: '{{ value_json.CompressorState }}'
+
+
+#  - platform: template
+#    sensors:
+      #
+#      heatpump_hotwater_temp:
+#        friendly_name: 'Varmvatten'
+#        unit_of_measurement: "°C"
+#        unique_id: heatpump_hotwater_temp
+#        value_template: "{{ state_attr('sensor.heatpump', 'HotwaterTemp1') }}"
+      #
+#      heatpump_hotwater_temp_2:
+#        friendly_name: 'Varmvatten'
+#        unit_of_measurement: "°C"
+#        unique_id: heatpump_hotwater_temp_2
+#        value_template: "{{ state_attr('sensor.heatpump', 'HotwaterTemp2') }}"
+      #
+#      heatpump_outdoor_temp:
+#        friendly_name: "Utomhus-temp"
+#        unit_of_measurement: "°C"
+#        device_class: temperature
+#        value_template: "{{ state_attr('sensor.heatpump', 'OutdoorTemp') }}"
+      #
+#      heatpump_radiator_forward:
+#        friendly_name: 'Framledning'
+#        unit_of_measurement: "°C"
+#        value_template: '{{ states.sensor.heatpump.attributes.RadiatorForwardTemp }}'
+      #
+#      heatpump_radiator_return:
+#        friendly_name: 'Returledning'
+#        unit_of_measurement: "°C"
+#        value_template: "{{ state_attr('sensor.heatpump', 'RadiatorReturnTemp') }}"
+      #
+#      heatpump_heatcarrier_in:
+#        friendly_name: 'Värmebärare in'
+#        unit_of_measurement: "°C"
+#        value_template: '{{ states.sensor.heatpump.attributes.HeatCarrierInTemp }}'
+      #
+#      heatpump_heatcarrier_out:
+#        friendly_name: 'Värmebärare ut'
+#        unit_of_measurement: "°C"
+#        value_template: "{{ state_attr('sensor.heatpump', 'HeatCarrierOutTemp') }}"
+      #
+#      heatpump_brine_in:
+#        friendly_name: 'Köldbärare in'
+#        unit_of_measurement: "°C"
+#        value_template: "{{ state_attr('sensor.heatpump', 'BrineInTemp') }}"
+      #
+#      heatpump_brine_out:
+#        friendly_name: 'Köldbärare ut'
+#        unit_of_measurement: "°C"
+#        value_template: "{{ state_attr('sensor.heatpump', 'BrineOutTemp') }}"
+      #
+#      heatpump_hotgas:
+#        friendly_name: 'Hetgas'
+#        unit_of_measurement: "°C"
+#        value_template: "{{ state_attr('sensor.heatpump', 'HotGasTemp') }}"
+      # HeatingSetpointTemp
+#      heatpump_heatinghetpointemp:
+#        friendly_name: Börvärde
+#        unit_of_measurement: "°C"
+#        value_template: "{{ state_attr('sensor.heatpump', 'HeatingSetpointTemp') }}"
+#
+  - platform: integration
+    source: sensor.heatpump_compressor_real_power
+    name: heatpump_compressor_consumption
+    unit_prefix: k
+    round: 2
+#
+  - platform: integration
+    source: sensor.heatpump_coldcircuitpump_real_power
+    name: heatpump_coldcircuitpump_consumption
+    unit_prefix: k
+    round: 2
+#
+binary_sensor:
+  #
+  - platform: template
+    sensors:
+      heatpump_compressor_state:
+        friendly_name: "Kompressor"
+        unique_id: heatpump_compressor_state
+        value_template: >-
+          {{ state_attr('sensor.heatpump', 'CompressorState') > 0 }}
+      #
+      heatpump_switchvalve_state:
+        friendly_name: "Växelventil"
+        unique_id: heatpump_switchvalve_state
+        value_template: >-
+          {{ state_attr('sensor.heatpump', 'SwitchValve1State') > 0 }}
+      #
+      heatpump_radiatorpump_state:
+        friendly_name: "Radiatorpump"
+        unique_id: heatpump_radiatorpump_state
+        value_template: >-
+          {{ state_attr('sensor.heatpump', 'RadiatorPumpState') > 0 }}
+      #
+      heatpump_coldcircuitpump_state:
+        friendly_name: "Köldbärarpump"
+        unique_id: heatpump_coldcircuitpump_state
+        value_template: >-
+          {{ state_attr('sensor.heatpump', 'ColdCircuitPumpState') > 0 }}
+      #
+      heatpump_heatcircuitpumpstate_state:
+        friendly_name: "Värmekretspump"
+        unique_id: heatpump_heatcircuitpumpstate_state
+        value_template: >-
+          {{ state_attr('sensor.heatpump', 'HeatCircuitPumpState') > 0 }}
+      #
+      heatpump_sumalarm:
+        friendly_name: "Summalarm"
+        unique_id: heatpump_sumalarm
+        value_template: >-
+          {{ state_attr('sensor.heatpump', 'SumAlarm') > 0 }}
+#
+template:
+    sensor:
+      #
+      - name: "Kompressor aktiv effekt P"
+        unique_id: heatpump_compressor_real_power
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {% if is_state('binary_sensor.heatpump_compressor_state', 'on') %}
+          {{ 230.0 * 5.5 }}
+          {% elif is_state('binary_sensor.heatpump_compressor_state', 'off') %}
+          0.0
+          {% endif %}
+      #
+      # Köldbärarpump aktiv effekt P
+      - unique_id: heatpump_coldcircuitpump_real_power
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {% if is_state('binary_sensor.heatpump_coldcircuitpump_state', 'on') %}
+          {{ 230.0 * 1.5 }}
+          {% elif is_state('binary_sensor.heatpump_coldcircuitpump_state', 'off') %}
+          0.0
+          {% endif %}
+#       Returledning
+      - name: heatpump_radiator_return
+        unique_id: heatpump_radiator_return
+        unit_of_measurement: "°C"
+        state_class: measurement
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'RadiatorReturnTemp') }}"
+      # Börvärde
+      - name: heatpump_heatinghetpointemp
+        unique_id: heatpump_heatinghetpointemp
+        unit_of_measurement: "°C"
+        state_class: measurement
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'HeatingSetpointTemp') }}"
+      # Värmebärare ut
+      - name: heatpump_heatcarrier_out
+        unique_id: heatpump_heatcarrier_out
+        unit_of_measurement: "°C"
+        state_class: measurement
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'HeatCarrierOutTemp') }}"
+      # Köldbärare in
+      - name: heatpump_brine_in
+        unique_id: heatpump_brine_in
+        state_class: measurement
+        device_class: temperature
+        unit_of_measurement: "°C"
+        state: "{{ state_attr('sensor.heatpump', 'BrineInTemp') }}"
+      # Köldbärare ut
+      - name: heatpump_brine_out
+        unique_id: heatpump_brine_out
+        state_class: measurement
+        device_class: temperature
+        unit_of_measurement: "°C"
+        state: "{{ state_attr('sensor.heatpump', 'BrineOutTemp') }}"
+      # Hetgas
+      - name: heatpump_hotgas
+        unique_id: heatpump_hotgas
+        unit_of_measurement: "°C"
+        state_class: measurement
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'HotGasTemp') }}"
+      # Varmvatten
+      - name: heatpump_hotwater_temp
+        unique_id: heatpump_hotwater_temp
+        unit_of_measurement: "°C"
+        state_class: measurement
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'HotwaterTemp1') }}"
+      # Varmvatten
+      - name: heatpump_hotwater_temp_2
+        unique_id: heatpump_hotwater_temp_2
+        unit_of_measurement: "°C"
+        state_class: measurement
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'HotwaterTemp2') }}"
+      # Utomhus-temp
+      - name: heatpump_outdoor_temp
+        unique_id: heatpump_outdoor_temp
+        unit_of_measurement: "°C"
+        state_class: measurement
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'OutdoorTemp') }}"
+#template:
+#  - trigger:
+#      - platform: time_pattern
+#        minutes: 1
+#    sensor:
+#      # Keep track how many days have past since a date
+#      - name: "Not smoking"
+#        state: '{{ ( ( as_timestamp(now()) - as_timestamp(strptime("06.07.2018", "%d.%m.%Y")) ) / 86400 ) | round(default=0) }}'
+#        unit_of_measurement: "Days"
