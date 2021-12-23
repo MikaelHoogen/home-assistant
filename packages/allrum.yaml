@@ -99,7 +99,6 @@ binary_sensor:
         friendly_name: Allrum
         value_template: >-
           {{ is_state('binary_sensor.allrum_presence', 'on')
-            and is_state_attr('sensor.allrum_hue_motion_sensor_light_level', 'daylight', false)
             and is_state('input_boolean.film_spelar', 'off') }}
       # binary_sensor.allrum_rorelsesensor
       allrum_presence_short:
