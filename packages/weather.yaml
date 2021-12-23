@@ -20,20 +20,20 @@ sensor:
         value_template: "{{ state_attr('sensor.netatmo_sannesholma_weather_station_pressure_statistics', 'min_value') }}"
 
 ### Trafikverket ###
-  - platform: trafikverket_weatherstation
-    name: Trafikverket Brokhult
-    api_key: !secret trafikverket_api_key
-    station: Brokhult
-    monitored_conditions:
-      - air_temp
-      - road_temp
-      - precipitation
-      - wind_direction
-      - wind_direction_text
-      - wind_speed
-      - wind_speed_max
-      - precipitation_amount
-      - precipitation_amountname
+#  - platform: trafikverket_weatherstation
+#    name: Trafikverket Brokhult
+#    api_key: !secret trafikverket_api_key
+#    station: Brokhult
+#    monitored_conditions:
+#      - air_temp
+#      - road_temp
+#      - precipitation
+#      - wind_direction
+#      - wind_direction_text
+#      - wind_speed
+#      - wind_speed_max
+#      - precipitation_amount
+#      - precipitation_amountname
 
 ### SMHI Alert
 #  - platform: smhialert
