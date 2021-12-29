@@ -60,6 +60,22 @@ utility_meter:
     source: sensor.accumulated_total_cost_hour
     cycle: yearly
 #
+  ehl75l9h_timme:
+    source: sensor.ehl75l9h_lifetime_energy
+    cycle: hourly
+  ehl75l9h_dag:
+    source: sensor.ehl75l9h_lifetime_energy
+    cycle: daily
+  ehl75l9h_vecka:
+    source: sensor.ehl75l9h_lifetime_energy
+    cycle: weekly
+  ehl75l9h_manad:
+    source: sensor.ehl75l9h_lifetime_energy
+    cycle: monthly
+  ehl75l9h_ar:
+    source: sensor.ehl75l9h_lifetime_energy
+    cycle: yearly
+#
   ehl75l9h_timme_kostnad:
     source: sensor.ehl75l9h_accumulated_total_cost_hour
     cycle: hourly
@@ -75,6 +91,17 @@ utility_meter:
   ehl75l9h_ar_kostnad:
     source: sensor.ehl75l9h_accumulated_total_cost_hour
     cycle: yearly
+#
+template:
+    sensor:
+      #
+      - name: accumulated_cost_total_hour_measurement_sannesholma_2181
+        unique_id: accumulated_cost_total_hour_measurement_sannesholma_2181
+        unit_of_measurement: "SEK"
+        state_class: measurement
+#        device_class: power
+        state: >
+          {{ states('sensor.accumulated_cost_total_hour_sannesholma_2181') }}
 #
 sensor:
   - platform: template
@@ -98,5 +125,5 @@ sensor:
       ehl75l9h_accumulated_total_cost_hour:
         friendly_name: "Kostnad"
         unit_of_measurement: "SEK"
-        value_template: "{{ ( states('sensor.ehl75l9h_energy_per_hour') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+        value_template: "{{ ( states('sensor.ehl75l9h_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
       ###
