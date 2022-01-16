@@ -33,7 +33,7 @@ sensor:
         friendly_name: "Kostnad"
         unit_of_measurement: "SEK"
         #        device_class: "humidity"
-        value_template: "{{ ( states('sensor.torktumlare_timme') | float * states('sensor.elpris_totalt_sek') | float ) | round(3) }}"
+        value_template: "{{ ( states('sensor.torktumlare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
 #
 binary_sensor:
 # Determine when the washing machine has a load running.
@@ -46,5 +46,5 @@ binary_sensor:
         delay_off:
           minutes: 2
         value_template: >-
-          {{ states('sensor.torktumlare_power')|float > 1 }}
+          {{ states('sensor.torktumlare_power') | float(0.0) > 1 }}
         icon_template: mdi:tumble-dryer
