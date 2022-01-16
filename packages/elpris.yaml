@@ -9,7 +9,7 @@ variable:
       icon: mdi:cash-multiple
       unit_of_measurement: "Öre/kWh"
   avgift_energiskatt:
-    value: 44.5
+    value: 45.0
     restore: true
     attributes:
       friendly_name: "Energiskatt"
@@ -17,6 +17,38 @@ variable:
       unit_of_measurement: "Öre/kWh"
 #
 template:
+  - sensor:
+      #
+    - name: avgift_elnat
+      unique_id: avgift_elnat
+      unit_of_measurement: "Öre/kWh"
+      state_class: measurement
+      state: "{{ 22.05 }}"
+      #
+    - name: avgift_energiskatt
+      unique_id: avgift_energiskatt
+      unit_of_measurement: "Öre/kWh"
+      state_class: measurement
+      state: "{{ 45.0 }}"
+      #
+    - name: elpris_abonnemang
+      unique_id: elpris_abonnemang
+      unit_of_measurement: "SEK/kWh"
+      state_class: measurement
+      state: >
+        {{ ( 556.25 / state_attr('sensor.electricity_price_sannesholma_2181', 'estimated_annual_consumption') ) | round (3) }}
+      ############# El totalpris #########################
+    - name: elpris_totalt
+      unique_id: elpris_totalt
+      unit_of_measurement: "Öre/kWh"
+      state_class: measurement
+      state: "{{ ( states('variable.avgift_elnat') | float + states('variable.avgift_energiskatt') | float + states('sensor.electricity_price_sannesholma_2181') | float * 100 + states('sensor.elpris_abonnemang') | float * 100 ) | round(2) }}"
+    - name: elpris_totalt_sek
+      unique_id: elpris_totalt_sek
+      unit_of_measurement: "SEK/kWh"
+      state_class: measurement
+      state: "{{ ( states('variable.avgift_elnat') | float / 100 + states('variable.avgift_energiskatt') | float / 100 + states('sensor.electricity_price_sannesholma_2181') | float + states('sensor.elpris_abonnemang') | float ) | round(3) }}"
+#
   - binary_sensor:
       - name: "Elpris cheap"
         unique_id: electricity_price_sannesholma_2181_cheap
@@ -74,13 +106,6 @@ binary_sensor:
 sensor:
   - platform: template
     sensors:
-      ############# El totalpris #########################
-      elpris_totalt:
-        unit_of_measurement: "Öre/kWh"
-        value_template: "{{ ( states('variable.avgift_elnat') | float + states('variable.avgift_energiskatt') | float + states('sensor.electricity_price_sannesholma_2181') | float * 100 ) | round(2) }}"
-      elpris_totalt_sek:
-        unit_of_measurement: "SEK/kWh"
-        value_template: "{{ ( states('variable.avgift_elnat') | float / 100 + states('variable.avgift_energiskatt') | float / 100 + states('sensor.electricity_price_sannesholma_2181') | float ) | round(3) }}"
       ############# El klockslag #########################
       elpris_idag_00:
         value_template: "{{ state_attr('sensor.elpris', 'today')[0] }}"
