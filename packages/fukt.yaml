@@ -161,18 +161,35 @@ sensor:
 #
       ### gastrum
       gastrum_ps:
-        friendly_name: "Ånghalt gastrum ps"
+        friendly_name: "Ånghalt gästrum ps"
         device_class: "humidity"
         value_template: "{{ 288.68 * ( 1.098 + states('sensor.gastrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
       #
       gastrum_vs:
-        friendly_name: "Ånghalt gastrum vs"
+        friendly_name: "Ånghalt gästrum vs"
         device_class: "humidity"
         value_template: "{{ states('sensor.gastrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.gastrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
       gastrum_v:
-        friendly_name: "Ånghalt gastrum v"
+        friendly_name: "Ånghalt gästrum v"
         unit_of_measurement: "g/m3"
         device_class: "humidity"
         value_template: "{{ ( states('sensor.gastrum_vs') | float(0.0) * ( states('sensor.gastrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+#
+      ### kok
+      kok_ps:
+        friendly_name: "Ånghalt kök ps"
+        device_class: "humidity"
+        value_template: "{{ 288.68 * ( 1.098 + states('sensor.kok_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+      #
+      kok_vs:
+        friendly_name: "Ånghalt kök vs"
+        device_class: "humidity"
+        value_template: "{{ states('sensor.kok_ps') | float(0.0) / ( 461.4 * ( states('sensor.kok_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+      #
+      kok_v:
+        friendly_name: "Ånghalt kök v"
+        unit_of_measurement: "g/m3"
+        device_class: "humidity"
+        value_template: "{{ ( states('sensor.kok_vs') | float(0.0) * ( states('sensor.kok_humidity') | float(0.0) / 100 ) ) | round(2) }}"
 
