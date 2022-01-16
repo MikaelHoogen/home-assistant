@@ -96,3 +96,13 @@ sensor:
           humidity: "{{ states('sensor.gastrum_humidity') | round(0) }}"
           co2: "0"
           v: "{{ states('sensor.gastrum_v') }}"
+#
+          ### kok
+      sensorer_kok:
+        friendly_name: "0 Kök"
+        value_template: "{{ states('sensor.time') }}"
+        attribute_templates:
+          temperature: "{{ states('sensor.kok_temperature') }}"
+          humidity: "{{ states('sensor.kok_humidity') | round(0) }}"
+          co2: "0"
+          v: "{{ states('sensor.kok_v') }}"
