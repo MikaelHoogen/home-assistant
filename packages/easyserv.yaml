@@ -32,80 +32,140 @@ sensor:
       - LoadL2
       - LoadL3
     value_template: '{{ value_json.CompressorState }}'
-
-
-#  - platform: template
-#    sensors:
-      #
-#      heatpump_hotwater_temp:
-#        friendly_name: 'Varmvatten'
-#        unit_of_measurement: "°C"
-#        unique_id: heatpump_hotwater_temp
-#        value_template: "{{ state_attr('sensor.heatpump', 'HotwaterTemp1') }}"
-      #
-#      heatpump_hotwater_temp_2:
-#        friendly_name: 'Varmvatten'
-#        unit_of_measurement: "°C"
-#        unique_id: heatpump_hotwater_temp_2
-#        value_template: "{{ state_attr('sensor.heatpump', 'HotwaterTemp2') }}"
-      #
-#      heatpump_outdoor_temp:
-#        friendly_name: "Utomhus-temp"
-#        unit_of_measurement: "°C"
-#        device_class: temperature
-#        value_template: "{{ state_attr('sensor.heatpump', 'OutdoorTemp') }}"
-      #
-#      heatpump_radiator_forward:
-#        friendly_name: 'Framledning'
-#        unit_of_measurement: "°C"
-#        value_template: '{{ states.sensor.heatpump.attributes.RadiatorForwardTemp }}'
-      #
-#      heatpump_radiator_return:
-#        friendly_name: 'Returledning'
-#        unit_of_measurement: "°C"
-#        value_template: "{{ state_attr('sensor.heatpump', 'RadiatorReturnTemp') }}"
-      #
-#      heatpump_heatcarrier_in:
-#        friendly_name: 'Värmebärare in'
-#        unit_of_measurement: "°C"
-#        value_template: '{{ states.sensor.heatpump.attributes.HeatCarrierInTemp }}'
-      #
-#      heatpump_heatcarrier_out:
-#        friendly_name: 'Värmebärare ut'
-#        unit_of_measurement: "°C"
-#        value_template: "{{ state_attr('sensor.heatpump', 'HeatCarrierOutTemp') }}"
-      #
-#      heatpump_brine_in:
-#        friendly_name: 'Köldbärare in'
-#        unit_of_measurement: "°C"
-#        value_template: "{{ state_attr('sensor.heatpump', 'BrineInTemp') }}"
-      #
-#      heatpump_brine_out:
-#        friendly_name: 'Köldbärare ut'
-#        unit_of_measurement: "°C"
-#        value_template: "{{ state_attr('sensor.heatpump', 'BrineOutTemp') }}"
-      #
-#      heatpump_hotgas:
-#        friendly_name: 'Hetgas'
-#        unit_of_measurement: "°C"
-#        value_template: "{{ state_attr('sensor.heatpump', 'HotGasTemp') }}"
-      # HeatingSetpointTemp
-#      heatpump_heatinghetpointemp:
-#        friendly_name: Börvärde
-#        unit_of_measurement: "°C"
-#        value_template: "{{ state_attr('sensor.heatpump', 'HeatingSetpointTemp') }}"
+#
 #
   - platform: integration
     source: sensor.heatpump_compressor_real_power
     name: heatpump_compressor_consumption
     unit_prefix: k
     round: 2
+    method: left
 #
   - platform: integration
     source: sensor.heatpump_coldcircuitpump_real_power
     name: heatpump_coldcircuitpump_consumption
     unit_prefix: k
     round: 2
+    method: left
+#
+  - platform: integration
+    source: sensor.heatpump_hotwater_power
+    name: heatpump_hotwater_consumption
+    unit_prefix: k
+    round: 2
+    method: left
+#
+  - platform: integration
+    source: sensor.heatpump_heat_power
+    name: heatpump_heat_consumption
+    unit_prefix: k
+    round: 2
+    method: left
+#
+  - platform: history_stats
+    name: heatpump_compressor_today
+    entity_id: binary_sensor.heatpump_compressor_state
+    state: "on"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+    end: "{{ now() }}"
+#
+# binary_sensor.heatpump_coldcircuitpump_state
+  - platform: history_stats
+    name: heatpump_coldcircuitpump_today
+    entity_id: binary_sensor.heatpump_coldcircuitpump_state
+    state: "on"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+    end: "{{ now() }}"
+#
+utility_meter:
+  heatpump_timme:
+    source: sensor.heatpump_consumption
+    cycle: hourly
+  heatpump_dag:
+    source: sensor.heatpump_consumption
+    cycle: daily
+  heatpump_vecka:
+    source: sensor.heatpump_consumption
+    cycle: weekly
+  heatpump_manad:
+    source: sensor.heatpump_consumption
+    cycle: monthly
+  heatpump_ar:
+    source: sensor.heatpump_consumption
+    cycle: yearly
+  #
+  heatpump_timme_kostnad:
+    source: sensor.heatpump_kostnad
+    cycle: daily
+  heatpump_dag_kostnad:
+    source: sensor.heatpump_kostnad
+    cycle: daily
+  heatpump_manad_kostnad:
+    source: sensor.heatpump_kostnad
+    cycle: monthly
+  heatpump_ar_kostnad:
+    source: sensor.heatpump_kostnad
+    cycle: yearly
+#
+  heatpump_hotwater_timme:
+    source: sensor.heatpump_hotwater_consumption
+    cycle: hourly
+  heatpump_hotwater_dag:
+    source: sensor.heatpump_hotwater_consumption
+    cycle: daily
+  heatpump_hotwater_vecka:
+    source: sensor.heatpump_hotwater_consumption
+    cycle: weekly
+  heatpump_hotwater_manad:
+    source: sensor.heatpump_hotwater_consumption
+    cycle: monthly
+  heatpump_hotwater_ar:
+    source: sensor.heatpump_hotwater_consumption
+    cycle: yearly
+#
+  heatpump_hotwater_timme_kostnad:
+    source: sensor.heatpump_hotwater_kostnad
+    cycle: daily
+  heatpump_hotwater_dag_kostnad:
+    source: sensor.heatpump_hotwater_kostnad
+    cycle: daily
+  heatpump_hotwater_manad_kostnad:
+    source: sensor.heatpump_hotwater_kostnad
+    cycle: monthly
+  heatpump_hotwater_ar_kostnad:
+    source: sensor.heatpump_hotwater_kostnad
+    cycle: yearly
+#
+  heatpump_heat_timme:
+    source: sensor.heatpump_heat_consumption
+    cycle: hourly
+  heatpump_heat_dag:
+    source: sensor.heatpump_heat_consumption
+    cycle: daily
+  heatpump_heat_vecka:
+    source: sensor.heatpump_heat_consumption
+    cycle: weekly
+  heatpump_heat_manad:
+    source: sensor.heatpump_heat_consumption
+    cycle: monthly
+  heatpump_heat_ar:
+    source: sensor.heatpump_heat_consumption
+    cycle: yearly
+#
+  heatpump_heat_timme_kostnad:
+    source: sensor.heatpump_heat_kostnad
+    cycle: daily
+  heatpump_heat_dag_kostnad:
+    source: sensor.heatpump_heat_kostnad
+    cycle: daily
+  heatpump_heat_manad_kostnad:
+    source: sensor.heatpump_heat_kostnad
+    cycle: monthly
+  heatpump_heat_ar_kostnad:
+    source: sensor.heatpump_heat_kostnad
+    cycle: yearly
 #
 binary_sensor:
   #
@@ -149,7 +209,7 @@ binary_sensor:
 #
 template:
     sensor:
-      #
+      # Kompressor
       - name: "Kompressor aktiv effekt P"
         unique_id: heatpump_compressor_real_power
         unit_of_measurement: "W"
@@ -157,10 +217,19 @@ template:
         device_class: power
         state: >
           {% if is_state('binary_sensor.heatpump_compressor_state', 'on') %}
-          {{ 230.0 * 5.5 }}
+          {{ 400.0 * 5.5 }}
           {% elif is_state('binary_sensor.heatpump_compressor_state', 'off') %}
           0.0
           {% endif %}
+      #
+      - name: heatpump_consumption_test
+        unique_id: heatpump_consumption_test
+        unit_of_measurement: "kWh"
+        state_class: total_increasing
+        device_class: energy
+        availability: "{{ is_number(states('sensor.heatpump_compressor_today')) and is_number(states('sensor.heatpump_coldcircuitpump_today')) }}"
+        state: >
+          {{ ( 400.0 * 5.5 * states('sensor.heatpump_compressor_today') | float('nan') / 1000.0 + 400.0 * 1.5 * states('sensor.heatpump_coldcircuitpump_today') | float('nan') / 1000.0 ) | round(3) }}
       #
       # Köldbärarpump aktiv effekt P
       - unique_id: heatpump_coldcircuitpump_real_power
@@ -169,10 +238,75 @@ template:
         device_class: power
         state: >
           {% if is_state('binary_sensor.heatpump_coldcircuitpump_state', 'on') %}
-          {{ 230.0 * 1.5 }}
+          {{ 400.0 * 1.5 }}
           {% elif is_state('binary_sensor.heatpump_coldcircuitpump_state', 'off') %}
           0.0
           {% endif %}
+#
+      ### Förbrukning
+      - name: heatpump_consumption
+        unique_id: heatpump_consumption
+        unit_of_measurement: "kWh"
+        state_class: total_increasing
+        availability: "{{ is_number(states('sensor.heatpump_compressor_consumption')) and is_number(states('sensor.heatpump_coldcircuitpump_consumption')) }}"
+        state: >
+          {{ states('sensor.heatpump_compressor_consumption') | float('not_a_number') + states('sensor.heatpump_coldcircuitpump_consumption') | float('not_a_number') }}
+      #
+      - name: heatpump_consumption_measurement
+        unique_id: heatpump_consumption_measurement
+        unit_of_measurement: "kWh"
+        state_class: measurement
+        state: >
+          {{ states('sensor.heatpump_timme') }}
+      #
+      # Varmvatten
+      - name: heatpump_hotwater_power
+        unique_id: heatpump_hotwater_power
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {% if is_state('binary_sensor.heatpump_switchvalve_state', 'on') %}
+          {{ states('sensor.heatpump_coldcircuitpump_real_power') | float(0.0) + states('sensor.heatpump_compressor_real_power') | float(0.0) }}
+          {% elif is_state('binary_sensor.heatpump_switchvalve_state', 'off') %}
+          0.0
+          {% endif %}
+      #
+      # Värme
+      - name: heatpump_heat_power
+        unique_id: heatpump_heat_power
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {% if is_state('binary_sensor.heatpump_switchvalve_state', 'off') %}
+          {{ states('sensor.heatpump_coldcircuitpump_real_power') | float(0.0) + states('sensor.heatpump_compressor_real_power') | float(0.0) }}
+          {% elif is_state('binary_sensor.heatpump_switchvalve_state', 'on') %}
+          0.0
+          {% endif %}
+      #
+      ### Kostnad
+      - name: heatpump_kostnad
+        unique_id: heatpump_kostnad
+        unit_of_measurement: "SEK"
+        state_class: measurement
+        availability: "{{ is_number(states('sensor.heatpump_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.heatpump_timme') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
+#
+      - name: heatpump_hotwater_kostnad
+        unique_id: heatpump_hotwater_kostnad
+        unit_of_measurement: "SEK"
+        state_class: measurement
+        availability: "{{ is_number(states('sensor.heatpump_hotwater_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.heatpump_hotwater_timme') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
+#
+      - name: heatpump_heat_kostnad
+        unique_id: heatpump_heat_kostnad
+        unit_of_measurement: "SEK"
+        state_class: measurement
+        availability: "{{ is_number(states('sensor.heatpump_heat_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.heatpump_heat_timme') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
+#
 #       Returledning
       - name: heatpump_radiator_return
         unique_id: heatpump_radiator_return
@@ -236,12 +370,16 @@ template:
         state_class: measurement
         device_class: temperature
         state: "{{ state_attr('sensor.heatpump', 'OutdoorTemp') }}"
-#template:
-#  - trigger:
-#      - platform: time_pattern
-#        minutes: 1
-#    sensor:
-#      # Keep track how many days have past since a date
-#      - name: "Not smoking"
-#        state: '{{ ( ( as_timestamp(now()) - as_timestamp(strptime("06.07.2018", "%d.%m.%Y")) ) / 86400 ) | round(default=0) }}'
-#        unit_of_measurement: "Days"
+#
+homeassistant:
+  customize:
+    sensor.heatpump_coldcircuitpump_consumption:
+      friendly_name: Värmepump köldbärarpump
+    sensor.heatpump_compressor_consumption:
+      friendly_name: Värmepump kompressor
+    sensor.heatpump_timme:
+      friendly_name: Värmepump
+    sensor.heatpump_heat_consumption:
+      friendly_name: Värmepump värmeproduktion
+    sensor.heatpump_hotwater_consumption:
+      friendly_name: Värmepump varmvattenproduktion
