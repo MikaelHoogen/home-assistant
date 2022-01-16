@@ -5,3 +5,11 @@ sensor:
     disks:
       - /dev/sda
       - /dev/sdb
+#
+homeassistant:
+  customize:
+    sensor.antec_dev_sda:
+      state_class: measurement
+    sensor.antec_dev_sdb:
+      state_class: measurement
+#
