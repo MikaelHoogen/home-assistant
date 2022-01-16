@@ -1,0 +1,83 @@
+utility_meter:
+  eaton3s_timme:
+    source: sensor.eaton3s_accumulated_consumption
+    cycle: hourly
+  eaton3s_dag:
+    source: sensor.eaton3s_accumulated_consumption
+    cycle: daily
+  eaton3s_vecka:
+    source: sensor.eaton3s_accumulated_consumption
+    cycle: weekly
+  eaton3s_manad:
+    source: sensor.eaton3s_accumulated_consumption
+    cycle: monthly
+  eaton3s_ar:
+    source: sensor.eaton3s_accumulated_consumption
+    cycle: yearly
+  #
+  eaton3s_dag_kostnad:
+    source: sensor.eaton3s_timme_kostnad
+    cycle: daily
+  eaton3s_manad_kostnad:
+    source: sensor.eaton3s_timme_kostnad
+    cycle: monthly
+  eaton3s_ar_kostnad:
+    source: sensor.eaton3s_timme_kostnad
+    cycle: yearly
+
+# eaton3s
+template:
+    sensor:
+      #
+      - name: eaton3s_apparent_power
+        unique_id: eaton3s_apparent_power
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {{ states('sensor.eaton3s_nominal_power') | float(850.0) * states('sensor.eaton3s_load') | float(0.0) / 100 }}
+#
+      - name: eaton3s_timme_kostnad
+        unique_id: eaton3s_timme_kostnad
+        unit_of_measurement: "SEK"
+        state_class: measurement
+        state: "{{ ( states('sensor.eaton3s_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+      ###
+#
+      - name: eaton3s_consumption_measurement
+        unique_id: eaton3s_consumption_measurement
+        unit_of_measurement: "kWh"
+        state_class: measurement
+        state: "{{ states('sensor.eaton3s_timme') }}"
+#
+sensor:
+    - platform: integration
+      source: sensor.eaton3s_apparent_power
+      name: eaton3s_accumulated_consumption
+      unit_prefix: k
+      round: 2
+#
+#customize:
+#  sensor.eaton3s_accumulated_consumption:
+#  state_class: measurement
+#
+homeassistant:
+  customize:
+    sensor.mikrotik_crs312_cpu_temperature:
+      state_class: measurement
+    sensor.mikrotik_crs312_cpu_load:
+      state_class: measurement
+#
+    sensor.mikrotik_hex_temperature:
+      state_class: measurement
+    sensor.mikrotik_hex_cpu_load:
+      state_class: measurement
+#
+    sensor.mikrotik_crs326_cpu_temperature:
+      state_class: measurement
+    sensor.mikrotik_crs326_cpu_load:
+      state_class: measurement
+#
+    sensor.eaton3s_accumulated_consumption:
+      friendly_name: Eaton3s
+#
