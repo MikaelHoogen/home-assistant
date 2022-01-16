@@ -28,13 +28,15 @@ sensor:
     name: Avfuktare_consumption
     unit_prefix: k
     round: 2
+    method: left
+    #
   - platform: template
     sensors:
       ###
       avfuktare_timme_kostnad:
         friendly_name: "Kostnad"
         unit_of_measurement: "SEK"
-        value_template: "{{ ( states('sensor.avfuktare_timme') | float * states('sensor.elpris_totalt_sek') | float ) | round(3) }}"
+        value_template: "{{ ( states('sensor.avfuktare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
 #
 utility_meter:
   avfuktare_timme:
@@ -113,3 +115,8 @@ automation:
           {% endif %}
         entity_id:
           - switch.motorvarmare
+#
+homeassistant:
+  customize:
+    sensor.avfuktare_consumption:
+      friendly_name: Avfuktare
