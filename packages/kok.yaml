@@ -4,14 +4,14 @@ adaptive_lighting:
   lights:
     - light.kok_bankbelysning
     - light.kok_koksbord
-    - light.kok_kokso_2
+    - light.kok_kokso
     - light.kok_tak
     - light.kok_skafferi
   prefer_rgb_color: false
   transition: 30
   initial_transition: 3
   interval: 90
-  min_brightness: 10
+  min_brightness: 15
   max_brightness: 100
   min_color_temp: 2100
   max_color_temp: 4000
@@ -199,5 +199,5 @@ automation:
         entity_id:
           - light.kok_tak
           - light.kok_koksbord
-          - light.kok_kokso_2
+          - light.kok_kokso
           - light.kok_skafferi
