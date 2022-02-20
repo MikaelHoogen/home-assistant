@@ -7,7 +7,7 @@ adaptive_lighting:
     transition: 30
     initial_transition: 2
     interval: 90
-    min_brightness: 15
+    min_brightness: 20
     max_brightness: 100
     min_color_temp: 2100
     max_color_temp: 4000
@@ -24,19 +24,15 @@ adaptive_lighting:
     only_once: false
     separate_turn_on_commands: false
 #
-# Example configuration.yaml entry
-#input_boolean:
-#  hall_dorr_trigger:
-#    name: Dörr trigger
 #
 template:
-  trigger:
-    - platform: state
-      entity_id: binary_sensor.entre_dorrbrytare
-  binary_sensor:
-    - name: Hall dörrtrigger
-      auto_off: 5
-      state: "true"
+  - trigger:
+      - platform: state
+        entity_id: binary_sensor.entre_dorrbrytare
+    binary_sensor:
+      - name: Hall dörrtrigger
+        auto_off: 5
+        state: "true"
 #
 binary_sensor:
   #
@@ -57,7 +53,8 @@ binary_sensor:
       hall_presence_light_automation_control:
         friendly_name: Hall
         value_template: >-
-          {{ is_state('binary_sensor.hall_presence', 'on') }}
+          {{ is_state('binary_sensor.hall_presence', 'on')
+              and is_state('input_boolean.film_spelar', 'off') }}
 #
 #
 automation:
@@ -78,15 +75,4 @@ automation:
         entity_id:
           - light.hall
   #
-#  - alias: Hall dörrtrigger
-#    trigger:
-#      - platform: state
-#        entity_id: binary_sensor.entre_dorrbrytare
-#    action:
-#      - service: input_boolean.turn_on
-#        entity_id:
-#          - input_boolean.hall_dorr_trigger
-#      - delay: 1
-#      - service: input_boolean.turn_off
-#        entity_id:
-#          - input_boolean.hall_dorr_trigger
+#
