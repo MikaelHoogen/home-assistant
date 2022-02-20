@@ -37,7 +37,7 @@ automation:
       title: "Rök detekterad"
       #
 template:
-  trigger:
+- trigger:
   - platform: event
     event_type: rfxtrx_event
     event_data:
