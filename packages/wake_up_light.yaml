@@ -1,0 +1,59 @@
+#
+input_boolean:
+  wake_up_light:
+    name: Väckning
+    icon: mdi:sleep-off
+#
+input_datetime:
+  wake_up_light_time:
+    name: Väckningstid
+    has_date: false
+    has_time: true
+#
+template:
+  - sensor:
+    #
+    - name: wake_up_light_time_to_wake
+      unique_id: wake_up_light_time_to_wake
+#      device_class: timestamp
+      state: >
+        {{ ( state_attr('input_datetime.wake_up_light_time', 'timestamp') - (now().second + now().minute * 60 + now().hour * 60 * 60)) | timestamp_custom('%H:%M', False) }}
+#
+  - binary_sensor:
+    #
+    - name: wake_up_light_time
+      unique_id: wake_up_light_time
+      state: >
+        {{ ( states('sensor.time') == (state_attr('input_datetime.wake_up_light_time', 'timestamp') | int | timestamp_custom('%H:%M', False)) )
+          and ( states('input_boolean.wake_up_light') == 'on' ) }}
+#
+automation:
+############# Automation #######################################
+- alias: "Wake up light"
+  trigger:
+    platform: state
+    to: 'on'
+    entity_id: binary_sensor.wake_up_light_time
+  action:
+    - service: switch.turn_off
+      entity_id: switch.adaptive_lighting_sovrum
+    #
+    - service: input_boolean.turn_off
+      entity_id:
+      - input_boolean.wake_up_light
+    #
+    - service: light.turn_on
+      data:
+        entity_id: light.sovrum
+        kelvin: 2000
+        brightness: 1
+    - delay:
+        seconds: 1
+    - service: light.turn_on
+      data:
+        entity_id: light.sovrum
+        kelvin: 4000
+        brightness: 100
+        transition: 1800
+#    - service: switch.turn_on
+#      entity_id: switch.adaptive_lighting_sovrum
