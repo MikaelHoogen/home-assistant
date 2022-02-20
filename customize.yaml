@@ -18,3 +18,7 @@ light.kok_tak:
   icon: hue:bulb-spot
 light.kok_bankbelysning:
   icon: hue:bulb-spot
+#
+#
+sensor.accumulated_consumption_sannesholma_2181:
+  state_class: total_increasing
