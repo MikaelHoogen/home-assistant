@@ -27,7 +27,7 @@ utility_meter:
 
 # eaton3s
 template:
-    sensor:
+  - sensor:
       #
       - name: eaton3s_apparent_power
         unique_id: eaton3s_apparent_power
@@ -36,6 +36,14 @@ template:
         device_class: power
         state: >
           {{ states('sensor.eaton3s_nominal_power') | float(850.0) * states('sensor.eaton3s_load') | float(0.0) / 100 }}
+#
+      - name: eaton3s_real_power
+        unique_id: eaton3s_real_power
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {{ states('sensor.eaton3s_nominal_power') | float(850.0) * states('sensor.power_factor_sannesholma_2181') | float(0.0) / 100 * states('sensor.eaton3s_load') | float(0.0) / 100 }}
 #
       - name: eaton3s_timme_kostnad
         unique_id: eaton3s_timme_kostnad
@@ -52,7 +60,7 @@ template:
 #
 sensor:
     - platform: integration
-      source: sensor.eaton3s_apparent_power
+      source: sensor.eaton3s_real_power
       name: eaton3s_accumulated_consumption
       unit_prefix: k
       round: 2
