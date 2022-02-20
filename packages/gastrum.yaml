@@ -3,12 +3,13 @@ adaptive_lighting:
   - name: Gästrum
     lights:
     - light.linas_skrivbord
-    - light.gastrum_fonster
+    - light.gastrum_fonster_1
+    - light.gastrum_fonster_2
     prefer_rgb_color: false
     transition: 30
     initial_transition: 5
     interval: 90
-    min_brightness: 10
+    min_brightness: 20
     max_brightness: 100
     min_color_temp: 2100
     max_color_temp: 4000
@@ -31,7 +32,18 @@ light:
     unique_id: gastrum_grupp
     entities:
     - light.linas_skrivbord
-    - light.gastrum_fonster
+    - light.gastrum_fonster_1
+    - light.gastrum_fonster_2
+#
+#
+input_number:
+  gastrum_light_level:
+    name: Ljusstyrka utomhus för belysning gästrum
+    min: 0
+    max: 1000
+    step: 50
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
 #
 binary_sensor:
 #
@@ -40,9 +52,9 @@ binary_sensor:
       gastrum_belysning_lightlevel:
         friendly_name: Gästrum
         delay_off:
-          minutes: 30
+          minutes: 15
         value_template: >-
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.gastrum_light_level') | float }}
       gastrum_belysning_automation_control:
         friendly_name: Gästrum
         value_template: >-
@@ -65,7 +77,8 @@ automation:
         light.turn_off
         {% endif %}
       entity_id:
-      - light.gastrum_fonster
+      - light.gastrum_fonster_1
+      - light.gastrum_fonster_2
 #
 #
   - alias: Gästrum Knapp 1 klick
