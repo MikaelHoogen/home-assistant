@@ -1,20 +1,20 @@
 ################ Variabel ####################
-variable:
+#variable:
   ### Priser elnät och elcertifikat ###############
-  avgift_elnat:
-    value: 22.05
-    restore: true
-    attributes:
-      friendly_name: "Elnätsavgift"
-      icon: mdi:cash-multiple
-      unit_of_measurement: "Öre/kWh"
-  avgift_energiskatt:
-    value: 45.0
-    restore: true
-    attributes:
-      friendly_name: "Energiskatt"
-      icon: mdi:cash-multiple
-      unit_of_measurement: "Öre/kWh"
+#  avgift_elnat:
+#    value: 22.05
+#    restore: true
+#    attributes:
+#      friendly_name: "Elnätsavgift"
+#      icon: mdi:cash-multiple
+#      unit_of_measurement: "Öre/kWh"
+#  avgift_energiskatt:
+#    value: 45.0
+#    restore: true
+#    attributes:
+#      friendly_name: "Energiskatt"
+#      icon: mdi:cash-multiple
+#      unit_of_measurement: "Öre/kWh"
 #
 template:
   - sensor:
@@ -37,17 +37,17 @@ template:
       state_class: measurement
       state: >
         {{ ( 556.25 / state_attr('sensor.electricity_price_sannesholma_2181', 'estimated_annual_consumption') ) | round (3) }}
-      ############# El totalpris #########################
+      ############# El totalpris ######################### TODO, hantera om någon faller bort
     - name: elpris_totalt
       unique_id: elpris_totalt
       unit_of_measurement: "Öre/kWh"
       state_class: measurement
-      state: "{{ ( states('variable.avgift_elnat') | float + states('variable.avgift_energiskatt') | float + states('sensor.electricity_price_sannesholma_2181') | float * 100 + states('sensor.elpris_abonnemang') | float * 100 ) | round(2) }}"
+      state: "{{ ( states('sensor.avgift_elnat') | float + states('sensor.avgift_energiskatt') | float + states('sensor.electricity_price_sannesholma_2181') | float * 100 + states('sensor.elpris_abonnemang') | float * 100 ) | round(2) }}"
     - name: elpris_totalt_sek
       unique_id: elpris_totalt_sek
       unit_of_measurement: "SEK/kWh"
       state_class: measurement
-      state: "{{ ( states('variable.avgift_elnat') | float / 100 + states('variable.avgift_energiskatt') | float / 100 + states('sensor.electricity_price_sannesholma_2181') | float + states('sensor.elpris_abonnemang') | float ) | round(3) }}"
+      state: "{{ ( states('sensor.avgift_elnat') | float / 100 + states('sensor.avgift_energiskatt') | float / 100 + states('sensor.electricity_price_sannesholma_2181') | float + states('sensor.elpris_abonnemang') | float ) | round(3) }}"
 #
   - binary_sensor:
       - name: "Elpris cheap"
@@ -104,6 +104,13 @@ binary_sensor:
 #
 #
 sensor:
+  - platform: average
+    name: elpris_totalt_medel
+    unique_id: elpris_totalt_medel
+    start: "{{ now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) }}"
+    end: "{{ now() }}"
+    entities:
+      - sensor.elpris_totalt_sek
   - platform: template
     sensors:
       ############# El klockslag #########################
@@ -640,7 +647,12 @@ sensor:
             {% endif %}
       #
       elpris_imorgon_02:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[2] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[2] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[2] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "02:00 - 03:00"
           kommentar: >
@@ -667,7 +679,12 @@ sensor:
             {% endif %}
       #
       elpris_imorgon_03:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[3] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[3] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[3] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "03:00 - 04:00"
           kommentar: >
@@ -694,7 +711,12 @@ sensor:
             {% endif %}
       #
       elpris_imorgon_04:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[4] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[4] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[4] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "04:00 - 05:00"
           kommentar: >
@@ -721,7 +743,12 @@ sensor:
             {% endif %}
       #
       elpris_imorgon_05:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[5] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[5] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[5] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "05:00 - 06:00"
           kommentar: >
@@ -748,7 +775,12 @@ sensor:
             {% endif %}
       #
       elpris_imorgon_06:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[6] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[6] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[6] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "06:00 - 07:00"
           kommentar: >
@@ -775,7 +807,12 @@ sensor:
             {% endif %}
       #
       elpris_imorgon_07:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[7] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[7] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[7] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "07:00 - 08:00"
           kommentar: >
@@ -804,7 +841,12 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[7] + state_attr('sensor.elpris', 'tomorrow')[8] + state_attr('sensor.elpris', 'tomorrow')[9] ) / 3 }}
       #
       elpris_imorgon_08:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[8] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[8] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[8] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "08:00 - 09:00"
           kommentar: >
@@ -834,7 +876,12 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[8] + state_attr('sensor.elpris', 'tomorrow')[8 + 1] + state_attr('sensor.elpris', 'tomorrow')[8 + 2] ) / 3 }}
       #
       elpris_imorgon_09:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[9] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[9] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[9] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "09:00 - 10:00"
           kommentar: >
@@ -865,7 +912,12 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[9] + state_attr('sensor.elpris', 'tomorrow')[9 + 1] + state_attr('sensor.elpris', 'tomorrow')[9 + 2] ) / 3 }}
       #
       elpris_imorgon_10:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[10] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[10] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[10] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "10:00 - 11:00"
           kommentar: >
@@ -896,9 +948,14 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[10] + state_attr('sensor.elpris', 'tomorrow')[10 + 1] + state_attr('sensor.elpris', 'tomorrow')[10 + 2] ) / 3 | round(2) }}
       #
       elpris_imorgon_11:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[11] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[11] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[11] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
-          timme: "11:00 - 11:00"
+          timme: "11:00 - 12:00"
           kommentar: >
             {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
             {% set price = state_attr('sensor.elpris', 'tomorrow')[11] %}
@@ -927,7 +984,12 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[11] + state_attr('sensor.elpris', 'tomorrow')[11 + 1] + state_attr('sensor.elpris', 'tomorrow')[11 + 2] ) / 3 | round(2) }}
       #
       elpris_imorgon_12:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[12] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[12] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[12] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "12:00 - 13:00"
           kommentar: >
@@ -958,7 +1020,12 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[12] + state_attr('sensor.elpris', 'tomorrow')[12 + 1] + state_attr('sensor.elpris', 'tomorrow')[12 + 2] ) / 3 | round(2) }}
       #
       elpris_imorgon_13:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[13] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[13] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[13] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "13:00 - 14:00"
           kommentar: >
@@ -989,7 +1056,12 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[13] + state_attr('sensor.elpris', 'tomorrow')[13 + 1] + state_attr('sensor.elpris', 'tomorrow')[13 + 2] ) / 3 | round(2) }}
       #
       elpris_imorgon_14:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[14] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[14] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[14] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "14:00 - 15:00"
           kommentar: >
@@ -1020,7 +1092,12 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[14] + state_attr('sensor.elpris', 'tomorrow')[14 + 1] + state_attr('sensor.elpris', 'tomorrow')[14 + 2] ) / 3 | round(2) }}
       #
       elpris_imorgon_15:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[15] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[15] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[15] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "15:00 - 16:00"
           kommentar: >
@@ -1051,7 +1128,12 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[15] + state_attr('sensor.elpris', 'tomorrow')[15 + 1] + state_attr('sensor.elpris', 'tomorrow')[15 + 2] ) / 3 | round(2) }}
       #
       elpris_imorgon_16:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[16] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[16] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[16] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "16:00 - 17:00"
           kommentar: >
@@ -1082,7 +1164,12 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[16] + state_attr('sensor.elpris', 'tomorrow')[16 + 1] + state_attr('sensor.elpris', 'tomorrow')[16 + 2] ) / 3 | round(2) }}
       #
       elpris_imorgon_17:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[17] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[17] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[17] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "17:00 - 18:00"
           kommentar: >
@@ -1117,7 +1204,12 @@ sensor:
             {% endif %}
       #
       elpris_imorgon_18:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[18] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[18] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[18] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "18:00 - 19:00"
           kommentar: >
@@ -1148,7 +1240,12 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[18] + state_attr('sensor.elpris', 'tomorrow')[18 + 1] + state_attr('sensor.elpris', 'tomorrow')[18 + 2] ) / 3 | round(2) }}
       #
       elpris_imorgon_19:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[19] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[19] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[19] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "19:00 - 20:00"
           kommentar: >
@@ -1179,7 +1276,12 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[19] + state_attr('sensor.elpris', 'tomorrow')[19 + 1] + state_attr('sensor.elpris', 'tomorrow')[19 + 2] ) / 3 | round(2) }}
       #
       elpris_imorgon_20:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[20] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[20] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[20] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "20:00 - 21:00"
           kommentar: >
@@ -1210,7 +1312,12 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[20] + state_attr('sensor.elpris', 'tomorrow')[20 + 1] + state_attr('sensor.elpris', 'tomorrow')[20 + 2] ) / 3 | round(2) }}
       #
       elpris_imorgon_21:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[21] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[21] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[21] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "21:00 - 22:00"
           kommentar: >
@@ -1241,7 +1348,12 @@ sensor:
       #            {{ ( state_attr('sensor.elpris', 'tomorrow')[21] + state_attr('sensor.elpris', 'tomorrow')[21 + 1] + state_attr('sensor.elpris', 'tomorrow')[21 + 2] ) / 3 | round(2) }}
       #
       elpris_imorgon_22:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[22] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[22] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[22] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "22:00 - 23:00"
           kommentar: >
@@ -1261,7 +1373,12 @@ sensor:
             -
       #
       elpris_imorgon_23:
-        value_template: "{{ state_attr('sensor.elpris', 'tomorrow')[23] }}"
+        value_template: >
+          {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[23] != None %}
+            {{ state_attr('sensor.elpris', 'tomorrow')[23] }}
+          {% else %}
+          -
+          {% endif %}
         attribute_templates:
           timme: "23:00 - 00:00"
           kommentar: >
