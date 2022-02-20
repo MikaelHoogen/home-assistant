@@ -2,12 +2,14 @@
 adaptive_lighting:
 - name: Barnrum
   lights:
-  - light.barnrum_fonster
+  - light.lillis_skank
+  - light.barnrum_fonster_1
+  - light.barnrum_fonster_2
   prefer_rgb_color: false
   transition: 30
   initial_transition: 5
   interval: 90
-  min_brightness: 10
+  min_brightness: 20
   max_brightness: 100
   min_color_temp: 2100
   max_color_temp: 4000
@@ -24,6 +26,14 @@ adaptive_lighting:
   only_once: false
   separate_turn_on_commands: false
 #
+input_number:
+  barnrum_light_level:
+    name: Ljusstyrka utomhus för belysning barnrum
+    min: 0
+    max: 1000
+    step: 50
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
 #
 binary_sensor:
 #
@@ -32,9 +42,9 @@ binary_sensor:
       barnrum_belysning_lightlevel:
         friendly_name: Barnrum
         delay_off:
-          minutes: 30
+          minutes: 15
         value_template: >-
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.barnrum_light_level') | float }}
       barnrum_belysning_automation_control:
         friendly_name: Barnrum
         value_template: >-
@@ -57,4 +67,6 @@ automation:
       light.turn_off
       {% endif %}
     entity_id:
-    - light.barnrum_fonster
+    - light.lillis_skank
+    - light.barnrum_fonster_1
+    - light.barnrum_fonster_2
