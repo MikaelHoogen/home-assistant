@@ -29,6 +29,8 @@ automation:
             - light.mikaels_rum_tak
             - light.mikaels_dator_hue_play
             - light.vardagsrum_liten_laslampa
+            # Gästrum
+            - light.linas_skrivbord
       - delay:
           seconds: 5
       - service: switch.turn_on
@@ -89,6 +91,11 @@ automation:
             - switch.adaptive_lighting_sleep_mode_hall
             #
             - switch.adaptive_lighting_sleep_mode_gastrum
+      #
+      - service: switch.turn_on
+        data:
+          entity_id:
+            - switch.adaptive_lighting_sovrum
       #
       - service: select.select_option
         target:
