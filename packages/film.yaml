@@ -8,12 +8,12 @@ input_boolean:
 #
 #
 automation:
-#################### Filmläge ###############################
+#################### Filmläge ############################### 
 ### Movie playing ###
 - alias: Film_play
   trigger: 
   - platform: state
-    entity_id: media_player.vardagsrum
+    entity_id: media_player.allrum
     to: 'playing'
     for:
       seconds: 10
@@ -30,7 +30,7 @@ automation:
   trigger: 
     # Chromecast
   - platform: state
-    entity_id: media_player.vardagsrum
+    entity_id: media_player.allrum
     from: 'playing'
     for:
       seconds: 5
