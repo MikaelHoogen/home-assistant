@@ -2,6 +2,9 @@ input_boolean:
   candle:
     name: Levande ljus
     icon: mdi:candle
+  badrum_candle:
+    name: Levande ljus
+    icon: mdi:candle
 #
 automation:
 ########## Levande ljus ######################
@@ -18,21 +21,31 @@ automation:
     - switch.adaptive_lighting_hall
     - switch.adaptive_lighting_badrum
     - switch.adaptive_lighting_vardagsrum_belysning_filament
+  - delay:
+      seconds: 5
   - service: light.turn_on
     data:
       brightness_pct: 2
       entity_id:
       - light.kok_fonsterbelysning
-      - light.vardagsrum
+      - light.vardagsrum_fonster_hangande
+      - light.vardagsrum_huslampa
+      - light.vardagsrum_fonster_fotogen
+      - light.vardagsrum_fonster_piano
+      - light.vardagsrum_fonster_trappa
   - service: light.turn_on
     data:
       entity_id:
       - light.kok_koksbord
       - light.kok_tak
-      - light.kok_kokso_2
+      - light.kok_kokso
       - light.hall
       - light.badrum
       profile: 'candle'
+  - service: light.turn_off
+    data:
+      entity_id:
+      - light.kok_bankbelysning
 #
 - alias: Candle off
   trigger:
@@ -47,3 +60,30 @@ automation:
     - switch.adaptive_lighting_hall
     - switch.adaptive_lighting_badrum
     - switch.adaptive_lighting_vardagsrum_belysning_filament
+########## Levande ljus badrum ######################
+- alias: Candle
+  trigger:
+  - platform: state
+    entity_id: input_boolean.badrum_candle
+    to: 'on'
+  action:
+  - service: switch.turn_off
+    entity_id:
+    - switch.adaptive_lighting_badrum
+  - delay:
+      seconds: 5
+  - service: light.turn_on
+    data:
+      entity_id:
+      - light.badrum
+      profile: 'candle'
+#
+- alias: Candle off
+  trigger:
+  - platform: state
+    entity_id: input_boolean.candle
+    to: 'off'
+  action:
+  - service: switch.turn_on
+    entity_id:
+    - switch.adaptive_lighting_badrum
