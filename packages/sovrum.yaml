@@ -11,9 +11,9 @@ adaptive_lighting:
     transition: 30
     initial_transition: 3
     interval: 90
-    min_brightness: 10
+    min_brightness: 20
     max_brightness: 100
-    min_color_temp: 2100
+    min_color_temp: 2000
     max_color_temp: 4000
     sleep_brightness: 1
     sleep_color_temp: 2000
@@ -27,6 +27,16 @@ adaptive_lighting:
     # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
     only_once: false
     separate_turn_on_commands: false
+#
+#
+input_number:
+  sovrum_light_level:
+    name: Ljusstyrka utomhus för belysning sovrum
+    min: 0
+    max: 1000
+    step: 50
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
 #
 sensor:
   - platform: template
@@ -46,7 +56,7 @@ binary_sensor:
         delay_off:
           minutes: 30
         value_template: >-
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.sovrum_light_level') | float }}
       sovrum_belysning_automation_control:
         friendly_name: Sovrum
         value_template: >-
