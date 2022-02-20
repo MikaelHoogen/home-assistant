@@ -3,6 +3,7 @@ adaptive_lighting:
 - name: Test
   lights:
     - light.datorrum_skrivbord
+    - light.kallarentre
   prefer_rgb_color: false
   transition: 1
   initial_transition: 0
