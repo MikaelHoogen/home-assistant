@@ -37,6 +37,19 @@ sensor:
         friendly_name: "Kostnad"
         unit_of_measurement: "SEK"
         value_template: "{{ ( states('sensor.avfuktare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+      ###
+      snickarboa_heater_timme_kostnad:
+        friendly_name: "Kostnad"
+        unit_of_measurement: "SEK"
+        value_template: "{{ ( states('sensor.snickarboa_heater_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+#
+  - platform: history_stats
+    name: snickarboa_heater_today
+    entity_id: switch.motorvarmare
+    state: "on"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+    end: "{{ now() }}"
 #
 utility_meter:
   avfuktare_timme:
@@ -64,8 +77,32 @@ utility_meter:
   avfuktare_ar_kostnad:
     source: sensor.avfuktare_timme_kostnad
     cycle: yearly
-#
-
+#####
+  snickarboa_heater_timme:
+    source: sensor.snickarboa_heater_consumption
+    cycle: hourly
+  snickarboa_heater_dag:
+    source: sensor.snickarboa_heater_consumption
+    cycle: daily
+  snickarboa_heater_vecka:
+    source: sensor.snickarboa_heater_consumption
+    cycle: weekly
+  snickarboa_heater_manad:
+    source: sensor.snickarboa_heater_consumption
+    cycle: monthly
+  snickarboa_heater_ar:
+    source: sensor.snickarboa_heater_consumption
+    cycle: yearly
+  #
+  snickarboa_heater_dag_kostnad:
+    source: sensor.snickarboa_heater_timme_kostnad
+    cycle: daily
+  snickarboa_heater_manad_kostnad:
+    source: sensor.snickarboa_heater_timme_kostnad
+    cycle: monthly
+  snickarboa_heater_ar_kostnad:
+    source: sensor.snickarboa_heater_timme_kostnad
+    cycle: yearly
 #
 template:
   - binary_sensor:
@@ -75,12 +112,22 @@ template:
           {{ is_state('input_boolean.avfuktare', 'on')
           and is_state('binary_sensor.elpris_cheap', 'on') }}
 #
-  - binary_sensor:
       - name: snickarboa_heater
         unique_id: snickarboa_heater
         state: >
           {{ is_state('input_boolean.snickarboa_heater', 'on')
           and is_state('binary_sensor.electricity_price_sannesholma_2181_max', 'off') }}
+#
+  - sensor:
+    ### Förbrukning
+    - name: snickarboa_heater_consumption
+      unique_id: snickarboa_heater_consumption
+      unit_of_measurement: "kWh"
+      state_class: total_increasing
+      device_class: energy
+      availability: "{{ is_number(states('sensor.snickarboa_heater_today')) }}"
+      state: >
+        {{ ( 1200.0 * states('sensor.snickarboa_heater_today') | float('nan') / 1000.0 ) | round(3) }}
 #
 automation:
   #
@@ -120,3 +167,7 @@ homeassistant:
   customize:
     sensor.avfuktare_consumption:
       friendly_name: Avfuktare
+    sensor.snickarboa_heater_consumption:
+      friendly_name: Snickarboa värmare
+    sensor.snickarboa_heater_dag:
+      friendly_name: Snickarboa värmare
