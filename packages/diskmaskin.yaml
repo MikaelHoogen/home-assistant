@@ -45,5 +45,27 @@ binary_sensor:
         delay_on:
           seconds: 30
         value_template: >-
-          {{ states('sensor.diskmaskin_power')|float > 4 }}
+          {{ states('sensor.diskmaskin_power')|float > 1 }}
         icon_template: mdi:dishwasher
+#
+automation:
+- alias: Diskmaskin klar
+  trigger:
+    platform: state
+    entity_id: binary_sensor.diskmaskin
+    from: "on"
+    to: "off"
+  action:
+  - service: persistent_notification.create
+    data_template:
+      message: "Diskmaskin"
+      title: "Diskmaskinen är klar"
+  - service: notify.mobile_app_sm_n975f
+    data_template:
+      message: "Diskmaskin klar"
+      title: "Diskmaskinen är klar"
+  - service: notify.mobile_app_sm_g998b
+    data_template:
+      message: "Diskmaskin klar"
+      title: "Diskmaskinen är klar"
+#
