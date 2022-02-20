@@ -6,12 +6,14 @@ adaptive_lighting:
       - light.vardagsrum_fonster_hangande
       - light.vardagsrum_huslampa
       - light.vardagsrum_fonster_fotogen
+      - light.vardagsrum_fonster_piano
+      - light.vardagsrum_fonster_trappa
     prefer_rgb_color: false
     transition: 45
     initial_transition: 5
     interval: 90
     min_brightness: 1
-    max_brightness: 45
+    max_brightness: 50 #45
     min_color_temp: 2100
     max_color_temp: 4000
     sleep_brightness: 1
@@ -77,3 +79,5 @@ automation:
           - light.vardagsrum_fonster_hangande
           - light.vardagsrum_huslampa
           - light.vardagsrum_fonster_fotogen
+          - light.vardagsrum_fonster_piano
+          - light.vardagsrum_fonster_trappa
