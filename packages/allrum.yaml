@@ -5,13 +5,13 @@ adaptive_lighting:
       - light.allrum_tak_1
       - light.allrum_tak_2
       - light.allrum_tak_3
-      - light.allrum_stor_laslampa
+      - light.allrum_laslampa
       - light.allrum_klotlampa
     prefer_rgb_color: false
     transition: 30
     initial_transition: 3
     interval: 90
-    min_brightness: 15
+    min_brightness: 20
     max_brightness: 100
     min_color_temp: 2100
     max_color_temp: 4000
@@ -36,7 +36,7 @@ adaptive_lighting:
     initial_transition: 5
     interval: 90
     min_brightness: 1
-    max_brightness: 45
+    max_brightness: 50 #45
     min_color_temp: 2100
     max_color_temp: 4000
     sleep_brightness: 1
@@ -59,7 +59,7 @@ light:
       - light.allrum_tak_1
       - light.allrum_tak_2
       - light.allrum_tak_3
-      - light.allrum_stor_laslampa
+      - light.allrum_laslampa
       - light.allrum_klotlampa
       - light.allrum_fonster_betong
 #
@@ -81,19 +81,19 @@ binary_sensor:
   - platform: template
     sensors:
       allrum_belysning_filament_lightlevel:
-        friendly_name: Vardagsrum
+        friendly_name: Allrum
         delay_off:
-          minutes: 30
+          minutes: 5
         value_template: >-
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
+      #
       allrum_belysning_filament_automation_control:
-        friendly_name: Vardagsrum
-        #        delay_off:
-        #          minutes: 30
+        friendly_name: Allrum
         value_template: >-
           {{ is_state('binary_sensor.allrum_belysning_filament_lightlevel', 'on')
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('input_boolean.sovdags', 'off') }}
+      #
       ### Närvarostyrd belysning
       allrum_presence_light_automation_control:
         friendly_name: Allrum
@@ -103,26 +103,26 @@ binary_sensor:
       # binary_sensor.allrum_rorelsesensor
       allrum_presence_short:
         delay_off:
-          minutes: 15
+          minutes: 60
         value_template: >-
           {{ is_state('binary_sensor.allrum_rorelsesensor', 'on')
           or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
-          or is_state('media_player.vardagsrum', 'playing') }}
+          or is_state('media_player.allrum', 'playing') }}
       # TODO
       # Läsning
       ##################
-      allrum_presence_long:
-        value_template: >-
-          {{ ( is_state('binary_sensor.allrum_rorelsesensor', 'on')
-            or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on') )
-            and is_state('binary_sensor.hall_rorelsesensor', 'off')
-            and is_state('binary_sensor.kok_hue_motion_sensor_motion', 'off') }}
-      allrum_presence_break:
-        value_template: >-
-          {{ is_state('binary_sensor.vardagsrum_rorelsesensor', 'off')
-            and ( is_state('binary_sensor.hall_rorelsesensor', 'on')
-            or is_state('binary_sensor.trappa_rorelsesensor', 'on')
-            or is_state('binary_sensor.entredorr', 'on') ) }}
+#      allrum_presence_long:
+#        value_template: >-
+#          {{ ( is_state('binary_sensor.allrum_rorelsesensor', 'on')
+#            or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on') )
+#            and is_state('binary_sensor.hall_rorelsesensor', 'off')
+#            and is_state('binary_sensor.kok_hue_motion_sensor_motion', 'off') }}
+#      allrum_presence_break:
+#        value_template: >-
+#          {{ is_state('binary_sensor.vardagsrum_rorelsesensor', 'off')
+#            and ( is_state('binary_sensor.hall_rorelsesensor', 'on')
+#            or is_state('binary_sensor.trappa_rorelsesensor', 'on')
+#            or is_state('binary_sensor.entredorr', 'on') ) }}
       ### Närvaro
       allrum_presence:
         device_class: motion
