@@ -13,7 +13,7 @@ adaptive_lighting:
     max_color_temp: 4000
     sleep_brightness: 1
     sleep_color_temp: 2000
-    sunrise_time: "07:00:00" # override the sunrise time
+    #sunrise_time: "07:00:00" # override the sunrise time
     #    sunrise_offset:
     #    sunset_time: "20:00:00"
     #    sunset_offset: 1800  # in seconds or '00:15:00'
@@ -31,6 +31,7 @@ template:
         entity_id: binary_sensor.entre_dorrbrytare
     binary_sensor:
       - name: Hall dörrtrigger
+        unique_id: Hall dörrtrigger
         auto_off: 5
         state: "true"
 #
