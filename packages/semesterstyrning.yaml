@@ -1,0 +1,65 @@
+input_boolean:
+  semester:
+    name: Semester
+#
+#
+binary_sensor:
+  - platform: template
+    sensors:
+      semester_rorelse:
+        device_class: presence
+        friendly_name: Närvaro hus semester
+        delay_off:
+          minutes: 1
+        value_template: >-
+          {{ is_state('input_boolean.semester', 'on')
+            and ( is_state('binary_sensor.allrum_rorelsesensor', 'on')
+            or is_state('binary_sensor.mikaels_rum_rorelsesensor', 'on')
+            or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
+            or is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'on')
+            or is_state('binary_sensor.hall_hue_motion_sensor_motion', 'on')
+            or is_state('binary_sensor.kok_hue_motion_sensor_motion', 'on')
+            or is_state('binary_sensor.vardagsrum_hue_motion_sensor_motion', 'on') ) }}
+            
+#
+alert:
+  semester_rorelse:
+    name: Rörelse detekterad i huset
+    done_message: Ingen rörelse detekterad i huset
+    entity_id: binary_sensor.semester_rorelse
+    state: 'on'
+    repeat: 30
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - pushbullet
+      - mobile_app_sm_n975f
+      - mobile_app_sm_g998b
+#
+#
+automation:
+- alias: Semester sovdags
+  trigger:
+  - platform: time
+    at: '21:00:00'
+  condition:
+  - condition: state
+    entity_id: input_boolean.semester
+    state: 'on'
+  action:
+  - delay: '{{ (range(0, 1)|random|int) }}:{{ (range(1, 59)|random|int) }}:00'
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.sovdags
+#
+- alias: Semester vakna
+  trigger:
+  - platform: time
+    at: '07:30:00'
+  condition:
+  - condition: state
+    entity_id: input_boolean.semester
+    state: 'on'
+  action:
+#  - delay: '{{ (range(0, 1)|random|int) }}:{{ (range(1, 59)|random|int) }}:00'
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.sovdags
