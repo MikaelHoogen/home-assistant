@@ -62,7 +62,7 @@ alert:
     notifiers:
       - pushbullet
       - mobile_app_sm_n975f
-      - mobile_app_sm_g960f
+      - mobile_app_sm_g998b
       - pushbullet_lina
       - persistent_notification
 #
@@ -80,5 +80,5 @@ alert:
     notifiers:
       - pushbullet
       - mobile_app_sm_n975f
-      - mobile_app_sm_g960f
+      - mobile_app_sm_g998b
       - persistent_notification
