@@ -61,7 +61,7 @@ automation:
     - switch.adaptive_lighting_badrum
     - switch.adaptive_lighting_vardagsrum_belysning_filament
 ########## Levande ljus badrum ######################
-- alias: Candle
+- alias: Badrum Candle
   trigger:
   - platform: state
     entity_id: input_boolean.badrum_candle
@@ -78,10 +78,10 @@ automation:
       - light.badrum
       profile: 'candle'
 #
-- alias: Candle off
+- alias: Badrum Candle off
   trigger:
   - platform: state
-    entity_id: input_boolean.candle
+    entity_id: input_boolean.badrum_candle
     to: 'off'
   action:
   - service: switch.turn_on
