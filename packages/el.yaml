@@ -139,93 +139,95 @@ template:
         unique_id: average_price_last_month
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
-        state: "{{ ( state_attr('sensor.accumulated_cost_month_sannesholma_2181', 'last_period') | float(0.0) / state_attr('sensor.accumulated_consumption_month_sannesholma_2181', 'last_period') | float(0.0) ) | round(3) }}"
+        state: "{{ ( state_attr('sensor.accumulated_cost_month_sannesholma_2181', 'last_period') | float(0.0) / state_attr('sensor.accumulated_consumption_month_sannesholma_2181', 'last_period') | float(0.0) ) | round(2) }}"
       #
       ### Medel med moms och påslag
       - name: average_total_price
         unique_id: average_total_price
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
-        state: "{{ ( states('sensor.accumulated_cost_total_month_sannesholma_2181') | float(0.0) / states('sensor.accumulated_consumption_month_sannesholma_2181') | float(0.0) ) | round(3) }}"
+        state: "{{ ( states('sensor.accumulated_cost_total_month_sannesholma_2181') | float(0.0) / states('sensor.accumulated_consumption_month_sannesholma_2181') | float(0.0) ) | round(2) }}"
       #
-      ### Kostnad
+      ### Kostnad elbil #######################################################################
       - name: ehl75l9h_accumulated_total_cost_hour
         unique_id: ehl75l9h_accumulated_total_cost_hour
         unit_of_measurement: "SEK"
         state_class: measurement
-        availability: "{{ is_number(states('sensor.ehl75l9h_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        availability: > 
+          {{ ( is_number(states('sensor.ehl75l9h_timme')) and is_number(states('sensor.elpris_totalt_sek')) )
+            and is_state('binary_sensor.ehl75l9h_online', 'on') }}
         state: >
-          {{ ( states('sensor.ehl75l9h_timme') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}
+          {{ ( states('sensor.ehl75l9h_timme') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(2) }}
       ###
       - name: ehl75l9h_average_price_last_month
         unique_id: ehl75l9h_average_price_last_month
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
         availability: "{{ is_number(state_attr('sensor.ehl75l9h_manad_kostnad', 'last_period')) and state_attr('sensor.ehl75l9h_manad', 'last_period') | float(0.0) > 0 }}"
-        state: "{{ ( state_attr('sensor.ehl75l9h_manad_kostnad', 'last_period') | float(0.0) / state_attr('sensor.ehl75l9h_manad', 'last_period') | float(0.0) ) | round(3) }}"
+        state: "{{ ( state_attr('sensor.ehl75l9h_manad_kostnad', 'last_period') | float(0.0) / state_attr('sensor.ehl75l9h_manad', 'last_period') | float(0.0) ) | round(2) }}"
         #
       - name: ehl75l9h_average_price
         unique_id: ehl75l9h_average_price
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
         availability: "{{ is_number(states('sensor.ehl75l9h_manad_kostnad')) and states('sensor.ehl75l9h_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.ehl75l9h_manad_kostnad') | float(0.0) / states('sensor.ehl75l9h_manad') | float(0.0) ) | round(3) }}"
-        #
+        state: "{{ ( states('sensor.ehl75l9h_manad_kostnad') | float(0.0) / states('sensor.ehl75l9h_manad') | float(0.0) ) | round(2) }}"
+        # Värmepump ##########################################################################
       - name: heatpump_heat_average_price
         unique_id: heatpump_heat_average_price
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
         availability: "{{ is_number(states('sensor.heatpump_heat_manad_kostnad')) and states('sensor.heatpump_heat_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.heatpump_heat_manad_kostnad') | float(0.0) / states('sensor.heatpump_heat_manad') | float(0.0) ) | round(3) }}"
+        state: "{{ ( states('sensor.heatpump_heat_manad_kostnad') | float(0.0) / states('sensor.heatpump_heat_manad') | float(0.0) ) | round(2) }}"
         #
       - name: eaton3s_average_price
         unique_id: eaton3s_average_price
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
         availability: "{{ is_number(states('sensor.eaton3s_manad_kostnad')) and states('sensor.eaton3s_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.eaton3s_manad_kostnad') | float(0.0) / states('sensor.eaton3s_manad') | float(0.0) ) | round(3) }}"
+        state: "{{ ( states('sensor.eaton3s_manad_kostnad') | float(0.0) / states('sensor.eaton3s_manad') | float(0.0) ) | round(2) }}"
         #
       - name: heatpump_hotwater_average_price
         unique_id: heatpump_hotwater_average_price
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
         availability: "{{ is_number(states('sensor.heatpump_hotwater_manad_kostnad')) and states('sensor.heatpump_hotwater_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.heatpump_hotwater_manad_kostnad') | float(0.0) / states('sensor.heatpump_hotwater_manad') | float(0.0) ) | round(3) }}"
+        state: "{{ ( states('sensor.heatpump_hotwater_manad_kostnad') | float(0.0) / states('sensor.heatpump_hotwater_manad') | float(0.0) ) | round(2) }}"
         #
       - name: avfuktare_average_price
         unique_id: avfuktare_average_price
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
         availability: "{{ is_number(states('sensor.avfuktare_manad_kostnad')) and states('sensor.avfuktare_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.avfuktare_manad_kostnad') | float(0.0) / states('sensor.avfuktare_manad') | float(0.0) ) | round(3) }}"
+        state: "{{ ( states('sensor.avfuktare_manad_kostnad') | float(0.0) / states('sensor.avfuktare_manad') | float(0.0) ) | round(2) }}"
         #
       - name: snickarboa_heater_average_price
         unique_id: snickarboa_heater_average_price
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
         availability: "{{ is_number(states('sensor.snickarboa_heater_manad_kostnad')) and states('sensor.snickarboa_heater_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.snickarboa_heater_manad_kostnad') | float(0.0) / states('sensor.snickarboa_heater_manad') | float(0.0) ) | round(3) }}"
+        state: "{{ ( states('sensor.snickarboa_heater_manad_kostnad') | float(0.0) / states('sensor.snickarboa_heater_manad') | float(0.0) ) | round(2) }}"
         #
       - name: diskmaskin_average_price
         unique_id: diskmaskin_average_price
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
         availability: "{{ is_number(states('sensor.diskmaskin_manad_kostnad')) and states('sensor.diskmaskin_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.diskmaskin_manad_kostnad') | float(0.0) / states('sensor.diskmaskin_manad') | float(0.0) ) | round(3) }}"
+        state: "{{ ( states('sensor.diskmaskin_manad_kostnad') | float(0.0) / states('sensor.diskmaskin_manad') | float(0.0) ) | round(2) }}"
         #
       - name: torktumlare_average_price
         unique_id: torktumlare_average_price
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
         availability: "{{ is_number(states('sensor.torktumlare_manad_kostnad')) and states('sensor.torktumlare_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.torktumlare_manad_kostnad') | float(0.0) / states('sensor.torktumlare_manad') | float(0.0) ) | round(3) }}"
+        state: "{{ ( states('sensor.torktumlare_manad_kostnad') | float(0.0) / states('sensor.torktumlare_manad') | float(0.0) ) | round(2) }}"
         #
       - name: tvattmaskin_average_price
         unique_id: tvattmaskin_average_price
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
         availability: "{{ is_number(states('sensor.tvattmaskin_manad_kostnad')) and states('sensor.tvattmaskin_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.tvattmaskin_manad_kostnad') | float(0.0) / states('sensor.tvattmaskin_manad') | float(0.0) ) | round(3) }}"
+        state: "{{ ( states('sensor.tvattmaskin_manad_kostnad') | float(0.0) / states('sensor.tvattmaskin_manad') | float(0.0) ) | round(2) }}"
         #
 homeassistant:
   customize:
@@ -240,7 +242,7 @@ homeassistant:
       friendly_name: Värmepump värme
       icon: mdi:radiator
     sensor.eaton3s_manad_kostnad:
-      friendly_name: Eatons3
+      friendly_name: Eaton3s
       icon: mdi:server
     sensor.heatpump_hotwater_manad_kostnad:
       friendly_name: Varmvatten
