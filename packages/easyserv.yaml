@@ -372,6 +372,15 @@ template:
         state: >
           {{ 400.0 * 7.0 * states('sensor.heatpump_heat_today') | float('nan') / 1000.0  | round(3) }}
       #
+#      - name: heatpump_heat_consumption
+#        unique_id: heatpump_heat_consumption
+#        unit_of_measurement: "kWh"
+#        state_class: total_increasing
+#        device_class: energy
+#        availability: "{{ is_number(states('sensor.heatpump_consumption')) and is_number(states('sensor.heatpump_hotwater_consumption')) }}"
+#        state: >
+#          {{ states('sensor.heatpump_consumption') | float('nan') - states('sensor.heatpump_hotwater_consumption') | float('nan') }}
+      #
       ####################################################################################################################################################
       ### Kostnad test
       - name: heatpump_kostnad_test
