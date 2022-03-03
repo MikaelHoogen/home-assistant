@@ -34,19 +34,30 @@ sensor:
         unit_of_measurement: "SEK"
         value_template: "{{ ( states('sensor.diskmaskin_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
 #
-binary_sensor:
+#binary_sensor:
 # Determine when the dishwasher has a load running.
-  - platform: template
-    sensors:
-      diskmaskin:
-        friendly_name: "Diskmaskin"
+#  - platform: template
+#    sensors:
+#      diskmaskin:
+#        friendly_name: "Diskmaskin"
+#        delay_off:
+#          minutes: 5
+#        delay_on:
+#          seconds: 30
+#        value_template: >-
+#          {{ states('sensor.diskmaskin_power')|float > 1 }}
+#        icon_template: mdi:dishwasher
+#
+template:
+  - binary_sensor:
+      - name: diskmaskin
+        unique_id: diskmaskin
         delay_off:
           minutes: 5
         delay_on:
           seconds: 30
-        value_template: >-
-          {{ states('sensor.diskmaskin_power')|float > 1 }}
-        icon_template: mdi:dishwasher
+        state: >
+          {{ states('sensor.diskmaskin_power') | float > 1 }}
 #
 automation:
 - alias: Diskmaskin klar
