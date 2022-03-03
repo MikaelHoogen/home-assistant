@@ -49,7 +49,7 @@ sensor:
     state: "on"
     type: time
     start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
-    end: "{{ now() }}"
+    end: "{{ now().replace(microsecond=0) }}"
 #
 utility_meter:
   avfuktare_timme:
@@ -116,7 +116,7 @@ template:
         unique_id: snickarboa_heater
         state: >
           {{ is_state('input_boolean.snickarboa_heater', 'on')
-          and is_state('binary_sensor.electricity_price_sannesholma_2181_max', 'off') }}
+          and is_state('binary_sensor.electricity_price_sannesholma_2181_max_3', 'off') }}
 #
   - sensor:
     ### Förbrukning
