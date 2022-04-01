@@ -89,7 +89,8 @@ template:
         delay_on:
           minutes: 1
         state: >-
-          {{ states('sensor.elpris') | float(0.0) == state_attr('sensor.elpris', 'max') | float(0.1) }}
+          {{ states('sensor.electricity_price_sannesholma_2181') | float(0.0) == state_attr('sensor.electricity_price_sannesholma_2181', 'max_price') | float(0.1) }}
+#          {{ states('sensor.elpris') | float(0.0) == state_attr('sensor.elpris', 'max') | float(0.1) }}
 #
       - name: electricity_price_sannesholma_2181_max_3
         unique_id: electricity_price_sannesholma_2181_max_3
@@ -131,6 +132,15 @@ sensor:
     end: "{{ now() }}"
     entities:
       - sensor.elpris_totalt_sek
+    #
+  - platform: average
+    name: elpris_tibber_medel
+    unique_id: elpris_tibber_medel
+    start: "{{ now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) }}"
+    end: "{{ now() }}"
+    entities:
+      - sensor.electricity_price_sannesholma_2181
+    #
   - platform: template
     sensors:
       ############# El klockslag #########################
