@@ -65,9 +65,9 @@ automation:
     - service: switch.turn_off
       entity_id: switch.adaptive_lighting_sovrum
     #
-    - service: input_boolean.turn_off
-      entity_id:
-      - input_boolean.wake_up_light
+#    - service: input_boolean.turn_off
+#      entity_id:
+#      - input_boolean.wake_up_light
     #
     - service: light.turn_on
       data:
