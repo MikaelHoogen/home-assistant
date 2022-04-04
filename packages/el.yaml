@@ -118,6 +118,12 @@ template:
         state: "{{ ( states('sensor.accumulated_consumption_current_hour_sannesholma_2181') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
 #        state: "{{ ( states('sensor.accumulated_consumption_current_hour_sannesholma_2181') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) if is_number(states('sensor.accumulated_consumption_current_hour_sannesholma_2181')) }}"
       #
+      - name: accumulated_total_savings_month
+        unique_id: accumulated_total_savings_month
+        unit_of_measurement: SEK
+        state_class: measurement
+        state: >
+          {{ ( states('sensor.accumulated_cost_total_month_sannesholma_2181') | float('not_a_number') - ( states('sensor.monthly_net_consumption_sannesholma_2181') | float('not_a_number') * states('sensor.elpris_totalt_medel') | float('not_a_number') ) ) | round(2) }}
       ### Kostnad exl moms och påslag
       - name: accumulated_cost_ex_moms_hour
         unique_id: accumulated_cost_ex_moms_hour
@@ -147,6 +153,13 @@ template:
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
         state: "{{ ( states('sensor.accumulated_cost_month_sannesholma_2181') | float(0.0) / states('sensor.accumulated_consumption_month_sannesholma_2181') | float(0.0) ) | round(2) }}"
+      #
+      ### Medel tibber
+      - name: average_price_consumption_tibber
+        unique_id: average_price_consumption_tibber
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        state: "{{ ( states('sensor.monthly_cost_sannesholma_2181') | float(0.0) / states('sensor.monthly_net_consumption_sannesholma_2181') | float(0.0) ) | round(2) }}"
       #
       ### Medel totalt
       - name: average_total_price
