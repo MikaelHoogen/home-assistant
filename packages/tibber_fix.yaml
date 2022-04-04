@@ -1,0 +1,18 @@
+automation:
+- alias: tibber reload
+  description: ''
+  trigger:
+    - platform: time_pattern
+      minutes: /10
+  condition:
+    - condition: template
+      value_template: >-
+        {{(as_timestamp(now()) -
+        as_timestamp(states.sensor.accumulated_consumption_sannesholma_2181.last_changed)) >
+        100}}
+  action:
+    - service: homeassistant.reload_config_entry
+      data: {}
+      target:
+        device_id: 03fdcc07bb636a9631c65c2dd1673eb5
+  mode: single
