@@ -42,12 +42,14 @@ template:
       unique_id: elpris_totalt
       unit_of_measurement: "Öre/kWh"
       state_class: measurement
-      state: "{{ ( states('sensor.avgift_elnat') | float + states('sensor.avgift_energiskatt') | float + states('sensor.electricity_price_sannesholma_2181') | float * 100 + states('sensor.elpris_abonnemang') | float * 100 ) | round(2) }}"
+      availability: "{{ is_number(states('electricity_price_sannesholma_2181')) }}"
+      state: "{{ ( states('sensor.avgift_elnat') | float + states('sensor.avgift_energiskatt') | float + states('sensor.electricity_price_sannesholma_2181') | float('naan') * 100 + states('sensor.elpris_abonnemang') | float * 100 ) | round(2) }}"
     - name: elpris_totalt_sek
       unique_id: elpris_totalt_sek
       unit_of_measurement: "SEK/kWh"
       state_class: measurement
-      state: "{{ ( states('sensor.avgift_elnat') | float / 100 + states('sensor.avgift_energiskatt') | float / 100 + states('sensor.electricity_price_sannesholma_2181') | float + states('sensor.elpris_abonnemang') | float ) | round(3) }}"
+      availability: "{{ is_number(states('sensor.electricity_price_sannesholma_2181')) }}"
+      state: "{{ ( states('sensor.avgift_elnat') | float / 100 + states('sensor.avgift_energiskatt') | float / 100 + states('sensor.electricity_price_sannesholma_2181') | float(naan) + states('sensor.elpris_abonnemang') | float ) | round(3) }}"
 #
     - name: elpris_price_level
       unique_id: elpris_price_level
