@@ -28,9 +28,7 @@ sensor:
       - HotwaterSetpointTemp
       - AddHeatLevelPercent
       - SumAlarm
-      - LoadL1
-      - LoadL2
-      - LoadL3
+      - Integral
     value_template: '{{ value_json.CompressorState }}'
 #
 #
@@ -242,7 +240,7 @@ template:
       - name: heatpump_block
         unique_id: heatpump_block
         state: >
-          {{ is_state('binary_sensor.electricity_price_sannesholma_2181_max_3', 'on')
+          {{ is_state('binary_sensor.electricity_price_sannesholma_2181_max', 'on')
             or is_state('binary_sensor.elpris_very_expensive', 'on') }}
       # Värme
       - name: heatpump_heat
@@ -256,6 +254,16 @@ template:
         state: >
           {{ ( is_state('binary_sensor.heatpump_coldcircuitpump_state', 'on') or is_state('binary_sensor.heatpump_compressor_state', 'on') )
             and is_state('binary_sensor.heatpump_switchvalve_state', 'on') }}
+  #
+      - name: heatpump_addheat1state
+        unique_id: heatpump_addheat1state
+        state: >
+          {{ state_attr('sensor.heatpump', 'AddHeat1State') > 0 }}
+  #
+      - name: heatpump_addheat2state
+        unique_id: heatpump_addheat2state
+        state: >
+          {{ state_attr('sensor.heatpump', 'AddHeat2State') > 0 }}
   #
   - sensor:
       # Kompressor
@@ -368,7 +376,7 @@ template:
         unit_of_measurement: "kWh"
         state_class: total_increasing
         device_class: energy
-        availability: "{{ is_number(states('sensor.sensor.heatpump_heat_today')) }}"
+        availability: "{{ is_number(states('sensor.heatpump_heat_today')) }}"
         state: >
           {{ 400.0 * 7.0 * states('sensor.heatpump_heat_today') | float('nan') / 1000.0  | round(3) }}
       #
@@ -474,6 +482,13 @@ template:
         state_class: measurement
         device_class: temperature
         state: "{{ state_attr('sensor.heatpump', 'OutdoorTemp') }}"
+      # Gradminuter
+      - name: heatpump_integral
+        unique_id: heatpump_integral
+#        unit_of_measurement: "°C"
+        state_class: measurement
+#        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'Integral') }}"
 #
 homeassistant:
   customize:
