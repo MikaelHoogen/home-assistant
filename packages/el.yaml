@@ -138,9 +138,9 @@ template:
         unique_id: accumulated_total_cost_grid_month
         unit_of_measurement: "SEK"
         state_class: measurement
-        availability: "{{ is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) }}"
+        availability: "{{ is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) and is_number(states('sensor.elpris_abonnemang')) }}"
         state: >
-          {{ ( states('sensor.monthly_net_consumption_sannesholma_2181') | float('not_a_number') * ( ( states('sensor.avgift_elnat') | float / 100 + states('sensor.avgift_energiskatt') | float / 100 + states('sensor.elpris_abonnemang') | float ) ) ) | round(3) }}
+          {{ ( states('sensor.monthly_net_consumption_sannesholma_2181') | float('not_a_number') * ( ( states('sensor.avgift_elnat') | float('naan') / 100 + states('sensor.avgift_energiskatt') | float('naan') / 100 + states('sensor.elpris_abonnemang') | float('naan') ) ) ) | round(3) }}
       #
       # Total besparing
       - name: accumulated_total_savings_month
