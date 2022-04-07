@@ -101,14 +101,15 @@ sensor:
     start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
     end: "{{ now().replace(microsecond=0) }}"
 #
+###############################################################################
 utility_meter:
   heatpump_timme:
     source: sensor.heatpump_consumption_today
     cycle: hourly
 #
-  heatpump_timme_test:
-    source: sensor.heatpump_consumption_test
-    cycle: hourly
+#  heatpump_timme_test:
+#    source: sensor.heatpump_consumption_test
+#    cycle: hourly
 #
   heatpump_dag:
     source: sensor.heatpump_consumption_today
@@ -193,7 +194,7 @@ utility_meter:
   heatpump_heat_ar_kostnad:
     source: sensor.heatpump_heat_kostnad
     cycle: yearly
-#
+################################################################################
 binary_sensor:
   #
   - platform: template
@@ -236,12 +237,14 @@ binary_sensor:
 #
 template:
   - binary_sensor:
-      # Kompressor
+      ### Blockera Kompressor
       - name: heatpump_block
         unique_id: heatpump_block
         state: >
           {{ is_state('binary_sensor.electricity_price_sannesholma_2181_max', 'on')
+            or is_state('binary_sensor.electricity_price_sannesholma_2181_max_4', 'on')
             or is_state('binary_sensor.elpris_very_expensive', 'on') }}
+      ########################################################################
       # Värme
       - name: heatpump_heat
         unique_id: heatpump_heat
@@ -264,6 +267,8 @@ template:
         unique_id: heatpump_addheat2state
         state: >
           {{ state_attr('sensor.heatpump', 'AddHeat2State') > 0 }}
+
+
   #
   - sensor:
       # Kompressor
@@ -391,12 +396,12 @@ template:
       #
       ####################################################################################################################################################
       ### Kostnad test
-      - name: heatpump_kostnad_test
-        unique_id: heatpump_kostnad_test
-        unit_of_measurement: "SEK"
-        state_class: measurement
-        availability: "{{ is_number(states('sensor.heatpump_timme_test')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-        state: "{{ ( states('sensor.heatpump_timme_test') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
+#      - name: heatpump_kostnad_test
+#        unique_id: heatpump_kostnad_test
+#        unit_of_measurement: "SEK"
+#        state_class: measurement
+#        availability: "{{ is_number(states('sensor.heatpump_timme_test')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+#        state: "{{ ( states('sensor.heatpump_timme_test') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
       ### Kostnad
       - name: heatpump_kostnad
         unique_id: heatpump_kostnad
