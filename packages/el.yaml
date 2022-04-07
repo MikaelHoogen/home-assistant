@@ -1,4 +1,6 @@
 utility_meter:
+#
+# Förbrukning
   accumulated_consumption_day_sannesholma_2181:
     source: sensor.accumulated_consumption_sannesholma_2181
     cycle: daily
@@ -12,6 +14,7 @@ utility_meter:
     source: sensor.accumulated_consumption_sannesholma_2181
     cycle: yearly
 #
+# Kostnad från tibber
   accumulated_cost_hour_sannesholma_2181:
     source: sensor.accumulated_cost_sannesholma_2181
     cycle: hourly
@@ -28,6 +31,7 @@ utility_meter:
     source: sensor.accumulated_cost_sannesholma_2181
     cycle: yearly
 #
+# Total kostnad
   accumulated_cost_total_hour_sannesholma_2181:
     source: sensor.accumulated_total_cost_hour
     cycle: hourly
@@ -44,6 +48,7 @@ utility_meter:
     source: sensor.accumulated_total_cost_hour
     cycle: yearly
 #
+# Kostnad nordpool
   accumulated_cost_ex_moms_hour_sannesholma_2181:
     source: sensor.accumulated_cost_ex_moms_hour
     cycle: hourly
@@ -60,6 +65,7 @@ utility_meter:
     source: sensor.accumulated_cost_ex_moms_hour
     cycle: yearly
 #
+# Förbrukning elbil
   ehl75l9h_timme:
     source: sensor.ehl75l9h_session_energy
     cycle: hourly
@@ -76,6 +82,7 @@ utility_meter:
     source: sensor.ehl75l9h_session_energy
     cycle: yearly
 #
+# Kostnad elbil
   ehl75l9h_timme_kostnad:
     source: sensor.ehl75l9h_accumulated_total_cost_hour
     cycle: hourly
@@ -95,21 +102,21 @@ utility_meter:
 template:
     - sensor:
       #
-      - name: accumulated_cost_total_hour_measurement_sannesholma_2181
-        unique_id: accumulated_cost_total_hour_measurement_sannesholma_2181
-        unit_of_measurement: "SEK"
-        state_class: measurement
-        state: >
-          {{ states('sensor.accumulated_cost_total_hour_sannesholma_2181') }}
+#      - name: accumulated_cost_total_hour_measurement_sannesholma_2181
+#        unique_id: accumulated_cost_total_hour_measurement_sannesholma_2181
+#        unit_of_measurement: "SEK"
+#        state_class: measurement
+#        state: >
+#          {{ states('sensor.accumulated_cost_total_hour_sannesholma_2181') }}
 #
-      - name: accumulated_consumption_current_hour_measurement_sannesholma_2181
-        unique_id: accumulated_consumption_current_hour_measurement_sannesholma_2181
-        unit_of_measurement: "kWh"
-        state_class: measurement
-        state: >
-          {{ states('sensor.accumulated_consumption_current_hour_sannesholma_2181') }}
+#      - name: accumulated_consumption_current_hour_measurement_sannesholma_2181
+#        unique_id: accumulated_consumption_current_hour_measurement_sannesholma_2181
+#        unit_of_measurement: "kWh"
+#        state_class: measurement
+#        state: >
+#          {{ states('sensor.accumulated_consumption_current_hour_sannesholma_2181') }}
 #
-      ### Kostnad
+      ### Total Kostnad
       - name: accumulated_total_cost_hour
         unique_id: accumulated_total_cost_hour
         unit_of_measurement: "SEK"
@@ -117,13 +124,33 @@ template:
         availability: "{{ is_number(states('sensor.accumulated_consumption_current_hour_sannesholma_2181')) and is_number(states('sensor.elpris_totalt_sek')) }}"
         state: "{{ ( states('sensor.accumulated_consumption_current_hour_sannesholma_2181') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
 #        state: "{{ ( states('sensor.accumulated_consumption_current_hour_sannesholma_2181') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) if is_number(states('sensor.accumulated_consumption_current_hour_sannesholma_2181')) }}"
+      # Total kostnad månad
+      - name: accumulated_total_cost_month
+        unique_id: accumulated_total_cost_month
+        unit_of_measurement: "SEK"
+        state_class: measurement
+        availability: "{{ is_number(states('sensor.monthly_cost_sannesholma_2181')) and is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) and is_number(states('sensor.elpris_abonnemang')) }}"
+        state: >
+          {{ ( states ('sensor.monthly_cost_sannesholma_2181') | float('not_a_number') + states('sensor.monthly_net_consumption_sannesholma_2181') | float('not_a_number') * ( ( states('sensor.avgift_elnat') | float / 100 + states('sensor.avgift_energiskatt') | float / 100 + states('sensor.elpris_abonnemang') | float ) ) ) | round(3) }}
       #
+      # Total kostnad elnät månad
+      - name: accumulated_total_cost_grid_month
+        unique_id: accumulated_total_cost_grid_month
+        unit_of_measurement: "SEK"
+        state_class: measurement
+        availability: "{{ is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) }}"
+        state: >
+          {{ ( states('sensor.monthly_net_consumption_sannesholma_2181') | float('not_a_number') * ( ( states('sensor.avgift_elnat') | float / 100 + states('sensor.avgift_energiskatt') | float / 100 + states('sensor.elpris_abonnemang') | float ) ) ) | round(3) }}
+      #
+      # Total besparing
       - name: accumulated_total_savings_month
         unique_id: accumulated_total_savings_month
         unit_of_measurement: SEK
         state_class: measurement
+        availability: " {{ is_number(states('sensor.accumulated_total_cost_month')) and is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) and is_number(states('sensor.elpris_totalt_medel')) }}"
         state: >
-          {{ ( states('sensor.accumulated_cost_total_month_sannesholma_2181') | float('not_a_number') - ( states('sensor.monthly_net_consumption_sannesholma_2181') | float('not_a_number') * states('sensor.elpris_totalt_medel') | float('not_a_number') ) ) | round(2) }}
+          {{ ( states('sensor.monthly_net_consumption_sannesholma_2181') | float('not_a_number') * states('sensor.elpris_totalt_medel') | float('not_a_number') - states('sensor.accumulated_total_cost_month') | float('not_a_number') ) | round(2) }}
+      #
       ### Kostnad exl moms och påslag
       - name: accumulated_cost_ex_moms_hour
         unique_id: accumulated_cost_ex_moms_hour
@@ -159,7 +186,8 @@ template:
         unique_id: average_price_consumption_tibber
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
-        state: "{{ ( states('sensor.monthly_cost_sannesholma_2181') | float(0.0) / states('sensor.monthly_net_consumption_sannesholma_2181') | float(0.0) ) | round(2) }}"
+        availability: "{{ is_number(states('sensor.monthly_cost_sannesholma_2181')) and is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) }}"
+        state: "{{ ( states('sensor.monthly_cost_sannesholma_2181') | float('naan') / states('sensor.monthly_net_consumption_sannesholma_2181') | float('naan') ) | round(2) }}"
       #
       ### Medel totalt
       - name: average_total_price
@@ -167,9 +195,14 @@ template:
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
         state: "{{ ( states('sensor.accumulated_cost_total_month_sannesholma_2181') | float(0.0) / states('sensor.accumulated_consumption_month_sannesholma_2181') | float(0.0) ) | round(2) }}"
+      - name: average_total_price_new
+        unique_id: average_total_price_new
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        state: "{{ ( states('sensor.accumulated_total_cost_month') | float(0.0) / states('sensor.monthly_net_consumption_sannesholma_2181') | float(0.0) ) | round(2) }}"
       #
       #
-      ### Kostnad elbil #######################################################################
+      ######## Kostnad elbil #######################################################################
       - name: ehl75l9h_accumulated_total_cost_hour
         unique_id: ehl75l9h_accumulated_total_cost_hour
         unit_of_measurement: "SEK"
@@ -210,7 +243,7 @@ template:
         state: "{{ ( states('sensor.heatpump_hotwater_manad_kostnad') | float(0.0) / states('sensor.heatpump_hotwater_manad') | float(0.0) ) | round(2) }}"
         #
         #
-        # Eaton
+        # Eaton ##########################################################################
       - name: eaton3s_average_price
         unique_id: eaton3s_average_price
         unit_of_measurement: "SEK/kWh"
@@ -218,6 +251,7 @@ template:
         availability: "{{ is_number(states('sensor.eaton3s_manad_kostnad')) and states('sensor.eaton3s_manad') | float(0.0) > 0 }}"
         state: "{{ ( states('sensor.eaton3s_manad_kostnad') | float(0.0) / states('sensor.eaton3s_manad') | float(0.0) ) | round(2) }}"
         #
+        # Avfuktare ##########################################################################
       - name: avfuktare_average_price
         unique_id: avfuktare_average_price
         unit_of_measurement: "SEK/kWh"
@@ -225,7 +259,7 @@ template:
         availability: "{{ is_number(states('sensor.avfuktare_manad_kostnad')) and states('sensor.avfuktare_manad') | float(0.0) > 0 }}"
         state: "{{ ( states('sensor.avfuktare_manad_kostnad') | float(0.0) / states('sensor.avfuktare_manad') | float(0.0) ) | round(2) }}"
         #
-        # Avfuktare
+        # Snickarboa värmare ##########################################################################
       - name: snickarboa_heater_average_price
         unique_id: snickarboa_heater_average_price
         unit_of_measurement: "SEK/kWh"
@@ -233,7 +267,7 @@ template:
         availability: "{{ is_number(states('sensor.snickarboa_heater_manad_kostnad')) and states('sensor.snickarboa_heater_manad') | float(0.0) > 0 }}"
         state: "{{ ( states('sensor.snickarboa_heater_manad_kostnad') | float(0.0) / states('sensor.snickarboa_heater_manad') | float(0.0) ) | round(2) }}"
         #
-        # Diskmaskin
+        # Diskmaskin ##########################################################################
       - name: diskmaskin_average_price
         unique_id: diskmaskin_average_price
         unit_of_measurement: "SEK/kWh"
@@ -241,7 +275,7 @@ template:
         availability: "{{ is_number(states('sensor.diskmaskin_manad_kostnad')) and states('sensor.diskmaskin_manad') | float(0.0) > 0 }}"
         state: "{{ ( states('sensor.diskmaskin_manad_kostnad') | float(0.0) / states('sensor.diskmaskin_manad') | float(0.0) ) | round(2) }}"
         #
-        # Torktumlare
+        # Torktumlare ##########################################################################
       - name: torktumlare_average_price
         unique_id: torktumlare_average_price
         unit_of_measurement: "SEK/kWh"
@@ -249,7 +283,7 @@ template:
         availability: "{{ is_number(states('sensor.torktumlare_manad_kostnad')) and states('sensor.torktumlare_manad') | float(0.0) > 0 }}"
         state: "{{ ( states('sensor.torktumlare_manad_kostnad') | float(0.0) / states('sensor.torktumlare_manad') | float(0.0) ) | round(2) }}"
         #
-        # Tvättmaskin
+        # Tvättmaskin ##########################################################################
       - name: tvattmaskin_average_price
         unique_id: tvattmaskin_average_price
         unit_of_measurement: "SEK/kWh"
