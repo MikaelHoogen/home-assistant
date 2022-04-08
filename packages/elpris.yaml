@@ -1,56 +1,51 @@
-################ Variabel ####################
-#variable:
-  ### Priser elnät och elcertifikat ###############
-#  avgift_elnat:
-#    value: 22.05
-#    restore: true
-#    attributes:
-#      friendly_name: "Elnätsavgift"
-#      icon: mdi:cash-multiple
-#      unit_of_measurement: "Öre/kWh"
-#  avgift_energiskatt:
-#    value: 45.0
-#    restore: true
-#    attributes:
-#      friendly_name: "Energiskatt"
-#      icon: mdi:cash-multiple
-#      unit_of_measurement: "Öre/kWh"
 #
 template:
   - sensor:
-      #
+      # Avgift elnät
     - name: avgift_elnat
       unique_id: avgift_elnat
       unit_of_measurement: "Öre/kWh"
       state_class: measurement
       state: "{{ 22.05 }}"
-      #
+      # Avgift energiskatt
     - name: avgift_energiskatt
       unique_id: avgift_energiskatt
       unit_of_measurement: "Öre/kWh"
       state_class: measurement
       state: "{{ 45.0 }}"
-      #
+      # Elnätsabonnemang
     - name: elpris_abonnemang
       unique_id: elpris_abonnemang
       unit_of_measurement: "SEK/kWh"
       state_class: measurement
+      availability: "{{ is_number(states('sensor.electricity_price_sannesholma_2181')) }}"
       state: >
         {{ ( 556.25 / state_attr('sensor.electricity_price_sannesholma_2181', 'estimated_annual_consumption') ) | round (3) }}
+      # Abonnemang tibber
+    - name: elpris_abonnemang_tibber
+      unique_id: elpris_abonnemang_tibber
+      unit_of_measurement: "SEK/kWh"
+      state_class: measurement
+      availability: "{{ is_number(states('sensor.electricity_price_sannesholma_2181')) }}"
+      state: >
+        {{ ( 39.0 * 12 / state_attr('sensor.electricity_price_sannesholma_2181', 'estimated_annual_consumption') ) | round (3) }}
+      #
       ############# El totalpris ######################### TODO, hantera om någon faller bort
+      # Öre
     - name: elpris_totalt
       unique_id: elpris_totalt
       unit_of_measurement: "Öre/kWh"
       state_class: measurement
-      availability: "{{ is_number(states('electricity_price_sannesholma_2181')) }}"
+      availability: "{{ is_number(states('sensor.electricity_price_sannesholma_2181')) }}"
       state: "{{ ( states('sensor.avgift_elnat') | float + states('sensor.avgift_energiskatt') | float + states('sensor.electricity_price_sannesholma_2181') | float('naan') * 100 + states('sensor.elpris_abonnemang') | float * 100 ) | round(2) }}"
+      # SEK
     - name: elpris_totalt_sek
       unique_id: elpris_totalt_sek
       unit_of_measurement: "SEK/kWh"
       state_class: measurement
       availability: "{{ is_number(states('sensor.electricity_price_sannesholma_2181')) }}"
-      state: "{{ ( states('sensor.avgift_elnat') | float / 100 + states('sensor.avgift_energiskatt') | float / 100 + states('sensor.electricity_price_sannesholma_2181') | float(naan) + states('sensor.elpris_abonnemang') | float ) | round(3) }}"
-#
+      state: "{{ ( states('sensor.avgift_elnat') | float / 100 + states('sensor.avgift_energiskatt') | float / 100 + states('sensor.electricity_price_sannesholma_2181') | float('naan') + states('sensor.elpris_abonnemang') | float ) | round(3) }}"
+      # Prisnivå
     - name: elpris_price_level
       unique_id: elpris_price_level
       state: >
@@ -85,7 +80,7 @@ template:
         unique_id: electricity_price_sannesholma_2181_very_expensive
         state: >
           {{ is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'VERY_EXPENSIVE') }}
-#
+        # Maxpris
       - name: electricity_price_sannesholma_2181_max
         unique_id: electricity_price_sannesholma_2181_max
         delay_on:
@@ -93,7 +88,7 @@ template:
         state: >-
           {{ states('sensor.electricity_price_sannesholma_2181') | float(0.0) == state_attr('sensor.electricity_price_sannesholma_2181', 'max_price') | float(0.1) }}
 #          {{ states('sensor.elpris') | float(0.0) == state_attr('sensor.elpris', 'max') | float(0.1) }}
-#
+        # Max 3
       - name: electricity_price_sannesholma_2181_max_3
         unique_id: electricity_price_sannesholma_2181_max_3
         delay_on:
@@ -102,6 +97,16 @@ template:
           {{ ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[0] )
             or ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[1] )
             or ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[2] ) }}
+        # Max 4
+      - name: electricity_price_sannesholma_2181_max_4
+        unique_id: electricity_price_sannesholma_2181_max_4
+        delay_on:
+          seconds: 5
+        state: >-
+          {{ ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[0] )
+            or ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[1] )
+            or ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[2] )
+            or ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[3] ) }}
 #
   - sensor:
       # Elförbrukning prognos
