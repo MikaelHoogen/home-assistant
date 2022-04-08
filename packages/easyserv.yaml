@@ -195,45 +195,45 @@ utility_meter:
     source: sensor.heatpump_heat_kostnad
     cycle: yearly
 ################################################################################
-binary_sensor:
-  #
-  - platform: template
-    sensors:
-      heatpump_compressor_state:
-        friendly_name: "Kompressor"
-        unique_id: heatpump_compressor_state
-        value_template: >-
-          {{ state_attr('sensor.heatpump', 'CompressorState') > 0 }}
-      #
-      heatpump_switchvalve_state:
-        friendly_name: "Växelventil"
-        unique_id: heatpump_switchvalve_state
-        value_template: >-
-          {{ state_attr('sensor.heatpump', 'SwitchValve1State') > 0 }}
-      #
-      heatpump_radiatorpump_state:
-        friendly_name: "Radiatorpump"
-        unique_id: heatpump_radiatorpump_state
-        value_template: >-
-          {{ state_attr('sensor.heatpump', 'RadiatorPumpState') > 0 }}
-      #
-      heatpump_coldcircuitpump_state:
-        friendly_name: "Köldbärarpump"
-        unique_id: heatpump_coldcircuitpump_state
-        value_template: >-
-          {{ state_attr('sensor.heatpump', 'ColdCircuitPumpState') > 0 }}
-      #
-      heatpump_heatcircuitpumpstate_state:
-        friendly_name: "Värmekretspump"
-        unique_id: heatpump_heatcircuitpumpstate_state
-        value_template: >-
-          {{ state_attr('sensor.heatpump', 'HeatCircuitPumpState') > 0 }}
-      #
-      heatpump_sumalarm:
-        friendly_name: "Summalarm"
-        unique_id: heatpump_sumalarm
-        value_template: >-
-          {{ state_attr('sensor.heatpump', 'SumAlarm') > 0 }}
+#binary_sensor:
+#  #
+#  - platform: template
+#    sensors:
+#      heatpump_compressor_state:
+#        friendly_name: "Kompressor"
+#        unique_id: heatpump_compressor_state
+#        value_template: >-
+#          {{ state_attr('sensor.heatpump', 'CompressorState') > 0 }}
+#      #
+#      heatpump_switchvalve_state:
+#        friendly_name: "Växelventil"
+#        unique_id: heatpump_switchvalve_state
+#        value_template: >-
+#          {{ state_attr('sensor.heatpump', 'SwitchValve1State') > 0 }}
+#      #
+#      heatpump_radiatorpump_state:
+#        friendly_name: "Radiatorpump"
+#        unique_id: heatpump_radiatorpump_state
+#        value_template: >-
+##          {{ state_attr('sensor.heatpump', 'RadiatorPumpState') > 0 }}
+#      #
+#      heatpump_coldcircuitpump_state:
+#        friendly_name: "Köldbärarpump"
+#        unique_id: heatpump_coldcircuitpump_state
+#        value_template: >-
+#          {{ state_attr('sensor.heatpump', 'ColdCircuitPumpState') > 0 }}
+#      #
+#      heatpump_heatcircuitpumpstate_state:
+#        friendly_name: "Värmekretspump"
+#        unique_id: heatpump_heatcircuitpumpstate_state
+#        value_template: >-
+#          {{ state_attr('sensor.heatpump', 'HeatCircuitPumpState') > 0 }}
+#      #
+#      heatpump_sumalarm:
+#        friendly_name: "Summalarm"
+#        unique_id: heatpump_sumalarm
+#        value_template: >-
+#          {{ state_attr('sensor.heatpump', 'SumAlarm') > 0 }}
 #
 template:
   - binary_sensor:
@@ -260,14 +260,51 @@ template:
   #
       - name: heatpump_addheat1state
         unique_id: heatpump_addheat1state
+        availability: "{{ is_number(states('sensor.heatpump'))}}"
         state: >
           {{ state_attr('sensor.heatpump', 'AddHeat1State') > 0 }}
   #
       - name: heatpump_addheat2state
         unique_id: heatpump_addheat2state
+        availability: "{{ is_number(states('sensor.heatpump'))}}"
         state: >
           {{ state_attr('sensor.heatpump', 'AddHeat2State') > 0 }}
-
+      # "Kompressor"
+      - name: heatpump_compressor_state
+        unique_id: heatpump_compressor_state
+        availability: "{{ is_number(states('sensor.heatpump'))}}"
+        state: >-
+          {{ state_attr('sensor.heatpump', 'CompressorState') > 0 }}
+      # Växelventil
+      - name: heatpump_switchvalve_state
+        unique_id: heatpump_switchvalve_state
+        availability: "{{ is_number(states('sensor.heatpump'))}}"
+        state: >-
+          {{ state_attr('sensor.heatpump', 'SwitchValve1State') > 0 }}
+      # Radiatorpump
+      - name: heatpump_radiatorpump_state
+        unique_id: heatpump_radiatorpump_state
+        availability: "{{ is_number(states('sensor.heatpump'))}}"
+        state: >-
+          {{ state_attr('sensor.heatpump', 'RadiatorPumpState') > 0 }}
+      # Köldbärarpump
+      - name: heatpump_coldcircuitpump_state
+        unique_id: heatpump_coldcircuitpump_state
+        availability: "{{ is_number(states('sensor.heatpump'))}}"
+        state: >-
+          {{ state_attr('sensor.heatpump', 'ColdCircuitPumpState') > 0 }}
+      # Värmekretspump
+      - name: heatpump_heatcircuitpumpstate_state
+        unique_id: heatpump_heatcircuitpumpstate_state
+        availability: "{{ is_number(states('sensor.heatpump'))}}"
+        state: >-
+          {{ state_attr('sensor.heatpump', 'HeatCircuitPumpState') > 0 }}
+      # Summalarm
+      - name: heatpump_sumalarm
+        unique_id: heatpump_sumalarm
+        availability: "{{ is_number(states('sensor.heatpump'))}}"
+        state: >-
+          {{ state_attr('sensor.heatpump', 'SumAlarm') > 0 }}
 
   #
   - sensor:
