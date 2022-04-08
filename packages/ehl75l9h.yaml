@@ -90,10 +90,10 @@ template:
         state_class: measurement
         availability: "{{ is_number(states('sensor.ehl75l9h_average_price_tibber')) and states('sensor.average_price_consumption_tibber') | float(0.0) > 0 }}"
         state: >
-          {% if states('sensor.ehl75l9h_average_price_tibber')  >  states('sensor.average_price_consumption_tibber') %}
-            {{ states('sensor.average_price_consumption_tibber') | float('naan') / 2.0 }}
+          {% if states('sensor.ehl75l9h_average_price_tibber') | float('naan')  >  states('sensor.average_price_consumption_tibber') | float('naan') %}
+            {{ states('sensor.ehl75l9h_average_price_tibber') | float('naan') / 2.0 }}
           {% elif is_state('binary_sensor.barnrum_belysning_automation_control', 'off') %}
-            {{ states('sensor.average_price_consumption_tibber') | float('naan') }}
+            {{ states('sensor.ehl75l9h_average_price_tibber') | float('naan') }}
           {% endif %}
           
 #
