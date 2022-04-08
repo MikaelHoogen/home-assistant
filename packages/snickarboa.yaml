@@ -30,18 +30,6 @@ sensor:
     round: 2
     method: left
     #
-  - platform: template
-    sensors:
-      ###
-      avfuktare_timme_kostnad:
-        friendly_name: "Kostnad"
-        unit_of_measurement: "SEK"
-        value_template: "{{ ( states('sensor.avfuktare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
-      ###
-      snickarboa_heater_timme_kostnad:
-        friendly_name: "Kostnad"
-        unit_of_measurement: "SEK"
-        value_template: "{{ ( states('sensor.snickarboa_heater_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
 #
   - platform: history_stats
     name: snickarboa_heater_today
@@ -118,6 +106,7 @@ template:
           {{ is_state('input_boolean.snickarboa_heater', 'on')
           and is_state('binary_sensor.electricity_price_sannesholma_2181_max_3', 'off') }}
 #
+#
   - sensor:
     ### Förbrukning
     - name: snickarboa_heater_consumption
@@ -128,6 +117,19 @@ template:
       availability: "{{ is_number(states('sensor.snickarboa_heater_today')) }}"
       state: >
         {{ ( 1200.0 * states('sensor.snickarboa_heater_today') | float('nan') / 1000.0 ) | round(3) }}
+#
+      ###
+    - name: avfuktare_timme_kostnad
+      unique_id: avfuktare_timme_kostnad
+      unit_of_measurement: "SEK"
+      availability: "{{ is_number(states('sensor.avfuktare_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+      state: "{{ ( states('sensor.avfuktare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+      ###
+    - name: snickarboa_heater_timme_kostnad
+      unique_id: snickarboa_heater_timme_kostnad
+      unit_of_measurement: "SEK"
+      availability: "{{ is_number(states('sensor.snickarboa_heater_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+      state: "{{ ( states('sensor.snickarboa_heater_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
 #
 automation:
   #
