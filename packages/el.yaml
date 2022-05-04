@@ -166,7 +166,8 @@ template:
         unique_id: average_total_price_new
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
-        state: "{{ ( states('sensor.accumulated_total_cost_month') | float(0.0) / states('sensor.monthly_net_consumption_sannesholma_2181') | float(0.0) ) | round(2) }}"
+        availability: "{{ is_number(states('sensor.accumulated_total_cost_month')) and is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) }}"
+        state: "{{ ( states('sensor.accumulated_total_cost_month') | float('naan') / states('sensor.monthly_net_consumption_sannesholma_2181') | float('naan') ) | round(2) }}"
       #
       #
         #
