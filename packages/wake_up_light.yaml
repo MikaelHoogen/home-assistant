@@ -80,7 +80,7 @@ automation:
       data:
         entity_id: light.wake_up
         kelvin: 4000
-        brightness: 100
+        brightness_pct: 100
         transition: 1800
 #    - service: switch.turn_on
 #      entity_id: switch.adaptive_lighting_sovrum
