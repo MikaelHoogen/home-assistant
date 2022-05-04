@@ -20,7 +20,8 @@ binary_sensor:
         value_template: >-
           {{ state_attr('weather.smhi_sannesholma', 'forecast')[0]['temperature'] | int >= 20
             or state_attr('weather.smhi_sannesholma', 'forecast')[1]['temperature'] | int >= 20
-            or is_state('binary_sensor.hot_outside', 'on') }}
+            or is_state('binary_sensor.hot_outside', 'on')
+            or state_attr('weather.smhi_sannesholma', 'forecast')[0]['condition'] == 'sunny' }}
 #          {{ ( state_attr('weather.smhi_home', 'forecast')[0]['temperature'] | int >= 20 and state_attr('weather.smhi_home', 'forecast')[0]['condition'] == 'sunny' )
 #            or ( state_attr('weather.smhi_home', 'forecast')[1]['temperature'] | int >= 20 and state_attr('weather.smhi_home', 'forecast')[1]['condition'] == 'sunny' )
 #            or is_state('binary_sensor.hot_outside', 'on') }}
