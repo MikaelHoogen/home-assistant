@@ -6,7 +6,7 @@ template:
       unique_id: avgift_elnat
       unit_of_measurement: "Öre/kWh"
       state_class: measurement
-      state: "{{ 22.05 }}"
+      state: "{{ 24.25 }}"
       # Avgift energiskatt
     - name: avgift_energiskatt
       unique_id: avgift_energiskatt
@@ -20,7 +20,7 @@ template:
       state_class: measurement
       availability: "{{ is_number(states('sensor.electricity_price_sannesholma_2181')) }}"
       state: >
-        {{ ( 556.25 / state_attr('sensor.electricity_price_sannesholma_2181', 'estimated_annual_consumption') ) | round (3) }}
+        {{ ( 612.5 / state_attr('sensor.electricity_price_sannesholma_2181', 'estimated_annual_consumption') ) | round (3) }}
       # Abonnemang tibber
     - name: elpris_abonnemang_tibber
       unique_id: elpris_abonnemang_tibber
