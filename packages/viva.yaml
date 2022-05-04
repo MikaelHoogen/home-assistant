@@ -7,19 +7,19 @@ sensor:
       value_template: '{{ value_json["GetSingleStationResult"]["Samples"][1]["Value"] }}'
       unit_of_measurement: "°C"
       ### Torshamnen
-    - platform: rest
-      resource: https://services.viva.sjofartsverket.se:8080/output/vivaoutputservice.svc/vivastation/101
-      name: Torshamnen vattentemp
-      value_template: '{{ value_json["GetSingleStationResult"]["Samples"][3]["Value"] }}'
-      unit_of_measurement: "°C"
+#    - platform: rest
+#      resource: https://services.viva.sjofartsverket.se:8080/output/vivaoutputservice.svc/vivastation/101
+#      name: Torshamnen vattentemp
+#      value_template: '{{ value_json["GetSingleStationResult"]["Samples"][3]["Value"] }}'
+#      unit_of_measurement: "°C"
       ### Petroport
-    - platform: rest
-      resource: https://services.viva.sjofartsverket.se:8080/output/vivaoutputservice.svc/vivastation/143
-      name: Petroport medelvind
-      value_template: '{{ value_json["GetSingleStationResult"]["Samples"][1]["Value"] }}'
-      unit_of_measurement: "m/s"
-    - platform: rest
-      resource: https://services.viva.sjofartsverket.se:8080/output/vivaoutputservice.svc/vivastation/143
-      name: Petroport byvind
-      value_template: '{{ value_json["GetSingleStationResult"]["Samples"][0]["Value"] }}'
-      unit_of_measurement: "m/s"
+#    - platform: rest
+#      resource: https://services.viva.sjofartsverket.se:8080/output/vivaoutputservice.svc/vivastation/143
+#      name: Petroport medelvind
+#      value_template: '{{ value_json["GetSingleStationResult"]["Samples"][1]["Value"] }}'
+#      unit_of_measurement: "m/s"
+#    - platform: rest
+#      resource: https://services.viva.sjofartsverket.se:8080/output/vivaoutputservice.svc/vivastation/143
+#      name: Petroport byvind
+#      value_template: '{{ value_json["GetSingleStationResult"]["Samples"][0]["Value"] }}'
+#      unit_of_measurement: "m/s"
