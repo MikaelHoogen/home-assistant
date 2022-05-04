@@ -54,7 +54,7 @@ automation:
             #
             - switch.adaptive_lighting_sleep_mode_hall
             #
-            - switch.adaptive_lighting_sleep_mode_gastrum
+#            - switch.adaptive_lighting_sleep_mode_gastrum
       #
 #      - service: select.select_option
 #        target:
@@ -90,7 +90,7 @@ automation:
             #
             - switch.adaptive_lighting_sleep_mode_hall
             #
-            - switch.adaptive_lighting_sleep_mode_gastrum
+#            - switch.adaptive_lighting_sleep_mode_gastrum
       #
       - service: switch.turn_on
         data:
