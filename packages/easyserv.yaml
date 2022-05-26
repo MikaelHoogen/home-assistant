@@ -66,7 +66,8 @@ sensor:
     state: "on"
     type: time
     start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
-    end: "{{ now().replace(microsecond=0) }}"
+    duration: 24:00:00
+#    end: "{{ now().replace(microsecond=0) }}"
 #
 #
   - platform: history_stats
@@ -75,7 +76,8 @@ sensor:
     state: "on"
     type: time
     start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
-    end: "{{ now().replace(microsecond=0) }}"
+    duration: 24:00:00
+#    end: "{{ now().replace(microsecond=0) }}"
 #
   - platform: history_stats
     name: heatpump_switchvalve_today
@@ -83,7 +85,8 @@ sensor:
     state: "on"
     type: time
     start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
-    end: "{{ now().replace(microsecond=0) }}"
+    duration: 24:00:00
+#    end: "{{ now().replace(microsecond=0) }}"
 #
   - platform: history_stats
     name: heatpump_heat_today
@@ -91,7 +94,8 @@ sensor:
     state: "on"
     type: time
     start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
-    end: "{{ now().replace(microsecond=0) }}"
+    duration: 24:00:00
+#    end: "{{ now().replace(microsecond=0) }}"
 #
   - platform: history_stats
     name: heatpump_hotwater_today
@@ -99,7 +103,8 @@ sensor:
     state: "on"
     type: time
     start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
-    end: "{{ now().replace(microsecond=0) }}"
+    duration: 24:00:00
+    #end: "{{ now().replace(microsecond=0) }}"
 #
 ###############################################################################
 utility_meter:
