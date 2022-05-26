@@ -52,11 +52,6 @@ template:
         state: "{{ ( states('sensor.eaton3s_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
       ###
 #
-      - name: eaton3s_consumption_measurement
-        unique_id: eaton3s_consumption_measurement
-        unit_of_measurement: "kWh"
-        state_class: measurement
-        state: "{{ states('sensor.eaton3s_timme') }}"
 #
 sensor:
     - platform: integration
