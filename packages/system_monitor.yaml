@@ -2,6 +2,8 @@ sensor:
   - platform: systemmonitor
     resources:
       - type: disk_use_percent
+      - type: disk_use
+      - type: disk_free
 #        arg: /home
       - type: memory_use_percent
       - type: load_1m
