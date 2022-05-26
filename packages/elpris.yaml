@@ -107,6 +107,14 @@ template:
             or ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[1] )
             or ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[2] )
             or ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[3] ) }}
+        # Below mean sensor.electricity_price_sannesholma_2181
+      - name: electricity_price_sannesholma_2181_below_avg_price
+        unique_id: electricity_price_sannesholma_2181_below_avg_price
+        availability: "{{ is_number(states('sensor.electricity_price_sannesholma_2181')) }}"
+        delay_on:
+          seconds: 5
+        state: >-
+          {{ states('sensor.electricity_price_sannesholma_2181') | float('naan') <= state_attr('sensor.electricity_price_sannesholma_2181', 'avg_price') }}
 #
   - sensor:
       # Elförbrukning prognos
