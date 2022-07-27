@@ -16,6 +16,12 @@ tts:
 recorder:
   db_url: !secret maria
   purge_keep_days: 60
+  exclude:
+    entity_globs:
+      - sensor.sensorer*
+    entities:
+      - sensor.time
+      - sensor.time_utc
 
 homeassistant:
 ## This is where I store all configuration
