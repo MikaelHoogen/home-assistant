@@ -39,6 +39,7 @@ binary_sensor:
     ### Light level
     badrum_lightlevel:
       friendly_name: Badrum
+      device_class: light
       delay_on:
         minutes: 15
       value_template: >-
