@@ -11,7 +11,7 @@ adaptive_lighting:
     transition: 30
     initial_transition: 3
     interval: 90
-    min_brightness: 20
+    min_brightness: 5
     max_brightness: 100
     min_color_temp: 2100
     max_color_temp: 4000
@@ -103,7 +103,7 @@ binary_sensor:
       # binary_sensor.allrum_rorelsesensor
       allrum_presence_short:
         delay_off:
-          minutes: 15
+          minutes: 30
         value_template: >-
           {{ is_state('binary_sensor.allrum_rorelsesensor', 'on')
           or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
@@ -164,6 +164,7 @@ automation:
           {% endif %}
         entity_id:
           - light.allrum
+#
 #
   - alias: Allrum Knapp 1 klick
     trigger:
