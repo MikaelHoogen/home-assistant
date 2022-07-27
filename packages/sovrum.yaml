@@ -53,6 +53,7 @@ binary_sensor:
     sensors:
       sovrum_belysning_lightlevel:
         friendly_name: Sovrum
+        device_class: light
         delay_off:
           minutes: 30
         value_template: >-
