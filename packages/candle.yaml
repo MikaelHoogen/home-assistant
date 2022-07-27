@@ -33,6 +33,7 @@ automation:
       - light.vardagsrum_fonster_fotogen
       - light.vardagsrum_fonster_piano
       - light.vardagsrum_fonster_trappa
+      
   - service: light.turn_on
     data:
       entity_id:
@@ -41,6 +42,8 @@ automation:
       - light.kok_kokso
       - light.hall
       - light.badrum
+      - light.vardagsrum_tak
+      - light.hall_byra
       profile: 'candle'
   - service: light.turn_off
     data:
