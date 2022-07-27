@@ -3,6 +3,8 @@ adaptive_lighting:
   - name: Hall
     lights:
       - light.hall
+      - light.vardagsrum_tak
+      - light.hall_byra
     prefer_rgb_color: false
     transition: 30
     initial_transition: 2
@@ -32,7 +34,9 @@ template:
     binary_sensor:
       - name: Hall dörrtrigger
         unique_id: Hall dörrtrigger
-        auto_off: 5
+        delay_on:
+          seconds: 1
+        auto_off: 30
         state: "true"
 #
 binary_sensor:
