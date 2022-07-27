@@ -2,7 +2,7 @@
 adaptive_lighting:
 - name: Barnrum
   lights:
-  - light.lillis_skank
+  - light.barnrum_skank
   - light.barnrum_fonster_1
   - light.barnrum_fonster_2
   prefer_rgb_color: false
@@ -67,6 +67,6 @@ automation:
       light.turn_off
       {% endif %}
     entity_id:
-    - light.lillis_skank
+    - light.barnrum_skank
     - light.barnrum_fonster_1
     - light.barnrum_fonster_2
