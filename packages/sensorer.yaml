@@ -1,3 +1,17 @@
+template:
+    - sensor:
+      ### Tvättstuga
+      - name: sensorer_tvattstuga
+        unique_id: sensorer_tvattstuga
+#        availability: > 
+#          {{ is_number(states('sensor.tvattstuga_temperatur')) and is_number(states('sensor.tvattstuga_humidity')) and is_number(states('sensor.tvattstuga_v')) }}
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.tvattstuga_temperatur') | round(1,'round-to-even', '-') }}"
+          humidity: "{{ states('sensor.tvattstuga_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: "0"
+          v: "{{ states('sensor.tvattstuga_v') | round(1, 'round-to-even', '-') }}"
+#
 sensor:
   - platform: template
     sensors:
@@ -9,7 +23,7 @@ sensor:
           temperature: "{{ states('sensor.netatmo_rosa_van_temperature') }}"
           humidity: "{{ states('sensor.netatmo_rosa_van_humidity') }}"
           co2: "{{ states('sensor.netatmo_rosa_van_co2') }}"
-          v: "{{ states('sensor.sovrum_v') }}"
+          v: "{{ states('sensor.sovrum_v') | round(1) }}"
       ### Hall
       sensorer_hall:
         friendly_name: "0 Hall"
@@ -18,16 +32,16 @@ sensor:
           temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_temperature') }}"
           humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_humidity') }}"
           co2: "{{ states('sensor.netatmo_sannesholma_weather_station_co2') }}"
-          v: "{{ states('sensor.indoor_v') }}"
+          v: "{{ states('sensor.indoor_v') | round(1) }}"
       ### Tvättstuga
-      sensorer_tvattstuga:
-        friendly_name: "0 Tvättstuga"
-        value_template: "{{ states('sensor.time') }}"
-        attribute_templates:
-          temperature: "{{ states('sensor.tvattstuga_temperatur') }}"
-          humidity: "{{ states('sensor.tvattstuga_humidity') | round(0) }}"
-          co2: "0"
-          v: "{{ states('sensor.tvattstuga_v') }}"
+#      sensorer_tvattstuga:
+#        friendly_name: "0 Tvättstuga"
+#        value_template: "{{ states('sensor.time') }}"
+#        attribute_templates:
+#          temperature: "{{ states('sensor.tvattstuga_temperatur') }}"
+#          humidity: "{{ states('sensor.tvattstuga_humidity') | round(0) }}"
+#          co2: "0"
+#          v: "{{ states('sensor.tvattstuga_v') | round(1) }}"
       ### Badrum
       sensorer_badrum:
         friendly_name: "0 Badrum"
@@ -36,7 +50,7 @@ sensor:
           temperature: "{{ states('sensor.badrum_temperature') }}"
           humidity: "{{ states('sensor.badrum_humidity') | round(0) }}"
           co2: "0"
-          v: "{{ states('sensor.badrum_v') }}"
+          v: "{{ states('sensor.badrum_v') | round(1) }}"
       ### Allrum
       sensorer_allrum:
         friendly_name: "1 Allrum"
@@ -45,7 +59,7 @@ sensor:
           temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') }}"
           humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_humidity') | round(0) }}"
           co2: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_co2') | round(0) }}" 
-          v: "{{ states('sensor.allrum_v') }}"
+          v: "{{ states('sensor.allrum_v') | round(1) }}"
       #
       sensorer_ute:
         friendly_name: "Utomhus"
@@ -54,7 +68,7 @@ sensor:
           temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') }}"
           humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_humidity') }}"
           co2: "400"
-          v: "{{ states('sensor.utomhus_v') }}"
+          v: "{{ states('sensor.utomhus_v') | round(1) }}"
           vs: "{{ states('sensor.utomhus_vs') | float | round(2) }}"
       #
       ### Snickarboa
@@ -65,7 +79,7 @@ sensor:
           temperature: "{{ states('sensor.snickarboa_temperature') }}"
           humidity: "{{ states('sensor.snickarboa_humidity') | round(0) }}"
           co2: "0"
-          v: "{{ states('sensor.snickarboa_v') }}"
+          v: "{{ states('sensor.snickarboa_v') | round(1) }}"
       #
       ### Vardagsrum
       sensorer_vardagsrum:
@@ -75,7 +89,7 @@ sensor:
           temperature: "{{ states('sensor.vardagsrum_temperature') }}"
           humidity: "{{ states('sensor.vardagsrum_humidity') | round(0) }}"
           co2: "0"
-          v: "{{ states('sensor.vardagsrum_v') }}"
+          v: "{{ states('sensor.vardagsrum_v') | round(1) }}"
 #
           ### barnrum
       sensorer_barnrum:
@@ -85,7 +99,7 @@ sensor:
           temperature: "{{ states('sensor.barnrum_temperature') }}"
           humidity: "{{ states('sensor.barnrum_humidity') | round(0) }}"
           co2: "0"
-          v: "{{ states('sensor.barnrum_v') }}"
+          v: "{{ states('sensor.barnrum_v') | round(1) }}"
 #
           ### gastrum
       sensorer_gastrum:
@@ -95,7 +109,7 @@ sensor:
           temperature: "{{ states('sensor.gastrum_temperature') }}"
           humidity: "{{ states('sensor.gastrum_humidity') | round(0) }}"
           co2: "0"
-          v: "{{ states('sensor.gastrum_v') }}"
+          v: "{{ states('sensor.gastrum_v') | round(1) }}"
 #
           ### kok
       sensorer_kok:
@@ -105,4 +119,4 @@ sensor:
           temperature: "{{ states('sensor.kok_temperature') }}"
           humidity: "{{ states('sensor.kok_humidity') | round(0) }}"
           co2: "0"
-          v: "{{ states('sensor.kok_v') }}"
+          v: "{{ states('sensor.kok_v') | round(1) }}"
