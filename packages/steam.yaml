@@ -1,5 +1,0 @@
-sensor:
-  - platform: steam_online
-    api_key: !secret steam_key
-    accounts:
-      - !secret steam_id
