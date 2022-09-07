@@ -30,12 +30,14 @@ adaptive_lighting:
 template:
   - trigger:
       - platform: state
+        to: 'on'
+        from: 'off'
         entity_id: binary_sensor.entre_dorrbrytare
     binary_sensor:
       - name: Hall dörrtrigger
         unique_id: Hall dörrtrigger
-        delay_on:
-          seconds: 1
+#        delay_on:
+#          seconds: 1
         auto_off: 30
         state: "true"
 #

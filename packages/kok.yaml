@@ -54,12 +54,12 @@ adaptive_lighting:
   # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
   only_once: false
 #
-group:
-  kok_group:
-    name: Kök
-    entities:
-      - light.kok
-      - light.kok_fonsterbelysning
+#group:
+#  kok_group:
+#    name: Kök
+#    entities:
+#      - light.kok
+#      - light.kok_fonsterbelysning
 #
 light:
   - platform: group
@@ -81,6 +81,8 @@ input_number:
 template:
   - trigger:
       - platform: state
+        to: 'on'
+        from: 'off'
         entity_id: binary_sensor.koksentre_dorrbrytare
     binary_sensor:
       - name: Köksentré dörrtrigger
@@ -103,7 +105,7 @@ binary_sensor:
         device_class: light
         friendly_name: Kök
         delay_on:
-          minutes: 15
+          minutes: 5
         value_template: >-
           {{ states('sensor.kok_hue_motion_sensor_light_level') | float > states('input_number.kok_light_level') | float }}
       ### Närvaro
@@ -111,10 +113,17 @@ binary_sensor:
         device_class: motion
         friendly_name: Kök
         delay_off:
-          minutes: 10
+          minutes: 20
         value_template: >-
           {{ is_state('binary_sensor.kok_hue_motion_sensor_motion', 'on')
             or is_state('binary_sensor.koksentre_dorrtrigger', 'on') }}
+#            or  ( is_state('binary_sensor.kok_presence', 'on')
+#              and is_state('binary_sensor.hall_hue_motion_sensor_motion', 'off')
+#              and is_state('binary_sensor.koksentre_dorrbrytare', 'off')
+#              and is_state('binary_sensor.vardagsrum_hue_motion_sensor_motion', 'off')
+#              and is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'off')
+#              )
+
       ### Fönsterbelysning
       kok_belysning_filament_automation_control:
         friendly_name: Kök
@@ -127,6 +136,7 @@ binary_sensor:
         value_template: >-
           {{ is_state('binary_sensor.vardagsrum_belysning_filament_lightlevel', 'on') 
             and ( state_attr('switch.adaptive_lighting_kok', 'color_temp_kelvin') <= 2300 | float ) }}
+      #
       ### Närvarostyrd belysning
       kok_presence_light_automation_control:
         friendly_name: Kök
@@ -139,13 +149,14 @@ binary_sensor:
         value_template: >-
           {{ is_state('binary_sensor.kok_presence', 'on') }}
       #
+      # Bänk
       kok_bank_presence_light_automation_control:
         friendly_name: Kök bänkbelysning
         value_template: >-
           {{ is_state('binary_sensor.kok_presence', 'on')
             and ( state_attr('switch.adaptive_lighting_kok', 'color_temp_kelvin') >= 2200 | float )
             and is_state('binary_sensor.kok_lightlevel', 'off')
-            or (is_state('binary_sensor.kok_presence', 'on')
+            or ( is_state('binary_sensor.kok_presence', 'on')
             and is_state('light.kok_bankbelysning', 'on') ) }}
 #
 #
@@ -219,6 +230,7 @@ automation:
           - light.kok_koksbord_1
           - light.kok_koksbord_2
           - light.kok_kokso
+          - light.hall_byra
 #
   - alias: Kök skafferibelysning
     trigger:
