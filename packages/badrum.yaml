@@ -41,7 +41,7 @@ binary_sensor:
       friendly_name: Badrum
       device_class: light
       delay_on:
-        minutes: 15
+        minutes: 5
       value_template: >-
         {{ states('sensor.badrum_hue_motion_sensor_light_level') | float > states('input_number.badrum_light_level') | float }}
     ### Närvaro
