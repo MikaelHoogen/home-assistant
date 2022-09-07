@@ -12,6 +12,16 @@ template:
           co2: "0"
           v: "{{ states('sensor.tvattstuga_v') | round(1, 'round-to-even', '-') }}"
 #
+      ### Snickarboa
+      - name: sensorer_snickarboa
+        unique_id: sensorer_snickarboa
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.snickarboa_temperature') | round(1,'round-to-even', '-' ) }}"
+          humidity: "{{ states('sensor.snickarboa_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: "0"
+          v: "{{ states('sensor.snickarboa_v') | round(1, 'round-to-even', '-') }}"
+#
 sensor:
   - platform: template
     sensors:
@@ -72,14 +82,14 @@ sensor:
           vs: "{{ states('sensor.utomhus_vs') | float | round(2) }}"
       #
       ### Snickarboa
-      sensorer_snickarboa:
-        friendly_name: "Snickarboa"
-        value_template: "{{ states('sensor.time') }}"
-        attribute_templates:
-          temperature: "{{ states('sensor.snickarboa_temperature') }}"
-          humidity: "{{ states('sensor.snickarboa_humidity') | round(0) }}"
-          co2: "0"
-          v: "{{ states('sensor.snickarboa_v') | round(1) }}"
+#      sensorer_snickarboa:
+#        friendly_name: "Snickarboa"
+#        value_template: "{{ states('sensor.time') }}"
+#        attribute_templates:
+#          temperature: "{{ states('sensor.snickarboa_temperature') }}"
+#          humidity: "{{ states('sensor.snickarboa_humidity') | round(0) }}"
+#          co2: "0"
+#          v: "{{ states('sensor.snickarboa_v') | round(1) }}"
       #
       ### Vardagsrum
       sensorer_vardagsrum:
