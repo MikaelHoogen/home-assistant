@@ -39,7 +39,7 @@ adaptive_lighting:
   initial_transition: 5
   interval: 90
   min_brightness: 1
-  max_brightness: 50 #45
+  max_brightness: 45
   min_color_temp: 2100
   max_color_temp: 4000
   sleep_brightness: 1
@@ -105,7 +105,7 @@ binary_sensor:
         device_class: light
         friendly_name: Kök
         delay_on:
-          minutes: 5
+          minutes: 10
         value_template: >-
           {{ states('sensor.kok_hue_motion_sensor_light_level') | float > states('input_number.kok_light_level') | float }}
       ### Närvaro
