@@ -31,6 +31,7 @@ adaptive_lighting:
   - name: Allrum belysning filament
     lights:
       - light.allrum_fonster_betong
+      - light.allrum_huslampa
     prefer_rgb_color: false
     transition: 45
     initial_transition: 5
@@ -62,6 +63,7 @@ light:
       - light.allrum_laslampa
       - light.allrum_klotlampa
       - light.allrum_fonster_betong
+      - light.allrum_huslampa
 #
 input_boolean:
   allrum_presence_flagga:
@@ -148,6 +150,7 @@ automation:
           {% endif %}
         entity_id:
           - light.allrum_fonster_betong
+          - light.allrum_huslampa
   #
   - alias: Allrum belysning
     trigger:
