@@ -36,7 +36,7 @@ automation:
               entity_id:
               - light.kok_fonsterbelysning
               - light.vardagsrum_fonster_hangande
-              - light.vardagsrum_huslampa
+              #- light.vardagsrum_huslampa
               - light.vardagsrum_fonster_fotogen
               - light.vardagsrum_fonster_piano
               - light.vardagsrum_fonster_trappa
@@ -50,6 +50,7 @@ automation:
               - light.hall
               - light.badrum
               - light.vardagsrum_tak
+              - light.vardagsrum_bord
               - light.hall_byra
               profile: 'candle'
           - service: light.turn_off
