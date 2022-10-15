@@ -1,0 +1,133 @@
+###################### Fjärrkontroll ###################################
+#
+automation:
+#- alias: Fjärrkontroll Film stopp
+#  trigger:
+#  - platform: event
+#    event_type: rfxtrx_event
+#    event_data:
+#      packet_type: 17
+#      sub_type: 0
+#      id_string: "1656792:1"
+#      values:
+#        Command: "On"
+#  action:
+#  - service: media_player.media_stop
+#    entity_id: media_player.allrum
+#
+- alias: Fjärrkontroll Film
+  trigger:
+#  - platform: event
+#    event_type: rfxtrx_event
+#    event_data:
+#      packet_type: 17
+#      sub_type: 0
+#      id_string: "1656792:2"
+#      values:
+#        Command: "On"
+  - platform: event
+    event_type: deconz_event
+    event_data:
+      id: allrum_smart_switch
+      event: 1004
+  condition:
+    - condition: state
+      entity_id: input_boolean.film
+      state: "off"
+  action:
+    service: input_boolean.turn_on
+    entity_id: input_boolean.film
+#
+#- alias: Fjärrkontroll Film av
+#  trigger:
+#  - platform: event
+#    event_type: rfxtrx_event
+#    event_data:
+#      packet_type: 17
+#      sub_type: 0
+#      id_string: "1656792:2"
+#      values:
+#        Command: "Off"
+#  action:
+#    service: homeassistant.turn_off
+#    entity_id: input_boolean.film
+#
+- alias: Fjärrkontroll Film paus
+  trigger:
+#  - platform: event
+#    event_type: rfxtrx_event
+#    event_data:
+#      packet_type: 17
+#      sub_type: 0
+#      id_string: "1656792:3"
+#      values:
+#        Command: "On"
+  - platform: event
+    event_type: deconz_event
+    event_data:
+      id: allrum_smart_switch
+      event: 1002
+  action:
+  - service: >
+      {% if is_state('media_player.allrum', 'playing') %}
+      media_player.media_pause
+      {% else %}
+      media_player.media_play
+      {% endif %}
+    entity_id:
+      - media_player.allrum
+
+#  - service: media_player.media_pause
+#    entity_id: media_player.vardagsrum
+#  - service: media_player.media_pause
+#    entity_id: media_player.playstation_4
+#
+#- alias: Fjärrkontroll Film play
+#  trigger:
+#  - platform: event
+#    event_type: rfxtrx_event
+#    event_data:
+#      packet_type: 17
+#      sub_type: 0
+#      id_string: "1656792:3"
+#      values:
+#        Command: "Off"
+#  action:
+#  - service: media_player.media_play
+#    entity_id: media_player.vardagsrum
+#  - service: media_player.media_play
+#    entity_id: media_player.playstation_4
+#
+- alias: Fjärrkontroll Film lampor
+  trigger:
+#  - platform: event
+#    event_type: rfxtrx_event
+#    event_data:
+#      packet_type: 17
+#      sub_type: 0
+#      id_string: "1656792:4"
+#      values:
+#        Command: "On"
+  - platform: event
+    event_type: deconz_event
+    event_data:
+      id: allrum_smart_switch
+      event: 1001 # Long press
+  action:
+    service: input_boolean.toggle
+    entity_id: input_boolean.film_spelar
+#
+#
+#- alias: Fjärrkontroll Film lampor off
+#  trigger:
+#  - platform: event
+#    event_type: rfxtrx_event
+#    event_data:
+#      packet_type: 17
+#      sub_type: 0
+#      id_string: "1656792:4"
+#      values:
+#        Command: "Off"
+#  action:
+#    service: automation.trigger
+#    entity_id: automation.film_pause
