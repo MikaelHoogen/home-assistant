@@ -4,10 +4,12 @@ adaptive_lighting:
   - name: Vardagsrum belysning filament
     lights:
       - light.vardagsrum_fonster_hangande
-      - light.vardagsrum_huslampa
+#      - light.vardagsrum_huslampa
       - light.vardagsrum_fonster_fotogen
       - light.vardagsrum_fonster_piano
       - light.vardagsrum_fonster_trappa
+      - light.vardagsrum_fonster_ytterdorr
+      - light.vardagsrum_fonster_vitrinskap
     prefer_rgb_color: false
     transition: 45
     initial_transition: 5
@@ -34,18 +36,20 @@ light:
     unique_id: vardagsrum
     entities:
       - light.vardagsrum_fonster_hangande
-      - light.vardagsrum_huslampa
+#      - light.vardagsrum_huslampa
       - light.vardagsrum_fonster_fotogen
       - light.vardagsrum_fonster_piano
       - light.vardagsrum_fonster_trappa
       - light.vardagsrum_tak
+      - light.vardagsrum_fonster_ytterdorr
+      - light.vardagsrum_fonster_vitrinskap
 #
 input_number:
   vardagsrum_light_level:
     name: Ljusstyrka vardagsrum för belysning
     min: 0
-    max: 200
-    step: 10
+    max: 100
+    step: 1
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
 #
@@ -70,20 +74,28 @@ template:
       ### Light level
       - name: vardagsrum_belysning_fonster_lightlevel
         unique_id: vardagsrum_belysning_fonster_lightlevel
-        device_class: light
+#        device_class: light
         delay_off:
-          minutes: 20
+          minutes: 10
         state: >-
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
       #
+      - name: vardagsrum_belysning_filament_lightlevel
+        unique_id: vardagsrum_belysning_filament_lightlevel
+#        device_class: light
+        delay_off:
+          minutes: 10
+        state: >-
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.vardagsrum_filament_light_level') | float }}
       #
+      # Belysning närvaro
       - name: vardagsrum_presence_light_automation_control
         unique_id: vardagsrum_presence_light_automation_control
         state: >-
           {{ is_state('binary_sensor.vardagsrum_presence', 'on')
             and is_state('binary_sensor.vardagsrum_lightlevel', 'off') }}
       #
-      ### Belysning
+      ### Belysning fönster
       - name: vardagsrum_belysning_fonster_automation_control
         unique_id: vardagsrum_belysning_fonster_automation_control
         state: >-
@@ -91,6 +103,14 @@ template:
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('input_boolean.sovdags', 'off') }}
       #
+      ### Belysning filament
+      - name: vardagsrum_belysning_filament_automation_control
+        unique_id: vardagsrum_belysning_filament_automation_control
+        state: >-
+          {{ is_state('binary_sensor.vardagsrum_presence', 'on')
+            and is_state('binary_sensor.vardagsrum_belysning_filament_lightlevel', 'on')
+            and is_state('input_boolean.film_spelar', 'off')
+            and is_state('input_boolean.sovdags', 'off') }}
       ### Light level
       ### Närvaro
       - name: vardagsrum_presence
@@ -105,7 +125,7 @@ template:
 #
 automation:
   #
-  - alias: Vardagsrum fönster belysning
+  - alias: Vardagsrum belysning fönster
     trigger:
       - platform: state
         entity_id: binary_sensor.vardagsrum_belysning_fonster_automation_control
@@ -119,12 +139,12 @@ automation:
           light.turn_off
           {% endif %}
         entity_id:
-          - light.vardagsrum_fonster_hangande
-          - light.vardagsrum_fonster_fotogen
           - light.vardagsrum_fonster_piano
           - light.vardagsrum_fonster_trappa
+          - light.vardagsrum_fonster_ytterdorr
+          - light.vardagsrum_fonster_vitrinskap
 #
-  - alias: Vardagsrum filament belysning
+  - alias: Vardagsrum belysning filament
     trigger:
       - platform: state
         entity_id: binary_sensor.vardagsrum_belysning_filament_automation_control
@@ -138,9 +158,11 @@ automation:
           light.turn_off
           {% endif %}
         entity_id:
-          - light.vardagsrum_huslampa
+#          - light.vardagsrum_huslampa
+          - light.vardagsrum_fonster_fotogen
+          - light.vardagsrum_fonster_hangande
 #
-  - alias: Vardagsrum takbelysning
+  - alias: Vardagsrum belysning tak
     trigger:
       - platform: state
         entity_id: binary_sensor.vardagsrum_presence_light_automation_control
