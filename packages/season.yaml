@@ -1,7 +1,0 @@
-sensor:
-  - platform: season
-    type: meteorological
-    name: Årstid meteorologisk
-  - platform: season
-    type: astronomical
-    name: Årstid astronomisk
