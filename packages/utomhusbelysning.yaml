@@ -8,9 +8,9 @@ adaptive_lighting:
     transition: 0
     initial_transition: 0
     interval: 90
-    min_brightness: 10
+    min_brightness: 40
     max_brightness: 90
-    min_color_temp: 2400
+    min_color_temp: 2200
     max_color_temp: 4000
     sleep_brightness: 1
     sleep_color_temp: 2200
@@ -34,7 +34,7 @@ adaptive_lighting:
     interval: 90
     min_brightness: 20
     max_brightness: 100
-    min_color_temp: 2400
+    min_color_temp: 2100
     max_color_temp: 4000
     sleep_brightness: 1
     sleep_color_temp: 2200
@@ -55,14 +55,14 @@ adaptive_lighting:
       - light.stall_entre
       - light.carport_entre
       - light.kackorna_entre
+      - light.stolpe_gang
+      - light.stolpe_grind
     prefer_rgb_color: false
     transition: 30
     initial_transition: 5
     interval: 90
     min_brightness: 50
     max_brightness: 100
-    min_color_temp: 2400
-    max_color_temp: 4000
     sleep_brightness: 1
     sleep_color_temp: 2200
     #sunrise_time: "07:00:00" # override the sunrise time
@@ -90,6 +90,8 @@ light:
       - light.stall_entre
       - light.carport_entre
       - light.kackorna_entre
+      - light.stall_entre
+      - light.stolpe_gang
 #
 input_number:
   utomhusbelysning_light_level:
@@ -182,6 +184,8 @@ automation:
           - light.entre_dorr
           - light.groventre_dorr
           - light.carport_entre
+          - light.stolpe_gang
+          - light.stolpe_grind
 #
   - alias: Entré närvarobelysning
     trigger:
