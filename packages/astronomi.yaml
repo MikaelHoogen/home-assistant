@@ -1,5 +1,5 @@
 sensor:
-  - platform: moon
+#  - platform: moon
 #
   - platform: sun2
     monitored_conditions:
