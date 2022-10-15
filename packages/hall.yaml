@@ -5,6 +5,7 @@ adaptive_lighting:
       - light.hall
       - light.vardagsrum_tak
       - light.hall_byra
+      - light.vardagsrum_bord
     prefer_rgb_color: false
     transition: 30
     initial_transition: 2
