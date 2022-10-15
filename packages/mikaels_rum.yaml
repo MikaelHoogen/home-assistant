@@ -5,8 +5,8 @@ adaptive_lighting:
     - light.mikaels_dator_hue_play_1
     - light.mikaels_dator_hue_play_2
     - light.kontor_fonster
-    - light.vardagsrum_liten_laslampa
-    #    - light.datorrum_skrivbord
+    - light.mikaels_rum_skrivbord
+    - light.ljusslinga
     - light.mikaels_rum_tak
   prefer_rgb_color: false
   transition: 30
@@ -29,14 +29,26 @@ adaptive_lighting:
   only_once: false
   separate_turn_on_commands: false
 #
-sensor:
-  - platform: template
-    sensors:
+light:
+  - platform: group
+    name: Mikaels rum
+    unique_id: mikaels_rum
+    entities:
+      - light.mikaels_dator_hue_play_1
+      - light.mikaels_dator_hue_play_2
+      - light.kontor_fonster
+      - light.mikaels_rum_skrivbord
+      - light.ljusslinga
+      - light.mikaels_rum_tak
+#
+template:
+  - sensor:
       ############# Temperatur #########################
-      netatmo_mikaels_rum_temperature:
+      - name: netatmo_mikaels_rum_temperature
+        unique_id: netatmo_mikaels_rum_temperature
         unit_of_measurement: "°C"
-        friendly_name: Mikaels rum termostat temperatur
-        value_template: "{{ state_attr('climate.netatmo_mikaels_rum', 'current_temperature') }}"
+        device_class: temperature
+        state: "{{ state_attr('climate.netatmo_mikaels_rum', 'current_temperature') }}"
 #
 binary_sensor:
   #
