@@ -17,6 +17,8 @@ adaptive_lighting:
     max_color_temp: 4000
     sleep_brightness: 1
     sleep_color_temp: 2000
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_rgb_color: [255, 161, 40]
     #sunrise_time: "07:00:00" # override the sunrise time
     #    sunrise_offset:
     #    sunset_time: "20:00:00"
@@ -107,3 +109,5 @@ automation:
       - service: light.toggle
         target:
           entity_id: light.sovrum_sang_mikael
+
+# https://community.home-assistant.io/t/automation-with-templates-and-choose-action/218338
