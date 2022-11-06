@@ -1,9 +1,9 @@
 #
-generic_hygrostat:
-  - name: Snickarboa
-    humidifier: input_boolean.avfuktare
-    target_sensor: sensor.snickarboa_humidity
-    device_class: "dehumidifier"
+#generic_hygrostat:
+#  - name: Snickarboa
+#    humidifier: input_boolean.avfuktare
+#    target_sensor: sensor.snickarboa_humidity
+#    device_class: "dehumidifier"
 #    max_humidity: 75
 #
 climate:
