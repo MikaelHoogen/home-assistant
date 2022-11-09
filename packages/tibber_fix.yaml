@@ -1,5 +1,5 @@
 automation:
-- alias: tibber reload
+- alias: Tibber reload
   description: ''
   trigger:
     - platform: time_pattern
