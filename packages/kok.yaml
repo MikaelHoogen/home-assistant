@@ -136,8 +136,8 @@ binary_sensor:
       kok_belysning_litet_fonster_automation_control:
         friendly_name: Kök litet fönster
         value_template: >-
-          {{ is_state('binary_sensor.kok_belysning_filament_lightlevel', 'on') 
-            and ( state_attr('switch.adaptive_lighting_kok', 'color_temp_kelvin') <= 2300 | float ) }}
+          {{ is_state('binary_sensor.kok_belysning_filament_lightlevel', 'on')  }}
+#            and ( state_attr('switch.adaptive_lighting_kok', 'color_temp_kelvin') <= 2300 | float ) }}
       #
       ### Närvarostyrd belysning
       kok_presence_light_automation_control:
