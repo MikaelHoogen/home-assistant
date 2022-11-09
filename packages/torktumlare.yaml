@@ -25,15 +25,25 @@ utility_meter:
     source: sensor.torktumlare_timme_kostnad
     cycle: yearly
 #
-sensor:
-  - platform: template
-    sensors:
+#sensor:
+#  - platform: template
+#    sensors:
       ###
-      torktumlare_timme_kostnad:
-        friendly_name: "Kostnad"
+#      torktumlare_timme_kostnad:
+#        friendly_name: "Kostnad"
+#        unit_of_measurement: "SEK"
+#        value_template: "{{ ( states('sensor.torktumlare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+#
+template:
+  - sensor:
+      # Torktumlare
+      - name: torktumlare_timme_kostnad
+        unique_id: torktumlare_timme_kostnad
         unit_of_measurement: "SEK"
-        #        device_class: "humidity"
-        value_template: "{{ ( states('sensor.torktumlare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+#        state_class: measurement
+        device_class: monetary
+        availability: "{{ is_number(states('sensor.torktumlare_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.torktumlare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
 #
 binary_sensor:
 # Determine when the washing machine has a load running.
