@@ -25,14 +25,14 @@ utility_meter:
     source: sensor.diskmaskin_timme_kostnad
     cycle: yearly
 #
-sensor:
-  - platform: template
-    sensors:
+#sensor:
+#  - platform: template
+#    sensors:
       ###
-      diskmaskin_timme_kostnad:
-        friendly_name: "Kostnad"
-        unit_of_measurement: "SEK"
-        value_template: "{{ ( states('sensor.diskmaskin_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+#      diskmaskin_timme_kostnad:
+#        friendly_name: "Kostnad"
+#        unit_of_measurement: "SEK"
+#        value_template: "{{ ( states('sensor.diskmaskin_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
 #
 #binary_sensor:
 # Determine when the dishwasher has a load running.
@@ -49,6 +49,17 @@ sensor:
 #        icon_template: mdi:dishwasher
 #
 template:
+  - sensor:
+      # Diskmaskin
+      - name: diskmaskin_timme_kostnad
+        unique_id: diskmaskin_timme_kostnad
+        unit_of_measurement: "SEK"
+#        state_class: measurement
+        device_class: monetary
+        availability: "{{ is_number(states('sensor.diskmaskin_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.diskmaskin_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+
+
   - binary_sensor:
       - name: diskmaskin
         unique_id: diskmaskin
