@@ -124,7 +124,8 @@ binary_sensor:
 #
 #
 automation:
-  #
+#
+#
   - alias: Allrum belysning fönster
     trigger:
       - platform: state
@@ -141,7 +142,8 @@ automation:
         entity_id:
           - light.allrum_fonster_betong
           - light.allrum_huslampa
-  #
+#
+#
   - alias: Allrum belysning
     trigger:
       - platform: state
@@ -159,7 +161,7 @@ automation:
           - light.allrum
 #
 #
-  - alias: Allrum Knapp 1 klick
+  - alias: Allrum knapp vid fåtölj
     trigger:
       - platform: event
         event_type: deconz_event
@@ -170,3 +172,44 @@ automation:
       - service: light.toggle
         target:
           entity_id: light.allrum
+#
+#
+  - alias: Allrum knapp vid tv
+    trigger:
+      - platform: event
+        event_type: deconz_event
+        event_data:
+          id: allrum_smart_switch
+    action:
+      - choose:
+        # Double press
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.event == 1004 }}'
+            - condition: state
+              entity_id: input_boolean.film
+              state: "off"
+          sequence:
+            - service: input_boolean.turn_on
+              entity_id: input_boolean.film
+        #
+        # Short press
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.event == 1002 }}'
+          sequence:
+            - service: >
+                {% if is_state('media_player.allrum', 'playing') %}
+                media_player.media_pause
+                {% else %}
+                media_player.media_play
+                {% endif %}
+              entity_id:
+                - media_player.allrum
+        # Long press
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.event == 1001 }}'
+          sequence:
+            - service: input_boolean.toggle
+              entity_id: input_boolean.film_spelar
