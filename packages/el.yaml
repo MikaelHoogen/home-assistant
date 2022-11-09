@@ -32,21 +32,21 @@ utility_meter:
     cycle: yearly
 #
 # Total kostnad
-  accumulated_cost_total_hour_sannesholma_2181:
-    source: sensor.accumulated_total_cost_hour
-    cycle: hourly
-  accumulated_cost_total_day_sannesholma_2181:
-    source: sensor.accumulated_total_cost_hour
-    cycle: daily
-  accumulated_cost_total_week_sannesholma_2181:
-    source: sensor.accumulated_total_cost_hour
-    cycle: weekly
-  accumulated_cost_total_month_sannesholma_2181:
-    source: sensor.accumulated_total_cost_hour
-    cycle: monthly
-  accumulated_cost_total_year_sannesholma_2181:
-    source: sensor.accumulated_total_cost_hour
-    cycle: yearly
+#  accumulated_cost_total_hour_sannesholma_2181:
+#    source: sensor.accumulated_total_cost_hour
+#    cycle: hourly
+#  accumulated_cost_total_day_sannesholma_2181:
+#    source: sensor.accumulated_total_cost_hour
+#    cycle: daily
+#  accumulated_cost_total_week_sannesholma_2181:
+#    source: sensor.accumulated_total_cost_hour
+#    cycle: weekly
+#  accumulated_cost_total_month_sannesholma_2181:
+#    source: sensor.accumulated_total_cost_hour
+#    cycle: monthly
+#  accumulated_cost_total_year_sannesholma_2181:
+#    source: sensor.accumulated_total_cost_hour
+#    cycle: yearly
 #
 # Kostnad nordpool
   accumulated_cost_ex_moms_hour_sannesholma_2181:
@@ -84,19 +84,19 @@ template:
 #          {{ states('sensor.accumulated_consumption_current_hour_sannesholma_2181') }}
 #
       ### Total Kostnad
-      - name: accumulated_total_cost_hour
-        unique_id: accumulated_total_cost_hour
-        unit_of_measurement: "SEK"
-        state_class: measurement
-        availability: "{{ is_number(states('sensor.accumulated_consumption_current_hour_sannesholma_2181')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-        state: "{{ ( states('sensor.accumulated_consumption_current_hour_sannesholma_2181') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
+#      - name: accumulated_total_cost_hour
+#        unique_id: accumulated_total_cost_hour
+#        unit_of_measurement: "SEK"
+#        state_class: measurement
+#        availability: "{{ is_number(states('sensor.accumulated_consumption_current_hour_sannesholma_2181')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+#        state: "{{ ( states('sensor.accumulated_consumption_current_hour_sannesholma_2181') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
 #        state: "{{ ( states('sensor.accumulated_consumption_current_hour_sannesholma_2181') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) if is_number(states('sensor.accumulated_consumption_current_hour_sannesholma_2181')) }}"
       #
       # Total kostnad månad
       - name: accumulated_total_cost_month
         unique_id: accumulated_total_cost_month
         unit_of_measurement: "SEK"
-        state_class: measurement
+        state_class: total_increasing
         availability: "{{ is_number(states('sensor.monthly_cost_sannesholma_2181')) and is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) and is_number(states('sensor.elpris_abonnemang')) }}"
         state: >
           {{ ( states ('sensor.monthly_cost_sannesholma_2181') | float('not_a_number') + states('sensor.monthly_net_consumption_sannesholma_2181') | float('not_a_number') * ( ( states('sensor.avgift_elnat') | float / 100 + states('sensor.avgift_energiskatt') | float / 100 + states('sensor.elpris_abonnemang') | float ) ) ) | round(3) }}
@@ -105,7 +105,7 @@ template:
       - name: accumulated_total_cost_grid_month
         unique_id: accumulated_total_cost_grid_month
         unit_of_measurement: "SEK"
-        state_class: measurement
+        state_class: total_increasing
         availability: "{{ is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) and is_number(states('sensor.elpris_abonnemang')) }}"
         state: >
           {{ ( states('sensor.monthly_net_consumption_sannesholma_2181') | float('not_a_number') * ( ( states('sensor.avgift_elnat') | float('naan') / 100 + states('sensor.avgift_energiskatt') | float('naan') / 100 + states('sensor.elpris_abonnemang') | float('naan') ) ) ) | round(3) }}
@@ -114,7 +114,7 @@ template:
       - name: accumulated_total_savings_month
         unique_id: accumulated_total_savings_month
         unit_of_measurement: SEK
-        state_class: measurement
+        state_class: total_increasing
         availability: " {{ is_number(states('sensor.accumulated_total_cost_month')) and is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) and is_number(states('sensor.elpris_totalt_medel')) }}"
         state: >
           {{ ( states('sensor.monthly_net_consumption_sannesholma_2181') | float('not_a_number') * states('sensor.elpris_totalt_medel') | float('not_a_number') - states('sensor.accumulated_total_cost_month') | float('not_a_number') ) | round(2) }}
@@ -123,7 +123,7 @@ template:
       - name: accumulated_cost_ex_moms_hour
         unique_id: accumulated_cost_ex_moms_hour
         unit_of_measurement: "SEK"
-        state_class: measurement
+        state_class: total_increasing
         availability: "{{ is_number(states('sensor.accumulated_consumption_current_hour_sannesholma_2181')) }}"
         state: >
           {{ ( states('sensor.accumulated_consumption_current_hour_sannesholma_2181') | float('not_a_number') * states('sensor.elpris') | float('not_a_number') ) | round(3) }}
@@ -181,11 +181,11 @@ template:
         state: "{{ ( states('sensor.monthly_cost_sannesholma_2181') | float('naan') / states('sensor.monthly_net_consumption_sannesholma_2181') | float('naan') ) | round(2) }}"
       #
       ### Medel totalt # Tas bort?
-      - name: average_total_price
-        unique_id: average_total_price
-        unit_of_measurement: "SEK/kWh"
-        state_class: measurement
-        state: "{{ ( states('sensor.accumulated_cost_total_month_sannesholma_2181') | float(0.0) / states('sensor.accumulated_consumption_month_sannesholma_2181') | float(0.0) ) | round(2) }}"
+#      - name: average_total_price
+#        unique_id: average_total_price
+#        unit_of_measurement: "SEK/kWh"
+#        state_class: measurement
+#        state: "{{ ( states('sensor.accumulated_cost_total_month_sannesholma_2181') | float(0.0) / states('sensor.accumulated_consumption_month_sannesholma_2181') | float(0.0) ) | round(2) }}"
       #
       #
       - name: average_total_price_new
