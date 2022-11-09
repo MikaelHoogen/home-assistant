@@ -1,6 +1,6 @@
 ##################### Brandvarnare #####################################
 automation:
-- alias: Kontroll av brandvarnare med push till Pushbullet
+- alias: Kontroll av brandvarnare
   trigger:
   - platform: event
     event_type: rfxtrx_event
