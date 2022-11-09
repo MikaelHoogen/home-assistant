@@ -36,7 +36,6 @@ automation:
               entity_id:
               - light.kok_fonsterbelysning
               - light.vardagsrum_fonster_hangande
-              #- light.vardagsrum_huslampa
               - light.vardagsrum_fonster_fotogen
               - light.vardagsrum_fonster_piano
               - light.vardagsrum_fonster_trappa
@@ -76,19 +75,6 @@ automation:
             - switch.adaptive_lighting_badrum
             - switch.adaptive_lighting_vardagsrum_belysning_filament
 #
-#- alias: Candle off
-#  trigger:
-#  - platform: state
-#    entity_id: input_boolean.candle
-#    to: 'off'
-#  action:
-#  - service: switch.turn_on
-#    entity_id:
-#    - switch.adaptive_lighting_kok
-#    - switch.adaptive_lighting_kok_fonster
-#    - switch.adaptive_lighting_hall
-#    - switch.adaptive_lighting_badrum
-#    - switch.adaptive_lighting_vardagsrum_belysning_filament
 ########## Levande ljus badrum ######################
 #
 - alias: Badrum Candle
@@ -124,12 +110,3 @@ automation:
             entity_id:
             - switch.adaptive_lighting_badrum
               #
-#- alias: Badrum Candle off
-#  trigger:
-#  - platform: state
-#    entity_id: input_boolean.badrum_candle
-#    to: 'off'
-#  action:
-#  - service: switch.turn_on
-#    entity_id:
-#    - switch.adaptive_lighting_badrum
