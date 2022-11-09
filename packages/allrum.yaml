@@ -9,7 +9,7 @@ adaptive_lighting:
       - light.allrum_klotlampa
     prefer_rgb_color: false
     transition: 30
-    initial_transition: 3
+    initial_transition: 1
     interval: 90
     min_brightness: 1
     max_brightness: 100
@@ -67,9 +67,9 @@ light:
       - light.allrum_fonster_betong
       - light.allrum_huslampa
 #
-input_boolean:
-  allrum_presence_flagga:
-    name: Flagga för närvaro i allrum
+#input_boolean:
+#  allrum_presence_flagga:
+#    name: Flagga för närvaro i allrum
 #
 sensor:
   - platform: template
@@ -104,7 +104,8 @@ binary_sensor:
         value_template: >-
           {{ is_state('binary_sensor.allrum_presence', 'on')
             and is_state('input_boolean.film_spelar', 'off') }}
-      # binary_sensor.allrum_rorelsesensor
+      #
+      # 
       allrum_presence_short:
         delay_off:
           minutes: 20
@@ -114,26 +115,13 @@ binary_sensor:
           or is_state('media_player.allrum', 'playing') }}
       # TODO
       # Läsning
-      ##################
-#      allrum_presence_long:
-#        value_template: >-
-#          {{ ( is_state('binary_sensor.allrum_rorelsesensor', 'on')
-#            or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on') )
-#            and is_state('binary_sensor.hall_rorelsesensor', 'off')
-#            and is_state('binary_sensor.kok_hue_motion_sensor_motion', 'off') }}
-#      allrum_presence_break:
-#        value_template: >-
-#          {{ is_state('binary_sensor.vardagsrum_rorelsesensor', 'off')
-#            and ( is_state('binary_sensor.hall_rorelsesensor', 'on')
-#            or is_state('binary_sensor.trappa_rorelsesensor', 'on')
-#            or is_state('binary_sensor.entredorr', 'on') ) }}
       ### Närvaro
       allrum_presence:
         device_class: motion
         friendly_name: Allrum
         value_template: >-
           {{ is_state('binary_sensor.allrum_presence_short', 'on') }}
-#            or is_state('input_boolean.presence_flagga_vardagsrum', 'on') }}
+#
 #
 automation:
   #
