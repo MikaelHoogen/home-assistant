@@ -25,15 +25,34 @@ utility_meter:
     source: sensor.tvattmaskin_timme_kostnad
     cycle: yearly
 #
-sensor:
-  - platform: template
-    sensors:
+#sensor:
+#  - platform: template
+#    sensors:
       ###
-      tvattmaskin_timme_kostnad:
-        friendly_name: "Kostnad"
-        unit_of_measurement: "SEK"
-        value_template: "{{ ( states('sensor.tvattmaskin_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+#      tvattmaskin_timme_kostnad:
+#        friendly_name: "Kostnad"
+#        unit_of_measurement: "SEK"
+#        value_template: "{{ ( states('sensor.tvattmaskin_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
 #
+template:
+  - sensor:
+      # Tvättmaskin
+    - name: tvattmaskin_timme_kostnad
+      unique_id: tvattmaskin_timme_kostnad
+      unit_of_measurement: "SEK"
+      device_class: monetary
+      availability: "{{ is_number(states('sensor.tvattmaskin_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+      state: "{{ ( states('sensor.tvattmaskin_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+      #
+  - binary_sensor:
+    - name: tvattmaskin
+      unique_id: tvattmaskin
+      delay_on:
+        seconds: 10
+      delay_off:
+        minutes: 2
+      state: "{{ states('sensor.tvattmaskin_effekt') | float(0.0) > 5 }}"
+    
 #
 variable:
 ### Tvättmaskin #######################
@@ -53,19 +72,19 @@ variable:
       icon: mdi:cash-multiple
       unit_of_measurement: "SEK"
 #
-binary_sensor:
+#binary_sensor:
 # Determine when the washing machine has a load running.
-  - platform: template
-    sensors:
-      tvattmaskin:
-        friendly_name: "Tvättmaskin"
-        delay_on:
-          seconds: 10
-        delay_off:
-          minutes: 2
-        value_template: >-
-          {{ states('sensor.tvattmaskin_effekt') | float(0.0) > 5 }}
-        icon_template: mdi:washing-machine
+#  - platform: template
+#    sensors:
+#      tvattmaskin:
+#        friendly_name: "Tvättmaskin"
+#        delay_on:
+#          seconds: 10
+#        delay_off:
+#          minutes: 2
+#        value_template: >-
+#          {{ states('sensor.tvattmaskin_effekt') | float(0.0) > 5 }}
+#        icon_template: mdi:washing-machine
 #
 automation:
 ############## Tvättmaskin ######################################################
