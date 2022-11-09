@@ -49,6 +49,7 @@ template:
         unique_id: eaton3s_timme_kostnad
         unit_of_measurement: "SEK"
         state_class: measurement
+        availability: "{{ is_number(states('sensor.eaton3s_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
         state: "{{ ( states('sensor.eaton3s_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
       ###
 #
