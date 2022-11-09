@@ -92,7 +92,8 @@ template:
       - name: vardagsrum_presence_light_automation_control
         unique_id: vardagsrum_presence_light_automation_control
         state: >-
-          {{ is_state('binary_sensor.vardagsrum_presence', 'on')
+          {{ ( is_state('binary_sensor.vardagsrum_presence', 'on')
+            or is_state('binary_sensor.kok_presence', 'on') )
             and is_state('binary_sensor.vardagsrum_lightlevel', 'off') }}
       #
       ### Belysning fönster
@@ -107,7 +108,8 @@ template:
       - name: vardagsrum_belysning_filament_automation_control
         unique_id: vardagsrum_belysning_filament_automation_control
         state: >-
-          {{ is_state('binary_sensor.vardagsrum_presence', 'on')
+          {{ ( is_state('binary_sensor.vardagsrum_presence', 'on')
+            or is_state('binary_sensor.kok_presence', 'on') )
             and is_state('binary_sensor.vardagsrum_belysning_filament_lightlevel', 'on')
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('input_boolean.sovdags', 'off') }}
