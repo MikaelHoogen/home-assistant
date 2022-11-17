@@ -139,7 +139,7 @@ template:
         unique_id: snickarboa_heater
         state: >
           {{ is_state('input_boolean.snickarboa_heater', 'on')
-          and is_state('binary_sensor.electricity_price_sannesholma_2181_max_3', 'off') }}
+          and is_state('binary_sensor.electricity_price_sannesholma_2181_above_avg_price', 'off') }}
 #
       ### Light level
       - name: snickarboa_lightlevel
