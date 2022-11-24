@@ -91,7 +91,7 @@ automation:
       - light.gastrum_fonster_2
 #
 #
-  - alias: Gästrum Knapp 1 klick
+  - alias: Gästrum knapp vid säng
     trigger:
       - platform: event
         event_type: deconz_event
