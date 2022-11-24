@@ -86,28 +86,50 @@ automation:
           - light.sovrum_fonster
           - light.sovrum_byra
 #
-  - alias: Sovrum Säng Mikael Knapp 1 klick
+  - alias: Sovrum Säng Mikael Knapp
     trigger:
       - platform: event
         event_type: deconz_event
         event_data:
           id: sovrum_sang_mikael_smart_switch
-          event: 1002
     action:
-      - service: input_boolean.toggle
-        target:
-          entity_id: input_boolean.sovdags
+      - choose:
+        # Short press
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.event == 1002 }}'
+          sequence:
+            - service: input_boolean.toggle
+              target:
+                entity_id: input_boolean.sovdags
 #
-  - alias: Sovrum Säng Mikael Knapp 2 klick
-    trigger:
-      - platform: event
-        event_type: deconz_event
-        event_data:
-          id: sovrum_sang_mikael_smart_switch
-          event: 1004
-    action:
-      - service: light.toggle
-        target:
-          entity_id: light.sovrum_sang_mikael
+        # Double press
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.event == 1004 }}'
+          sequence:
+            - service: light.toggle
+              target:
+                entity_id: light.sovrum_sang_mikael
+#
+        # Long press
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.event == 1001 }}'
+          sequence:
+            - service: switch.toggle
+              entity_id: switch.adaptive_lighting_sleep_mode_sovrum
+
+#  - alias: Sovrum Säng Mikael Knapp 2 klick
+#    trigger:
+#      - platform: event
+#        event_type: deconz_event
+#        event_data:
+#          id: sovrum_sang_mikael_smart_switch
+#          event: 1004
+#    action:
+#      - service: light.toggle
+#        target:
+#          entity_id: light.sovrum_sang_mikael
 
 # https://community.home-assistant.io/t/automation-with-templates-and-choose-action/218338
