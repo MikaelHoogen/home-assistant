@@ -2,7 +2,7 @@
 #
 input_number:
   electricity_price_sannesholma_2181_input_low:
-    name: Elpris gräns för lågt elpris
+    name: Elpris lågt
     min: 0
     max: 2
     step: 0.050
