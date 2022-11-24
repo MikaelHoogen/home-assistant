@@ -1,0 +1,7 @@
+homeassistant:
+  customize:
+#
+    sensor.mikrotik_hex_temperature:
+      state_class: measurement
+    sensor.mikrotik_hex_cpu_load:
+      state_class: measurement
