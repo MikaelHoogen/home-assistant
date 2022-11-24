@@ -108,14 +108,10 @@ sensor:
 #
 ###############################################################################
 utility_meter:
+  # Förbrukning
   heatpump_timme:
     source: sensor.heatpump_consumption_today
     cycle: hourly
-#
-#  heatpump_timme_test:
-#    source: sensor.heatpump_consumption_test
-#    cycle: hourly
-#
   heatpump_dag:
     source: sensor.heatpump_consumption_today
     cycle: daily
@@ -128,20 +124,23 @@ utility_meter:
   heatpump_ar:
     source: sensor.heatpump_consumption_today
     cycle: yearly
-  #
+  # Kostnad
   heatpump_timme_kostnad:
     source: sensor.heatpump_kostnad
     cycle: hourly
   heatpump_dag_kostnad:
     source: sensor.heatpump_kostnad
     cycle: daily
+  heatpump_vecka_kostnad:
+    source: sensor.heatpump_kostnad
+    cycle: weekly
   heatpump_manad_kostnad:
     source: sensor.heatpump_kostnad
     cycle: monthly
   heatpump_ar_kostnad:
     source: sensor.heatpump_kostnad
     cycle: yearly
-#
+# Varmvatten förbrukning
   heatpump_hotwater_timme:
     source: sensor.heatpump_hotwater_consumption_today
     cycle: hourly
@@ -157,7 +156,7 @@ utility_meter:
   heatpump_hotwater_ar:
     source: sensor.heatpump_hotwater_consumption_today
     cycle: yearly
-#
+# Varmvatten kostnad
   heatpump_hotwater_timme_kostnad:
     source: sensor.heatpump_hotwater_kostnad
     cycle: hourly
@@ -170,7 +169,7 @@ utility_meter:
   heatpump_hotwater_ar_kostnad:
     source: sensor.heatpump_hotwater_kostnad
     cycle: yearly
-#
+# Värme förbrukning
   heatpump_heat_timme:
     source: sensor.heatpump_heat_consumption_today
     cycle: hourly
@@ -186,7 +185,7 @@ utility_meter:
   heatpump_heat_ar:
     source: sensor.heatpump_heat_consumption_today
     cycle: yearly
-#
+# Värme kostnad
   heatpump_heat_timme_kostnad:
     source: sensor.heatpump_heat_kostnad
     cycle: hourly
@@ -247,7 +246,6 @@ template:
         unique_id: heatpump_block
         state: >
           {{ is_state('binary_sensor.electricity_price_sannesholma_2181_max', 'on')
-            or is_state('binary_sensor.electricity_price_sannesholma_2181_max_4', 'on')
             or is_state('binary_sensor.heatpump_run_time', 'off')
             or ( is_state('binary_sensor.electricity_price_sannesholma_2181_above_avg_price', 'on') 
                 and is_state('binary_sensor.electricity_price_sannesholma_2181_input_low', 'on') ) }}
@@ -329,14 +327,6 @@ template:
           0.0
           {% endif %}
       #
-#      - name: heatpump_compressor_consumption
-#        unique_id: heatpump_compressor_consumption
-#        unit_of_measurement: "kWh"
-#        state_class: total_increasing
-#        device_class: energy
-#        availability: "{{ is_number(states('sensor.heatpump_compressor_today')) }}"
-#        state: >
-#          {{ ( 400.0 * 5.5 * states('sensor.heatpump_compressor_today') | float('nan') / 1000.0 ) | round(3) }}
       #
       # Köldbärarpump aktiv effekt P
       - unique_id: heatpump_coldcircuitpump_real_power
@@ -350,14 +340,6 @@ template:
           0.0
           {% endif %}
 #
-#      - name: heatpump_coldcircuitpump_consumption
-#        unique_id: heatpump_coldcircuitpump_consumption
-#        unit_of_measurement: "kWh"
-#        state_class: total_increasing
-#        device_class: energy
-#        availability: "{{ is_number(states('sensor.heatpump_coldcircuitpump_today')) }}"
-#        state: >
-#          {{ ( 400.0 * 1.5 * states('sensor.heatpump_coldcircuitpump_today') | float('nan') / 1000.0 ) | round(3) }}
 #
 #
       ### Förbrukning
@@ -378,13 +360,6 @@ template:
 #        availability: "{{ is_number(states('sensor.heatpump_compressor_consumption')) and is_number(states('sensor.heatpump_coldcircuitpump_consumption')) }}"
 #        state: >
 #          {{ states('sensor.heatpump_compressor_consumption') | float('not_a_number') + states('sensor.heatpump_coldcircuitpump_consumption') | float('not_a_number') }}
-      #
-      - name: heatpump_consumption_measurement
-        unique_id: heatpump_consumption_measurement
-        unit_of_measurement: "kWh"
-        state_class: measurement
-        state: >
-          {{ states('sensor.heatpump_timme') }}
       #
       # Varmvatten
       - name: heatpump_hotwater_power
@@ -557,6 +532,17 @@ homeassistant:
     sensor.heatpump_hotwater_consumption:
       friendly_name: Värmepump varmvattenproduktion
       device_class: energy
+    #
+    heatpump_timme_kostnad:
+      state_class: total_increasing
+    heatpump_dag_kostnad:
+      state_class: total_increasing
+    heatpump_vecka_kostnad:
+      state_class: total_increasing
+    heatpump_manad_kostnad:
+      state_class: total_increasing
+    heatpump_ar_kostnad:
+      state_class: total_increasing
 #
 automation:
   - alias: Heatpump blockera
