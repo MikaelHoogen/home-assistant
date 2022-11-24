@@ -1,26 +1,34 @@
 template:
-    - sensor:
-      ### Tvättstuga
-      - name: sensorer_tvattstuga
-        unique_id: sensorer_tvattstuga
-#        availability: > 
-#          {{ is_number(states('sensor.tvattstuga_temperatur')) and is_number(states('sensor.tvattstuga_humidity')) and is_number(states('sensor.tvattstuga_v')) }}
-        state: "{{ states('sensor.time') }}"
-        attributes:
-          temperature: "{{ states('sensor.tvattstuga_temperatur') | round(1,'round-to-even', '-') }}"
-          humidity: "{{ states('sensor.tvattstuga_humidity') | round(0, 'round-to-even', '-') }}"
-          co2: "0"
-          v: "{{ states('sensor.tvattstuga_v') | round(1, 'round-to-even', '-') }}"
+  - sensor:
+    ### Tvättstuga
+    - name: sensorer_tvattstuga
+      unique_id: sensorer_tvattstuga
+      state: "{{ states('sensor.time') }}"
+      attributes:
+        temperature: "{{ states('sensor.tvattstuga_temperatur') | round(1,'round-to-even', '-') }}"
+        humidity: "{{ states('sensor.tvattstuga_humidity') | round(0, 'round-to-even', '-') }}"
+        co2: "0"
+        v: "{{ states('sensor.tvattstuga_v') | round(1, 'round-to-even', '-') }}"
 #
-      ### Snickarboa
-      - name: sensorer_snickarboa
-        unique_id: sensorer_snickarboa
-        state: "{{ states('sensor.time') }}"
-        attributes:
-          temperature: "{{ states('sensor.snickarboa_temperature') | round(1,'round-to-even', '-' ) }}"
-          humidity: "{{ states('sensor.snickarboa_humidity') | round(0, 'round-to-even', '-') }}"
-          co2: "0"
-          v: "{{ states('sensor.snickarboa_v') | round(1, 'round-to-even', '-') }}"
+    ### Snickarboa
+    - name: sensorer_snickarboa
+      unique_id: sensorer_snickarboa
+      state: "{{ states('sensor.time') }}"
+      attributes:
+        temperature: "{{ states('sensor.snickarboa_temperature') | round(1,'round-to-even', '-' ) }}"
+        humidity: "{{ states('sensor.snickarboa_humidity') | round(0, 'round-to-even', '-') }}"
+        co2: "0"
+        v: "{{ states('sensor.snickarboa_v') | round(1, 'round-to-even', '-') }}"
+#
+    ### Mikaels rum
+    - name: sensorer_mikaels_rum
+      unique_id: sensorer_mikaels_rum
+      state: "{{ states('sensor.time') }}"
+      attributes:
+        temperature: "{{ states('sensor.mikaels_rum_temperature') | round(1,'round-to-even', '-' ) }}"
+        humidity: "{{ states('sensor.mikaels_rum_humidity') | round(0, 'round-to-even', '-') }}"
+        co2: "---"
+        v: "{{ states('sensor.mikaels_rum_v') | round(1, 'round-to-even', '-') }}"
 #
 sensor:
   - platform: template

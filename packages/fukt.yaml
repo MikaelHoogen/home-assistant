@@ -1,3 +1,24 @@
+template:
+  - sensor:
+    ### Mikaels rum
+    - name: mikaels_rum_ps
+      unique_id: mikaels_rum_ps
+      device_class: humidity
+      availability: "{{ is_number(states('sensor.mikaels_rum_temperature')) }}"
+      state: "{{ 288.68 * ( 1.098 + states('sensor.mikaels_rum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+    #
+    - name: mikaels_rum_vs
+      unique_id: mikaels_rum_vs
+      device_class: humidity
+      availability: "{{ is_number(states('sensor.mikaels_rum_ps')) and is_number(states('sensor.mikaels_rum_temperature')) }}"
+      state: "{{ states('sensor.mikaels_rum_ps') | float(0.0) / ( 461.4 * ( states('sensor.mikaels_rum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+    #
+    - name: mikaels_rum_v
+      unique_id: mikaels_rum_v
+      device_class: humidity
+      availability: "{{ is_number(states('sensor.mikaels_rum_vs')) and is_number(states('sensor.mikaels_rum_humidity')) }}"
+      state: "{{ ( states('sensor.mikaels_rum_vs') | float(0.0) * ( states('sensor.mikaels_rum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+
 sensor:
   - platform: template
     sensors:
@@ -8,7 +29,7 @@ sensor:
         value_template: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_temperature') | float(0.0) / 100 ) ** 8.02 }}"
       #
       indoor_vs:
-        friendly_name: "Ånghalt inomhus ps"
+        friendly_name: "Ånghalt inomhus vs"
         device_class: "humidity"
         value_template: "{{ states('sensor.indoor_ps') | float(0.0) / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
