@@ -93,7 +93,8 @@ template:
         unique_id: vardagsrum_presence_light_automation_control
         state: >-
           {{ ( is_state('binary_sensor.vardagsrum_presence', 'on')
-            or is_state('binary_sensor.kok_presence', 'on') )
+            or is_state('binary_sensor.kok_presence', 'on')
+            or is_state('binary_sensor.hall_presence', 'on') )
             and is_state('binary_sensor.vardagsrum_lightlevel', 'off') }}
       #
       ### Belysning fönster
