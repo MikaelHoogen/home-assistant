@@ -15,10 +15,10 @@ automation:
 #      - binary_sensor.kd101_smoke_detector_b38d00_32
 #    to: 'on'
   action:
-  - service: notify.pushbullet
-    data_template:
-      message: "Brandvarnare aktiv"
-      title: "Rök detekterad"
+#  - service: notify.pushbullet
+#    data_template:
+#      message: "Brandvarnare aktiv"
+#      title: "Rök detekterad"
   - service: notify.mobile_app_sm_n975f
     data_template:
       message: "Brandvarnare aktiv"
@@ -27,10 +27,10 @@ automation:
     data_template:
       message: "Brandvarnare aktiv"
       title: "Rök detekterad"
-  - service: notify.pushbullet_lina
-    data_template:
-      message: "Brandvarnare aktiv"
-      title: "Rök detekterad"
+#  - service: notify.pushbullet_lina
+#    data_template:
+#      message: "Brandvarnare aktiv"
+#      title: "Rök detekterad"
   - service: persistent_notification.create
     data_template:
       message: "Brandvarnare aktiv"
@@ -60,10 +60,8 @@ alert:
     can_acknowledge: true
     skip_first: false
     notifiers:
-      - pushbullet
       - mobile_app_sm_n975f
-      - mobile_app_sm_g998b
-      - pushbullet_lina
+      - mobile_app_sm_g960f
       - persistent_notification
 #
 #
@@ -78,7 +76,6 @@ alert:
     can_acknowledge: true
     skip_first: false
     notifiers:
-      - pushbullet
       - mobile_app_sm_n975f
-      - mobile_app_sm_g998b
+      - mobile_app_sm_g960f
       - persistent_notification
