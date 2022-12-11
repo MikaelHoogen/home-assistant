@@ -11,9 +11,9 @@ utility_meter:
   torktumlare_manad:
     source: sensor.torktumlare_consumption
     cycle: monthly
-  torktumlare_ar:
-    source: sensor.torktumlare_consumption
-    cycle: yearly
+#  torktumlare_ar:
+#    source: sensor.torktumlare_consumption
+#    cycle: yearly
   #
   torktumlare_dag_kostnad:
     source: sensor.torktumlare_timme_kostnad
@@ -21,18 +21,10 @@ utility_meter:
   torktumlare_manad_kostnad:
     source: sensor.torktumlare_timme_kostnad
     cycle: monthly
-  torktumlare_ar_kostnad:
-    source: sensor.torktumlare_timme_kostnad
-    cycle: yearly
+#  torktumlare_ar_kostnad:
+#    source: sensor.torktumlare_timme_kostnad
+#    cycle: yearly
 #
-#sensor:
-#  - platform: template
-#    sensors:
-      ###
-#      torktumlare_timme_kostnad:
-#        friendly_name: "Kostnad"
-#        unit_of_measurement: "SEK"
-#        value_template: "{{ ( states('sensor.torktumlare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
 #
 template:
   - sensor:
@@ -40,13 +32,12 @@ template:
       - name: torktumlare_timme_kostnad
         unique_id: torktumlare_timme_kostnad
         unit_of_measurement: "SEK"
-#        state_class: measurement
         device_class: monetary
         availability: "{{ is_number(states('sensor.torktumlare_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
         state: "{{ ( states('sensor.torktumlare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
 #
 binary_sensor:
-# Determine when the washing machine has a load running.
+# Torktumlare
   - platform: template
     sensors:
       torktumlare:
@@ -58,3 +49,24 @@ binary_sensor:
         value_template: >-
           {{ states('sensor.torktumlare_power') | float(0.0) > 1 }}
         icon_template: mdi:tumble-dryer
+#
+automation:
+  - alias: Torktumlare klar
+    trigger:
+      platform: state
+      entity_id: binary_sensor.torktumlare
+      from: "on"
+      to: "off"
+    action:
+      - service: persistent_notification.create
+        data_template:
+          message: "Torktumlare"
+          title: "Torktumlaren är klar"
+      - service: notify.mobile_app_sm_n975f
+        data_template:
+          message: "Torktumlare klar"
+          title: "Torktumlaren är klar"
+      - service: notify.mobile_app_sm_g960f
+        data_template:
+          message: "Torktumlare"
+          title: "Torktumlaren är klar"
