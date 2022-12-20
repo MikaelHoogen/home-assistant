@@ -1,30 +1,31 @@
 ################# Circadian ##############################################
 adaptive_lighting:
-- name: Badrum
-  lights:
-  - light.badrum
-  prefer_rgb_color: false
-  transition: 30
-  initial_transition: 1
-  interval: 90
-  min_brightness: 20
-  max_brightness: 100
-  min_color_temp: 2100
-  max_color_temp: 4000
-  sleep_brightness: 1
-  sleep_color_temp: 2000
-  sleep_rgb_or_color_temp: rgb_color
-  sleep_rgb_color: [255, 161, 40]
+  - name: Badrum
+    lights:
+    - light.badrum
+    prefer_rgb_color: false
+    transition: 30
+    initial_transition: 1
+    interval: 90
+    min_brightness: 20
+    max_brightness: 100
+    min_color_temp: 2100
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_color_temp: 2000
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_rgb_color: [255, 161, 40]
+  #   max_sunrise_time: 07:00:00
   #sunrise_time: "07:00:00"  # override the sunrise time
-#    sunrise_offset:
-#    sunset_time: "20:00:00"
-#    sunset_offset: 1800  # in seconds or '00:15:00'
-  # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
-  take_over_control: true
-  detect_non_ha_changes: true
-  # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-  only_once: false
-  separate_turn_on_commands: false
+  #    sunrise_offset:
+  #    sunset_time: "20:00:00"
+  #    sunset_offset: 1800  # in seconds or '00:15:00'
+    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+    take_over_control: true
+    detect_non_ha_changes: true
+    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+    only_once: false
+    separate_turn_on_commands: false
 #
 input_number:
   badrum_light_level:
@@ -36,45 +37,45 @@ input_number:
     icon: mdi:lightbulb-on
 #
 binary_sensor:
-- platform: template
-  sensors:
-    ### Light level
-    badrum_lightlevel:
-      friendly_name: Badrum
-      device_class: light
-      delay_on:
-        minutes: 5
-      value_template: >-
-        {{ states('sensor.badrum_hue_motion_sensor_light_level') | float > states('input_number.badrum_light_level') | float }}
-    ### Närvaro
-    badrum_presence:
-      device_class: motion
-      friendly_name: Badrum
-      delay_off:
-        minutes: 10
-      value_template: >-
-        {{ is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'on') }}
-    ### Närvarostyrd belysning
-    badrum_presence_light_automation_control:
-      friendly_name: badrum
-      value_template: >-
-        {{ is_state('binary_sensor.badrum_presence', 'on') 
-            and is_state('binary_sensor.badrum_lightlevel', 'off') }}
+  - platform: template
+    sensors:
+      ### Light level
+      badrum_lightlevel:
+        friendly_name: Badrum
+        device_class: light
+        delay_on:
+          minutes: 5
+        value_template: >-
+          {{ states('sensor.badrum_hue_motion_sensor_light_level') | float > states('input_number.badrum_light_level') | float }}
+      ### Närvaro
+      badrum_presence:
+        device_class: motion
+        friendly_name: Badrum
+        delay_off:
+          minutes: 10
+        value_template: >-
+          {{ is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'on') }}
+      ### Närvarostyrd belysning
+      badrum_presence_light_automation_control:
+        friendly_name: badrum
+        value_template: >-
+          {{ is_state('binary_sensor.badrum_presence', 'on') 
+              and is_state('binary_sensor.badrum_lightlevel', 'off') }}
 #
 automation:
 #
-- alias: Badrum belysning
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.badrum_presence_light_automation_control
-  - platform: homeassistant
-    event: start
-  action:
-  - service: >
-      {% if is_state('binary_sensor.badrum_presence_light_automation_control', 'on') %}
-      light.turn_on
-      {% elif is_state('binary_sensor.badrum_presence_light_automation_control', 'off') %}
-      light.turn_off
-      {% endif %}
-    entity_id:
-    - light.badrum
+  - alias: Badrum belysning
+    trigger:
+    - platform: state
+      entity_id: binary_sensor.badrum_presence_light_automation_control
+    - platform: homeassistant
+      event: start
+    action:
+    - service: >
+        {% if is_state('binary_sensor.badrum_presence_light_automation_control', 'on') %}
+        light.turn_on
+        {% elif is_state('binary_sensor.badrum_presence_light_automation_control', 'off') %}
+        light.turn_off
+        {% endif %}
+      entity_id:
+      - light.badrum

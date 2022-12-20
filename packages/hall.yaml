@@ -3,8 +3,8 @@ adaptive_lighting:
   - name: Hall
     lights:
       - light.hall
-      - light.vardagsrum_tak
       - light.hall_byra
+      - light.vardagsrum_tak
       - light.vardagsrum_bord
     prefer_rgb_color: false
     transition: 30
@@ -18,6 +18,7 @@ adaptive_lighting:
     sleep_color_temp: 2000
     sleep_rgb_or_color_temp: rgb_color
     sleep_rgb_color: [255, 161, 40]
+#    max_sunrise_time: 07:00:00
     #sunrise_time: "07:00:00" # override the sunrise time
     #    sunrise_offset:
     #    sunset_time: "20:00:00"
@@ -39,8 +40,6 @@ template:
     binary_sensor:
       - name: Hall dörrtrigger
         unique_id: Hall dörrtrigger
-#        delay_on:
-#          seconds: 1
         auto_off: 30
         state: "true"
 #
@@ -57,7 +56,8 @@ binary_sensor:
         value_template: >-
           {{ is_state('binary_sensor.hall_hue_motion_sensor_motion', 'on')
             or is_state('binary_sensor.hall_dorrtrigger', 'on') }}
-        ### Närvarostyrd belysning
+      #
+      ### Närvarostyrd belysning
       hall_presence_light_automation_control:
         friendly_name: Hall
         value_template: >-

@@ -1,67 +1,62 @@
 ################# Circadian ##############################################
 adaptive_lighting:
-- name: Kök
-  lights:
-    - light.kok_bankbelysning
-    - light.kok_koksbord_1
-    - light.kok_koksbord_2
-    - light.kok_kokso
-    - light.kok_tak
-    - light.kok_skafferi
-  prefer_rgb_color: false
-  transition: 30
-  initial_transition: 3
-  interval: 90
-  min_brightness: 30
-  max_brightness: 100
-  min_color_temp: 2100
-  max_color_temp: 4000
-  sleep_brightness: 1
-  sleep_color_temp: 2000
-  sleep_rgb_or_color_temp: rgb_color
-  sleep_rgb_color: [255, 161, 40]
-  #sunrise_time: "07:00:00" # override the sunrise time
-  #    sunrise_offset:
-  #    sunset_time: "20:00:00"
-  #    sunset_offset: 1800  # in seconds or '00:15:00'
-  # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
-  take_over_control: true
-  detect_non_ha_changes: true
-  # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-  only_once: false
-  separate_turn_on_commands: false
+  - name: Kök
+    lights:
+      - light.kok_bankbelysning
+      - light.kok_koksbord_1
+      - light.kok_koksbord_2
+      - light.kok_kokso
+      - light.kok_tak
+      - light.kok_skafferi
+    prefer_rgb_color: false
+    transition: 30
+    initial_transition: 3
+    interval: 90
+    min_brightness: 30
+    max_brightness: 100
+    min_color_temp: 2100
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_color_temp: 2000
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_rgb_color: [255, 161, 40]
+    #sunrise_time: "07:00:00" # override the sunrise time
+#    max_sunrise_time: 07:00:00
+    #    sunrise_offset:
+    #    sunset_time: "20:00:00"
+    #    sunset_offset: 1800  # in seconds or '00:15:00'
+    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+    take_over_control: true
+    detect_non_ha_changes: true
+    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+    only_once: false
+    separate_turn_on_commands: false
+  #
+  - name: Kök fönster
+    lights:
+      - light.kok_fonster_1
+      - light.kok_fonster_2
+      - light.kok_fonster_3
+    prefer_rgb_color: false
+    transition: 45
+    initial_transition: 5
+    interval: 90
+    min_brightness: 1
+    max_brightness: 45
+    min_color_temp: 2100
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_color_temp: 2000
+    #sunrise_time: "07:00:00" # override the sunrise time
+    #    sunrise_offset: -00:05:00
+    #    sunset_time: '20:00'
+    #    sunset_offset: 1800  # in seconds or '00:15:00'
+    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+    take_over_control: true
+    detect_non_ha_changes: false
+    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
+    only_once: false
 #
-- name: Kök fönster
-  lights:
-    - light.kok_fonster_1
-    - light.kok_fonster_2
-    - light.kok_fonster_3
-  prefer_rgb_color: false
-  transition: 45
-  initial_transition: 5
-  interval: 90
-  min_brightness: 1
-  max_brightness: 45
-  min_color_temp: 2100
-  max_color_temp: 4000
-  sleep_brightness: 1
-  sleep_color_temp: 2000
-  #sunrise_time: "07:00:00" # override the sunrise time
-  #    sunrise_offset: -00:05:00
-  #    sunset_time: '20:00'
-  #    sunset_offset: 1800  # in seconds or '00:15:00'
-  # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
-  take_over_control: true
-  detect_non_ha_changes: false
-  # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-  only_once: false
-#
-#group:
-#  kok_group:
-#    name: Kök
-#    entities:
-#      - light.kok
-#      - light.kok_fonsterbelysning
 #
 light:
   - platform: group
@@ -90,73 +85,68 @@ template:
       - name: Köksentré dörrtrigger
         auto_off: 5
         state: "true"
-#
-binary_sensor:
   #
-  - platform: template
-    sensors:
-      ### Light level
-      kok_belysning_filament_lightlevel:
-        friendly_name: Kök
-        delay_off:
-          minutes: 10
-        value_template: >-
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
-      ### Light level
-      kok_lightlevel:
-        device_class: light
-        friendly_name: Kök
-        delay_on:
-          minutes: 10
-        value_template: >-
-          {{ states('sensor.kok_hue_motion_sensor_light_level') | float > states('input_number.kok_light_level') | float }}
+  - binary_sensor:
+      #
       ### Närvaro
-      kok_presence:
+      - name: kok_presence
+        unique_id: kok_presence
         device_class: motion
-        friendly_name: Kök
         delay_off:
           minutes: 20
-        value_template: >-
+        state: >
           {{ is_state('binary_sensor.kok_hue_motion_sensor_motion', 'on')
             or is_state('binary_sensor.koksentre_dorrtrigger', 'on') }}
-#            or  ( is_state('binary_sensor.kok_presence', 'on')
-#              and is_state('binary_sensor.hall_hue_motion_sensor_motion', 'off')
-#              and is_state('binary_sensor.koksentre_dorrbrytare', 'off')
-#              and is_state('binary_sensor.vardagsrum_hue_motion_sensor_motion', 'off')
-#              and is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'off')
-#              )
-
+      #
+      ### Light level filament
+      - name: kok_belysning_filament_lightlevel
+        unique_id: kok_belysning_filament_lightlevel
+        delay_off:
+          minutes: 10
+        state: >
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
+      #
+      ### Light level
+      - name: kok_lightlevel
+        unique_id: kok_lightlevel
+        device_class: light
+        delay_on:
+          minutes: 10
+        state: >
+          {{ states('sensor.kok_hue_motion_sensor_light_level') | float > states('input_number.kok_light_level') | float }}
+      #
       ### Fönsterbelysning
-      kok_belysning_filament_automation_control:
-        friendly_name: Kök
-        value_template: >-
+      - name: kok_belysning_filament_automation_control
+        unique_id: kok_belysning_filament_automation_control
+        state: >
           {{ is_state('binary_sensor.kok_belysning_filament_lightlevel', 'on')
             and is_state('input_boolean.film_spelar', 'off') }}
-      ### Fönsterbelysning
-      kok_belysning_litet_fonster_automation_control:
-        friendly_name: Kök litet fönster
-        value_template: >-
-          {{ is_state('binary_sensor.kok_belysning_filament_lightlevel', 'on')  }}
-#            and ( state_attr('switch.adaptive_lighting_kok', 'color_temp_kelvin') <= 2300 | float ) }}
+      #
+      ### Fönsterbelysning litet fönster
+      - name: kok_belysning_litet_fonster_automation_control
+        unique_id: kok_belysning_litet_fonster_automation_control
+        state: >
+          {{ is_state('binary_sensor.kok_belysning_filament_lightlevel', 'on') }}
       #
       ### Närvarostyrd belysning
-      kok_presence_light_automation_control:
-        friendly_name: Kök
-        value_template: >-
+      - name: kok_presence_light_automation_control
+        unique_id: kok_presence_light_automation_control
+        state: >
           {{ ( is_state('binary_sensor.vardagsrum_presence', 'on')
             or is_state('binary_sensor.kok_presence', 'on')
             or is_state('binary_sensor.hall_presence', 'on') )
             and is_state('binary_sensor.kok_lightlevel', 'off') }}
       #
-      kok_skafferi_presence_light_automation_control:
-        friendly_name: Kök skafferi
-        value_template: >-
+      ### Skafferi
+      - name: kok_skafferi_presence_light_automation_control
+        unique_id: kok_skafferi_presence_light_automation_control
+        state: >
           {{ is_state('binary_sensor.kok_presence', 'on') }}
       #
-      # Bänk
-      kok_bank_presence_light_automation_control:
-        friendly_name: Kök bänkbelysning
-        value_template: >-
+      ### Bänk
+      - name: kok_bank_presence_light_automation_control
+        unique_id: kok_bank_presence_light_automation_control
+        state: >
           {{ is_state('binary_sensor.kok_presence', 'on')
             and ( state_attr('switch.adaptive_lighting_kok', 'color_temp_kelvin') >= 2200 | float )
             and is_state('binary_sensor.kok_lightlevel', 'off')

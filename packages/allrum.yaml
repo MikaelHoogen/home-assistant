@@ -6,9 +6,9 @@ adaptive_lighting:
       - light.allrum_tak_2
       - light.allrum_tak_3
       - light.allrum_laslampa
-      - light.allrum_klotlampa
-    prefer_rgb_color: false
+#      - light.allrum_klotlampa
     transition: 30
+    sleep_transition: 30
     initial_transition: 1
     interval: 90
     min_brightness: 30
@@ -19,6 +19,7 @@ adaptive_lighting:
     sleep_color_temp: 2000
     sleep_rgb_or_color_temp: rgb_color
     sleep_rgb_color: [255, 161, 40]
+#    max_sunrise_time: 07:00:00
     #sunrise_time: "07:00:00" # override the sunrise time
     #    sunrise_offset:
     #    sunset_time: "20:00:00"
@@ -26,9 +27,6 @@ adaptive_lighting:
     # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
     take_over_control: true
     detect_non_ha_changes: true
-    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-    only_once: false
-    separate_turn_on_commands: false
   #
   - name: Allrum belysning filament
     lights:
@@ -51,8 +49,6 @@ adaptive_lighting:
     # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
     take_over_control: true
     detect_non_ha_changes: true
-    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-    only_once: false
 #
 light:
   - platform: group
@@ -63,9 +59,10 @@ light:
       - light.allrum_tak_2
       - light.allrum_tak_3
       - light.allrum_laslampa
-      - light.allrum_klotlampa
+#      - light.allrum_klotlampa
       - light.allrum_fonster_betong
-      - light.allrum_huslampa
+      # Tillfälligt i vardagsrum
+#      - light.allrum_huslampa
 #
 #input_boolean:
 #  allrum_presence_flagga:
@@ -80,53 +77,103 @@ sensor:
         friendly_name: Allrum termostat temperatur
         value_template: "{{ state_attr('climate.netatmo_allrum', 'current_temperature') }}"
 #
-binary_sensor:
-  #
-  - platform: template
-    sensors:
-      allrum_belysning_filament_lightlevel:
-        friendly_name: Allrum
+template:
+#
+  - trigger:
+      - platform: event
+        event_type: deconz_event
+        event_data:
+          id: allrum_knapp
+          event: 1004
+    binary_sensor:
+      - name: Allrum läsning
+        unique_id: Allrum läsning
+        auto_off: 30
+        state: "true"
+#
+  - binary_sensor:
+      - name: allrum_belysning_filament_lightlevel
+        unique_id:  allrum_belysning_filament_lightlevel
         delay_off:
           minutes: 5
-        value_template: >-
+        state: >
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
       #
-      allrum_belysning_filament_automation_control:
-        friendly_name: Allrum
-        value_template: >-
+      # Belysning filament
+      - name: allrum_belysning_filament_automation_control
+        unique_id: allrum_belysning_filament_automation_control
+        state: >
           {{ is_state('binary_sensor.allrum_belysning_filament_lightlevel', 'on')
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('input_boolean.sovdags', 'off') }}
       #
-      ### Närvarostyrd belysning
-      allrum_presence_light_automation_control:
-        friendly_name: Allrum
-        value_template: >-
+      ### Närvarostyrd belysning i tak
+      - name: allrum_presence_light_automation_control
+        unique_id: allrum_presence_light_automation_control
+        state: >
           {{ is_state('binary_sensor.allrum_presence', 'on')
             and is_state('input_boolean.film_spelar', 'off') }}
       #
-      # 
-      allrum_presence_short:
+      # Belysning i hall
+      - name: allrum_belysning_hall_automation_control
+        unique_id: allrum_belysning_hall_automation_control
+        state: >
+          {{ ( is_state('binary_sensor.allrum_presence_hall', 'on')
+            or is_state('binary_sensor.mikaels_rum_narvaro', 'on') )
+            and is_state('input_boolean.film_spelar', 'off') }}
+      #
+      # Belysning läslampa
+      - name: allrum_belysning_laslampa_automation_control
+        unique_id: allrum_belysning_laslampa_automation_control
+        state: >
+          {{ ( is_state('binary_sensor.allrum_presence', 'on')
+            or is_state('binary_sensor.allrum_presence_laslampa', 'on') )
+            and is_state('input_boolean.film_spelar', 'off') }}
+      #
+      - name: allrum_presence_kort
+        unique_id: allrum_presence_kort
         delay_off:
-          minutes: 20
-        value_template: >-
-          {{ is_state('binary_sensor.allrum_rorelsesensor', 'on')
-          or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
+          seconds: 60
+        state: >
+          {{ is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on') }}
+      #
+      - name: allrum_presence_lang
+        unique_id: allrum_presence_lang
+        delay_on:
+          seconds: 90
+        delay_off:
+          minutes: 10
+        state: >
+          {{ is_state('binary_sensor.allrum_presence_kort', 'on')
           or is_state('media_player.allrum', 'playing') }}
-      # TODO
-      # Läsning
-      ### Närvaro
-      allrum_presence:
-        device_class: motion
-        friendly_name: Allrum
-        value_template: >-
-          {{ is_state('binary_sensor.allrum_presence_short', 'on') }}
+      #
+      - name: allrum_presence
+        unique_id: allrum_presence
+        state: >
+          {{ is_state('binary_sensor.allrum_presence_kort', 'on')
+          or is_state('binary_sensor.allrum_presence_lang', 'on') }}
+      #
+      #
+      - name: allrum_presence_hall
+        unique_id: allrum_presence_hall
+        delay_off:
+          minutes: 5
+        state: >
+          {{ is_state('binary_sensor.allrum_rorelsesensor', 'on') }}
+      #
+      - name: allrum_presence_läslampa
+        unique_id: allrum_presence_läslampa
+        delay_off:
+          minutes: 30
+        state: >
+          {{ is_state('binary_sensor.allrum_lasning', 'on') }}
 #
 #
 automation:
 #
 #
   - alias: Allrum belysning fönster
+    id: Allrum belysning fönster
     trigger:
       - platform: state
         entity_id: binary_sensor.allrum_belysning_filament_automation_control
@@ -141,10 +188,12 @@ automation:
           {% endif %}
         entity_id:
           - light.allrum_fonster_betong
-          - light.allrum_huslampa
+          # Tillfälligt i vardagsrum
+          #- light.allrum_huslampa
 #
 #
-  - alias: Allrum belysning
+  - alias: Allrum belysning tak
+    id: Allrum belysning tak
     trigger:
       - platform: state
         entity_id: binary_sensor.allrum_presence_light_automation_control
@@ -158,10 +207,47 @@ automation:
           light.turn_off
           {% endif %}
         entity_id:
-          - light.allrum
+          - light.allrum_tak_1
+          - light.allrum_tak_2
+
+#
+  - alias: Allrum belysning hall
+    id: Allrum belysning hall
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.allrum_belysning_hall_automation_control
+      - platform: homeassistant
+        event: start
+    action:
+      - service: >
+          {% if is_state('binary_sensor.allrum_belysning_hall_automation_control', 'on') %}
+          light.turn_on
+          {% elif is_state('binary_sensor.allrum_belysning_hall_automation_control', 'off') %}
+          light.turn_off
+          {% endif %}
+        entity_id:
+          - light.allrum_tak_3
+#
+  - alias: Allrum belysning läslampa
+    id: Allrum belysning läslampa
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.allrum_belysning_laslampa_automation_control
+      - platform: homeassistant
+        event: start
+    action:
+      - service: >
+          {% if is_state('binary_sensor.allrum_belysning_laslampa_automation_control', 'on') %}
+          light.turn_on
+          {% elif is_state('binary_sensor.allrum_belysning_laslampa_automation_control', 'off') %}
+          light.turn_off
+          {% endif %}
+        entity_id:
+          - light.allrum_laslampa
 #
 #
   - alias: Allrum knapp vid fåtölj
+    id: Allrum knapp vid fåtölj
     trigger:
       - platform: event
         event_type: deconz_event
@@ -175,6 +261,7 @@ automation:
 #
 #
   - alias: Allrum knapp vid tv
+    id: Allrum knapp vid tv
     trigger:
       - platform: event
         event_type: deconz_event
@@ -182,6 +269,7 @@ automation:
           id: allrum_smart_switch
     action:
       - choose:
+        #
         # Double press
         - conditions:
             - condition: template
@@ -206,6 +294,7 @@ automation:
                 {% endif %}
               entity_id:
                 - media_player.allrum
+        #
         # Long press
         - conditions:
             - condition: template

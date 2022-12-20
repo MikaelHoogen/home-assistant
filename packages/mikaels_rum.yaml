@@ -41,6 +41,7 @@ adaptive_lighting:
     max_color_temp: 4000
     sleep_brightness: 1
     sleep_color_temp: 2000
+#    max_sunrise_time: 07:00:00
     #sunrise_time: "07:00:00" # override the sunrise time
     #    sunrise_offset:
     #    sunset_time: "20:00:00"
@@ -65,32 +66,39 @@ light:
       - light.mikaels_rum_tak
 #
 template:
-  - sensor:
-      ############# Temperatur #########################
-      - name: netatmo_mikaels_rum_temperature
-        unique_id: netatmo_mikaels_rum_temperature
-        unit_of_measurement: "°C"
-        device_class: temperature
-        state: "{{ state_attr('climate.netatmo_mikaels_rum', 'current_temperature') }}"
 #
-binary_sensor:
+  - binary_sensor:
   #
-  - platform: template
-    sensors:
-      mikaels_rum_belysning_lightlevel:
-        friendly_name: Mikaels rum
+      - name: mikaels_rum_belysning_lightlevel
+        unique_id: mikaels_rum_belysning_lightlevel
         delay_off:
           minutes: 5
-        value_template: >-
+        state: >
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
-      mikaels_rum_belysning_automation_control:
-        friendly_name: Mikaels rum
-        value_template: >-
+      #
+      - name: mikaels_rum_belysning_automation_control
+        unique_id: mikaels_rum_belysning_automation_control
+        state: >
           {{ is_state('binary_sensor.mikaels_rum_belysning_lightlevel', 'on') }}
+      #
+      - name: mikaels_rum_närvaro
+        unique_id: mikaels_rum_närvaro
+        delay_off:
+          minutes: 10
+        state: >
+          {{ is_state('binary_sensor.mikaels_rum_rorelsesensor', 'on') }}
+      #
+      - name: mikaels_rum_belysning_av
+        unique_id: mikaels_rum_belysning_av
+        delay_off:
+          minutes: 60
+        state: >
+          {{ is_state('binary_sensor.mikaels_rum_rorelsesensor', 'on') }}
 #
 automation:
   #
   - alias: Mikaels rum belysning
+    id: Mikaels rum belysning
     trigger:
       - platform: state
         entity_id: binary_sensor.mikaels_rum_belysning_automation_control
@@ -105,3 +113,13 @@ automation:
           {% endif %}
         entity_id:
           - light.kontor_fonster
+#
+  - alias: Mikaels rum belysning av
+    id: Mikaels rum belysning av
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.mikaels_rum_belysning_av
+        to: 'off'
+    action:
+      - service: light.turn_off
+        entity_id: light.mikaels_rum_hue
