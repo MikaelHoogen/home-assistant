@@ -4,7 +4,8 @@ adaptive_lighting:
   - name: Vardagsrum belysning filament
     lights:
       - light.vardagsrum_fonster_hangande
-#      - light.vardagsrum_huslampa
+      # Tillfälligt pga jul
+      - light.allrum_huslampa
       - light.vardagsrum_fonster_fotogen
       - light.vardagsrum_fonster_piano
       - light.vardagsrum_fonster_trappa
@@ -36,7 +37,8 @@ light:
     unique_id: vardagsrum
     entities:
       - light.vardagsrum_fonster_hangande
-#      - light.vardagsrum_huslampa
+      # Tillfälligt pga jul
+      - light.allrum_huslampa
       - light.vardagsrum_fonster_fotogen
       - light.vardagsrum_fonster_piano
       - light.vardagsrum_fonster_trappa
@@ -69,7 +71,7 @@ template:
         device_class: light
         delay_on:
           minutes: 10
-        state: >-
+        state: >
           {{ states('sensor.vardagsrum_hue_motion_sensor_light_level') | float > states('input_number.vardagsrum_light_level') | float }}
       ### Light level
       - name: vardagsrum_belysning_fonster_lightlevel
@@ -77,7 +79,7 @@ template:
 #        device_class: light
         delay_off:
           minutes: 10
-        state: >-
+        state: >
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
       #
       - name: vardagsrum_belysning_filament_lightlevel
@@ -85,13 +87,13 @@ template:
 #        device_class: light
         delay_off:
           minutes: 10
-        state: >-
+        state: >
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.vardagsrum_filament_light_level') | float }}
       #
       # Belysning närvaro
       - name: vardagsrum_presence_light_automation_control
         unique_id: vardagsrum_presence_light_automation_control
-        state: >-
+        state: >
           {{ ( is_state('binary_sensor.vardagsrum_presence', 'on')
             or is_state('binary_sensor.kok_presence', 'on')
             or is_state('binary_sensor.hall_presence', 'on') )
@@ -100,7 +102,7 @@ template:
       ### Belysning fönster
       - name: vardagsrum_belysning_fonster_automation_control
         unique_id: vardagsrum_belysning_fonster_automation_control
-        state: >-
+        state: >
           {{ is_state('binary_sensor.vardagsrum_belysning_fonster_lightlevel', 'on')
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('input_boolean.sovdags', 'off') }}
@@ -108,7 +110,7 @@ template:
       ### Belysning filament
       - name: vardagsrum_belysning_filament_automation_control
         unique_id: vardagsrum_belysning_filament_automation_control
-        state: >-
+        state: >
           {{ ( is_state('binary_sensor.vardagsrum_presence', 'on')
             or is_state('binary_sensor.kok_presence', 'on') )
             and is_state('binary_sensor.vardagsrum_belysning_filament_lightlevel', 'on')
@@ -161,7 +163,8 @@ automation:
           light.turn_off
           {% endif %}
         entity_id:
-#          - light.vardagsrum_huslampa
+          # Tillfälligt pga jul
+          - light.allrum_huslampa
           - light.vardagsrum_fonster_fotogen
           - light.vardagsrum_fonster_hangande
 #
