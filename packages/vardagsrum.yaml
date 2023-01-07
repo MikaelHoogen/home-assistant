@@ -45,6 +45,7 @@ light:
       - light.vardagsrum_tak
       - light.vardagsrum_fonster_ytterdorr
       - light.vardagsrum_fonster_vitrinskap
+      - light.vardagsrum_bord
 #
 input_number:
   vardagsrum_light_level:
@@ -63,6 +64,7 @@ input_number:
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
 #
+#
 template:
     - binary_sensor:
       ### Light level
@@ -76,7 +78,6 @@ template:
       ### Light level
       - name: vardagsrum_belysning_fonster_lightlevel
         unique_id: vardagsrum_belysning_fonster_lightlevel
-#        device_class: light
         delay_off:
           minutes: 10
         state: >
@@ -84,7 +85,6 @@ template:
       #
       - name: vardagsrum_belysning_filament_lightlevel
         unique_id: vardagsrum_belysning_filament_lightlevel
-#        device_class: light
         delay_off:
           minutes: 10
         state: >
