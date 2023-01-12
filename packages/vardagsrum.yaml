@@ -4,8 +4,6 @@ adaptive_lighting:
   - name: Vardagsrum belysning filament
     lights:
       - light.vardagsrum_fonster_hangande
-      # Tillfälligt pga jul
-      - light.allrum_huslampa
       - light.vardagsrum_fonster_fotogen
       - light.vardagsrum_fonster_piano
       - light.vardagsrum_fonster_trappa
@@ -37,8 +35,6 @@ light:
     unique_id: vardagsrum
     entities:
       - light.vardagsrum_fonster_hangande
-      # Tillfälligt pga jul
-      - light.allrum_huslampa
       - light.vardagsrum_fonster_fotogen
       - light.vardagsrum_fonster_piano
       - light.vardagsrum_fonster_trappa
@@ -64,6 +60,16 @@ input_number:
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
 #
+climate:
+  - platform: generic_thermostat
+    name: Vardagsrum värmegolv
+    unique_id: Vardagsrum värmegolv
+    cold_tolerance: 0.1
+    hot_tolerance: 0.1
+    precision: 0.1
+    heater: switch.vardagsrum_varmegolv
+    target_sensor: sensor.vardagsrum_temperature
+    min_temp: 7
 #
 template:
     - binary_sensor:
@@ -163,8 +169,6 @@ automation:
           light.turn_off
           {% endif %}
         entity_id:
-          # Tillfälligt pga jul
-          - light.allrum_huslampa
           - light.vardagsrum_fonster_fotogen
           - light.vardagsrum_fonster_hangande
 #
@@ -184,3 +188,35 @@ automation:
         entity_id:
           - light.vardagsrum_tak
           - light.vardagsrum_bord
+#
+  - alias: Vardagsrum värme
+    id: Vardagsrum värme
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.heatpump_block
+      - platform: homeassistant
+        event: start
+    action:
+      - choose:
+        #
+        - conditions:
+            - condition: state
+              state: 'on'
+              entity_id: binary_sensor.heatpump_block
+          sequence:
+            - service: climate.set_hvac_mode
+              target:
+                entity_id: climate.vardagsrum_varmegolv
+              data:
+                hvac_mode: 'off'
+        #
+        - conditions:
+            - condition: state
+              state: 'off'
+              entity_id: binary_sensor.heatpump_block
+          sequence:
+            - service: climate.set_hvac_mode
+              target:
+                entity_id: climate.vardagsrum_varmegolv
+              data:
+                hvac_mode: 'heat'
