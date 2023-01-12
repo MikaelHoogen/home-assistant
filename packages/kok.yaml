@@ -28,9 +28,7 @@ adaptive_lighting:
     # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
     take_over_control: true
     detect_non_ha_changes: true
-    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-    only_once: false
-    separate_turn_on_commands: false
+#
   #
   - name: Kök fönster
     lights:
@@ -74,6 +72,32 @@ input_number:
     step: 10
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
+#
+#switch:
+#  - platform: template
+#    switches:
+#      kok_varmegolv_heat:
+#        unique_id: kok_varmegolv_heat
+#        value_template: "{{ is_state('switch.kok_varmegolv', 'off') }}"
+#        turn_on:
+#          service: switch.turn_off
+#          target:
+#            entity_id: switch.kok_varmegolv
+#        turn_off:
+#          service: switch.turn_on
+#          target:
+#            entity_id: switch.kok_varmegolv
+#
+climate:
+  - platform: generic_thermostat
+    name: Kök värmegolv
+    unique_id: Kök värmegolv
+    cold_tolerance: 0.1
+    hot_tolerance: 0.1
+    precision: 0.1
+    heater: switch.kok_varmegolv
+    target_sensor: sensor.kok_temperature
+    min_temp: 7
 #
 template:
   - trigger:
@@ -157,6 +181,7 @@ template:
 automation:
   #
   - alias: Kök belysning stora fönster
+    id: Kök belysning stora fönster
     trigger:
       - platform: state
         entity_id: binary_sensor.kok_belysning_filament_automation_control
@@ -174,6 +199,7 @@ automation:
           - light.kok_fonster_2
   #
   - alias: Kök belysning litet fönster
+    id: Kök belysning litet fönster
     trigger:
       - platform: state
         entity_id: binary_sensor.kok_belysning_litet_fonster_automation_control
@@ -190,6 +216,7 @@ automation:
           - light.kok_fonster_3
   #
   - alias: Kök bänkbelysning
+    id: Kök bänkbelysning
     trigger:
       - platform: state
         entity_id: binary_sensor.kok_bank_presence_light_automation_control
@@ -207,6 +234,7 @@ automation:
       
   #
   - alias: Kök takbelysning
+    id: Kök takbelysning
     trigger:
       - platform: state
         entity_id: binary_sensor.kok_presence_light_automation_control
@@ -227,6 +255,7 @@ automation:
           - light.hall_byra
 #
   - alias: Kök skafferibelysning
+    id: Kök skafferibelysning
     trigger:
       - platform: state
         entity_id: binary_sensor.kok_skafferi_presence_light_automation_control
@@ -241,3 +270,35 @@ automation:
           {% endif %}
         entity_id:
           - light.kok_skafferi
+#
+  - alias: Kök värme
+    id: Kök värme
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.heatpump_block
+      - platform: homeassistant
+        event: start
+    action:
+      - choose:
+        #
+        - conditions:
+            - condition: state
+              state: 'on'
+              entity_id: binary_sensor.heatpump_block
+          sequence:
+            - service: climate.set_hvac_mode
+              target:
+                entity_id: climate.kok_varmegolv
+              data:
+                hvac_mode: 'off'
+        #
+        - conditions:
+            - condition: state
+              state: 'off'
+              entity_id: binary_sensor.heatpump_block
+          sequence:
+            - service: climate.set_hvac_mode
+              target:
+                entity_id: climate.kok_varmegolv
+              data:
+                hvac_mode: 'heat'
