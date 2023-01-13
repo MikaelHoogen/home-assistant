@@ -5,6 +5,7 @@ adaptive_lighting:
   - light.barnrum_skank
   - light.barnrum_fonster_1
   - light.barnrum_fonster_2
+  - light.barnrum_tak_1
   # Julstjärna
   - light.barnrum_fonster
   prefer_rgb_color: false
@@ -27,9 +28,6 @@ adaptive_lighting:
   # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
   take_over_control: true
   detect_non_ha_changes: true
-  # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-  only_once: false
-  separate_turn_on_commands: false
 #
 input_boolean:
   barnrum_gaster:
@@ -53,25 +51,16 @@ input_number:
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
 #
-#binary_sensor:
-#
-#  - platform: template
-#    sensors:
-#      #
-#      barnrum_belysning_lightlevel:
-#        friendly_name: Barnrum
-#        delay_off:
-#          minutes: 15
-#        value_template: >-
-#          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.barnrum_light_level') | float }}
-#      #
-#      barnrum_belysning_automation_control:
-#        friendly_name: Barnrum
-#        value_template: >-
-#          {{ ( is_state('binary_sensor.barnrum_belysning_lightlevel', 'on')
-#            and is_state('input_boolean.sovdags', 'off') )
-#            or ( is_state('binary_sensor.barnrum_belysning_lightlevel', 'on')
-#            and is_state('input_boolean.barnrum_gaster', 'on') ) }}
+climate:
+  - platform: generic_thermostat
+    name: Barnrum värmegolv
+    unique_id: Barnrum värmegolv
+    cold_tolerance: 0.0
+    hot_tolerance: 0.2
+    precision: 0.1
+    heater: switch.barnrum_varmegolv
+    target_sensor: sensor.barnrum_temperature
+    min_temp: 7
 #
 template:
   - binary_sensor:
@@ -108,38 +97,70 @@ template:
 #
 automation:
 #
-- alias: Barnrum belysning
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.barnrum_belysning_automation_control
-  - platform: homeassistant
-    event: start
-  action:
-  - service: >
-      {% if is_state('binary_sensor.barnrum_belysning_automation_control', 'on') %}
-      light.turn_on
-      {% elif is_state('binary_sensor.barnrum_belysning_automation_control', 'off') %}
-      light.turn_off
-      {% endif %}
-    entity_id:
-    - light.barnrum_skank
+  - alias: Barnrum belysning
+    id: Barnrum belysning
+    trigger:
+    - platform: state
+      entity_id: binary_sensor.barnrum_belysning_automation_control
+    - platform: homeassistant
+      event: start
+    action:
+    - service: >
+        {% if is_state('binary_sensor.barnrum_belysning_automation_control', 'on') %}
+        light.turn_on
+        {% elif is_state('binary_sensor.barnrum_belysning_automation_control', 'off') %}
+        light.turn_off
+        {% endif %}
+      entity_id:
+      - light.barnrum_skank
+  #
+  #
+  - alias: Barnrum belysning fönster
+    id: Barnrum belysning fönster
+    trigger:
+    - platform: state
+      entity_id: binary_sensor.barnrum_belysning_fonster_automation_control
+    - platform: homeassistant
+      event: start
+    action:
+    - service: >
+        {% if is_state('binary_sensor.barnrum_belysning_fonster_automation_control', 'on') %}
+        light.turn_on
+        {% elif is_state('binary_sensor.barnrum_belysning_fonster_automation_control', 'off') %}
+        light.turn_off
+        {% endif %}
+      entity_id:
+      - light.barnrum_fonster_1
+      - light.barnrum_fonster_2
 #
-#
-- alias: Barnrum belysning fönster
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.barnrum_belysning_fonster_automation_control
-  - platform: homeassistant
-    event: start
-  action:
-  - service: >
-      {% if is_state('binary_sensor.barnrum_belysning_fonster_automation_control', 'on') %}
-      light.turn_on
-      {% elif is_state('binary_sensor.barnrum_belysning_fonster_automation_control', 'off') %}
-      light.turn_off
-      {% endif %}
-    entity_id:
-    - light.barnrum_fonster_1
-    - light.barnrum_fonster_2
-    # Julstjärna
-    - light.barnrum_fonster
+  - alias: Barnrum värme
+    id: Barnrum värme
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.heatpump_block
+      - platform: homeassistant
+        event: start
+    action:
+      - choose:
+        #
+        - conditions:
+            - condition: state
+              state: 'on'
+              entity_id: binary_sensor.heatpump_block
+          sequence:
+            - service: climate.set_hvac_mode
+              target:
+                entity_id: climate.barnrum_varmegolv
+              data:
+                hvac_mode: 'off'
+        #
+        - conditions:
+            - condition: state
+              state: 'off'
+              entity_id: binary_sensor.heatpump_block
+          sequence:
+            - service: climate.set_hvac_mode
+              target:
+                entity_id: climate.barnrum_varmegolv
+              data:
+                hvac_mode: 'heat'
