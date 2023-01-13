@@ -64,8 +64,8 @@ climate:
   - platform: generic_thermostat
     name: Vardagsrum värmegolv
     unique_id: Vardagsrum värmegolv
-    cold_tolerance: 0.1
-    hot_tolerance: 0.1
+    cold_tolerance: 0.0
+    hot_tolerance: 0.2
     precision: 0.1
     heater: switch.vardagsrum_varmegolv
     target_sensor: sensor.vardagsrum_temperature
