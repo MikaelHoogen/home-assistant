@@ -85,28 +85,28 @@ automation:
   action:
     - choose:
       #
-      - conditions:
-        - condition: state
-          state: 'on'
-          entity_id: input_boolean.badrum_candle
-        sequence:
-          - service: switch.turn_off
-            entity_id:
-            - switch.adaptive_lighting_badrum
-          - delay:
-              seconds: 5
-          - service: light.turn_on
-            data:
+        - conditions:
+            - condition: state
+              state: 'on'
+              entity_id: input_boolean.badrum_candle
+          sequence:
+            - service: switch.turn_off
               entity_id:
-              - light.badrum
-              profile: 'candle'
-      #
-      - conditions:
-        - condition: state
-          state: 'off'
-          entity_id: input_boolean.badrum_candle
-        sequence:
-          - service: switch.turn_on
-            entity_id:
-            - switch.adaptive_lighting_badrum
-              #
+              - switch.adaptive_lighting_badrum
+            - delay:
+                seconds: 5
+            - service: light.turn_on
+              data:
+                entity_id:
+                - light.badrum
+                profile: 'candle'
+        #
+        - conditions:
+            - condition: state
+              state: 'off'
+              entity_id: input_boolean.badrum_candle
+          sequence:
+            - service: switch.turn_on
+              entity_id:
+              - switch.adaptive_lighting_badrum
+                #
