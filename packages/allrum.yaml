@@ -61,21 +61,26 @@ light:
       - light.allrum_laslampa
 #      - light.allrum_klotlampa
       - light.allrum_fonster_betong
-      # Tillfälligt i vardagsrum
-#      - light.allrum_huslampa
+      - light.allrum_huslampa
 #
-#input_boolean:
-#  allrum_presence_flagga:
-#    name: Flagga för närvaro i allrum
 #
-sensor:
-  - platform: template
-    sensors:
-      ############# Temperatur #########################
-      netatmo_allrum_temperature:
-        unit_of_measurement: "°C"
-        friendly_name: Allrum termostat temperatur
-        value_template: "{{ state_attr('climate.netatmo_allrum', 'current_temperature') }}"
+input_number:
+#
+  allrum_huslampa_light_level:
+    name: Ljusstyrka allrum för belysning huslampa
+    min: 0
+    max: 2000
+    step: 10
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
+#
+  allrum_fonster_light_level:
+    name: Ljusstyrka allrum för fönsterbelysning
+    min: 0
+    max: 2000
+    step: 10
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
 #
 template:
 #
@@ -88,16 +93,24 @@ template:
     binary_sensor:
       - name: Allrum läsning
         unique_id: Allrum läsning
-        auto_off: 30
+        auto_off: 45
         state: "true"
 #
   - binary_sensor:
+      # Fömsterbeysning ljusstyrka
       - name: allrum_belysning_filament_lightlevel
-        unique_id:  allrum_belysning_filament_lightlevel
+        unique_id: allrum_belysning_filament_lightlevel
         delay_off:
           minutes: 5
         state: >
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.allrum_fonster_light_level') | float }}
+      # Huslampa
+      - name: allrum_huslampa_lightlevel
+        unique_id: allrum_huslampa_lightlevel
+        delay_off:
+          minutes: 5
+        state: >
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.allrum_huslampa_light_level') | float }}
       #
       # Belysning filament
       - name: allrum_belysning_filament_automation_control
@@ -107,11 +120,20 @@ template:
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('input_boolean.sovdags', 'off') }}
       #
+      # Huslampa automationskontroll
+      - name: allrum_huslampa_automation_control
+        unique_id: allrum_huslampa_automation_control
+        state: >
+          {{ is_state('binary_sensor.allrum_huslampa_lightlevel', 'on')
+            and is_state('input_boolean.film_spelar', 'off') }}
+      #
+      #
       ### Närvarostyrd belysning i tak
       - name: allrum_presence_light_automation_control
         unique_id: allrum_presence_light_automation_control
         state: >
-          {{ is_state('binary_sensor.allrum_presence', 'on')
+          {{ ( is_state('binary_sensor.allrum_presence', 'on')
+            or is_state('binary_sensor.allrum_presence_laslampa', 'on') )
             and is_state('input_boolean.film_spelar', 'off') }}
       #
       # Belysning i hall
@@ -188,8 +210,6 @@ automation:
           {% endif %}
         entity_id:
           - light.allrum_fonster_betong
-          # Tillfälligt i vardagsrum
-          #- light.allrum_huslampa
 #
 #
   - alias: Allrum belysning tak
@@ -245,6 +265,22 @@ automation:
         entity_id:
           - light.allrum_laslampa
 #
+  - alias: Allrum huslampa
+    id: Allrum huslampa
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.allrum_huslampa_automation_control
+      - platform: homeassistant
+        event: start
+    action:
+      - service: >
+          {% if is_state('binary_sensor.allrum_huslampa_automation_control', 'on') %}
+          light.turn_on
+          {% elif is_state('binary_sensor.allrum_huslampa_automation_control', 'off') %}
+          light.turn_off
+          {% endif %}
+        entity_id:
+          - light.allrum_huslampa
 #
   - alias: Allrum knapp vid fåtölj
     id: Allrum knapp vid fåtölj
