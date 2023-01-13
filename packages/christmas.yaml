@@ -48,13 +48,7 @@ light:
       # Gästrum
       - light.gastrum_ljusstake
   #
-  - platform: switch
-    name: Barnrum ljusstake
-    entity_id: switch.vardagsrum_fonster_ikea
   #
-  - platform: switch
-    name: Gästrum ljusstake
-    entity_id: switch.on_off_plug_in_unit_16
 #
 input_number:
   ljusstakar_light_level:
@@ -83,14 +77,34 @@ binary_sensor:
           {{ is_state('binary_sensor.ljusstakar_belysning_lightlevel', 'on')
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('input_boolean.sovdags', 'off') }}
-      # Gästrum
-      gastrum_ljusstakar_belysning_automation_control:
-        friendly_name: Ljusstakar
-        value_template: >-
-          {{ is_state('binary_sensor.ljusstakar_belysning_lightlevel', 'on')
-            and is_state('input_boolean.film_spelar', 'off')
-            and is_state('input_boolean.sovdags', 'off')
-            and is_state('input_boolean.sovdags_gastrum', 'off') }}
+#
+template:
+  - binary_sensor:
+    # Gästrum
+    - name: gastrum_ljusstakar_belysning_automation_control
+      unique_id: gastrum_ljusstakar_belysning_automation_control
+      state: >
+        {{ ( is_state('binary_sensor.ljusstakar_belysning_lightlevel', 'on')
+        and is_state('input_boolean.sovdags_gastrum', 'off')
+        and is_state('input_boolean.sovdags', 'off') )
+        or ( is_state('input_boolean.sovdags_gastrum', 'off') 
+        and is_state('input_boolean.gaster', 'on') 
+        and is_state('binary_sensor.ljusstakar_belysning_lightlevel', 'on') ) }}
+      #
+#      gastrum_ljusstakar_belysning_automation_control:
+#        friendly_name: Ljusstakar
+#        value_template: >
+#          {{ ( is_state('binary_sensor.ljusstakar_belysning_lightlevel', 'on')
+#          and is_state('input_boolean.sovdags_gastrum', 'off')
+#          and is_state('input_boolean.sovdags', 'off') )
+#          or ( is_state('input_boolean.sovdags_gastrum', 'off') 
+#          and is_state('input_boolean.gaster', 'on') 
+#          and is_state('binary_sensor.gastrum_belysning_lightlevel', 'on') ) }}
+
+#          {{ is_state('binary_sensor.ljusstakar_belysning_lightlevel', 'on')
+#            and is_state('input_boolean.film_spelar', 'off')
+#            and is_state('input_boolean.sovdags', 'off')
+#            and is_state('input_boolean.sovdags_gastrum', 'off') }}
 #
 automation:
   #
