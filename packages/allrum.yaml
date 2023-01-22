@@ -93,7 +93,7 @@ template:
     binary_sensor:
       - name: Allrum läsning
         unique_id: Allrum läsning
-        auto_off: 45
+        auto_off: 60
         state: "true"
 #
   - binary_sensor:
