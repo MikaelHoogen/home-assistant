@@ -32,33 +32,33 @@ sensor:
     value_template: '{{ value_json.CompressorState }}'
 #
 #
-  - platform: integration
-    source: sensor.heatpump_compressor_real_power
-    name: heatpump_compressor_consumption
-    unit_prefix: k
-    round: 2
-    method: left
+#  - platform: integration
+#    source: sensor.heatpump_compressor_real_power
+#    name: heatpump_compressor_consumption
+#    unit_prefix: k
+#    round: 2
+#    method: left
 #
-  - platform: integration
-    source: sensor.heatpump_coldcircuitpump_real_power
-    name: heatpump_coldcircuitpump_consumption
-    unit_prefix: k
-    round: 2
-    method: left
+#  - platform: integration
+#    source: sensor.heatpump_coldcircuitpump_real_power
+#    name: heatpump_coldcircuitpump_consumption
+#    unit_prefix: k
+#    round: 2
+#    method: left
 #
-  - platform: integration
-    source: sensor.heatpump_hotwater_power
-    name: heatpump_hotwater_consumption
-    unit_prefix: k
-    round: 2
-    method: left
+#  - platform: integration
+#    source: sensor.heatpump_hotwater_power
+#    name: heatpump_hotwater_consumption
+#    unit_prefix: k
+#    round: 2
+#    method: left
 #
-  - platform: integration
-    source: sensor.heatpump_heat_power
-    name: heatpump_heat_consumption
-    unit_prefix: k
-    round: 2
-    method: left
+#  - platform: integration
+#    source: sensor.heatpump_heat_power
+#    name: heatpump_heat_consumption
+#    unit_prefix: k
+#    round: 2
+#    method: left
 #
   - platform: history_stats
     name: heatpump_compressor_today
@@ -110,9 +110,11 @@ sensor:
 utility_meter:
   # Förbrukning
   heatpump_timme:
+    unique_id: heatpump_timme
     source: sensor.heatpump_consumption_today
     cycle: hourly
   heatpump_dag:
+    unique_id: heatpump_dag
     source: sensor.heatpump_consumption_today
     cycle: daily
   heatpump_vecka:
@@ -140,11 +142,13 @@ utility_meter:
   heatpump_ar_kostnad:
     source: sensor.heatpump_kostnad
     cycle: yearly
+#
 # Varmvatten förbrukning
   heatpump_hotwater_timme:
     source: sensor.heatpump_hotwater_consumption_today
     cycle: hourly
   heatpump_hotwater_dag:
+    unique_id: heatpump_hotwater_dag
     source: sensor.heatpump_hotwater_consumption_today
     cycle: daily
   heatpump_hotwater_vecka:
@@ -156,24 +160,30 @@ utility_meter:
   heatpump_hotwater_ar:
     source: sensor.heatpump_hotwater_consumption_today
     cycle: yearly
-# Varmvatten kostnad
+  #
+  # Varmvatten kostnad
   heatpump_hotwater_timme_kostnad:
     source: sensor.heatpump_hotwater_kostnad
     cycle: hourly
   heatpump_hotwater_dag_kostnad:
     source: sensor.heatpump_hotwater_kostnad
     cycle: daily
+  heatpump_hotwater_vecka_kostnad:
+    source: sensor.heatpump_hotwater_kostnad
+    cycle: weekly
   heatpump_hotwater_manad_kostnad:
     source: sensor.heatpump_hotwater_kostnad
     cycle: monthly
   heatpump_hotwater_ar_kostnad:
     source: sensor.heatpump_hotwater_kostnad
     cycle: yearly
+#
 # Värme förbrukning
   heatpump_heat_timme:
     source: sensor.heatpump_heat_consumption_today
     cycle: hourly
   heatpump_heat_dag:
+    unique_id: heatpump_heat_dag
     source: sensor.heatpump_heat_consumption_today
     cycle: daily
   heatpump_heat_vecka:
@@ -199,45 +209,7 @@ utility_meter:
     source: sensor.heatpump_heat_kostnad
     cycle: yearly
 ################################################################################
-#binary_sensor:
-#  #
-#  - platform: template
-#    sensors:
-#      heatpump_compressor_state:
-#        friendly_name: "Kompressor"
-#        unique_id: heatpump_compressor_state
-#        value_template: >-
-#          {{ state_attr('sensor.heatpump', 'CompressorState') > 0 }}
-#      #
-#      heatpump_switchvalve_state:
-#        friendly_name: "Växelventil"
-#        unique_id: heatpump_switchvalve_state
-#        value_template: >-
-#          {{ state_attr('sensor.heatpump', 'SwitchValve1State') > 0 }}
-#      #
-#      heatpump_radiatorpump_state:
-#        friendly_name: "Radiatorpump"
-#        unique_id: heatpump_radiatorpump_state
-#        value_template: >-
-##          {{ state_attr('sensor.heatpump', 'RadiatorPumpState') > 0 }}
-#      #
-#      heatpump_coldcircuitpump_state:
-#        friendly_name: "Köldbärarpump"
-#        unique_id: heatpump_coldcircuitpump_state
-#        value_template: >-
-#          {{ state_attr('sensor.heatpump', 'ColdCircuitPumpState') > 0 }}
-#      #
-#      heatpump_heatcircuitpumpstate_state:
-#        friendly_name: "Värmekretspump"
-#        unique_id: heatpump_heatcircuitpumpstate_state
-#        value_template: >-
-#          {{ state_attr('sensor.heatpump', 'HeatCircuitPumpState') > 0 }}
-#      #
-#      heatpump_sumalarm:
-#        friendly_name: "Summalarm"
-#        unique_id: heatpump_sumalarm
-#        value_template: >-
-#          {{ state_attr('sensor.heatpump', 'SumAlarm') > 0 }}
+#
 #
 template:
   - binary_sensor:
@@ -248,7 +220,7 @@ template:
           {{ is_state('binary_sensor.electricity_price_sannesholma_2181_max', 'on')
             or is_state('binary_sensor.heatpump_run_time', 'off')
             or ( is_state('binary_sensor.electricity_price_sannesholma_2181_above_avg_price', 'on') 
-                and is_state('binary_sensor.electricity_price_sannesholma_2181_input_low', 'on') ) }}
+            and is_state('binary_sensor.electricity_price_sannesholma_2181_input_low', 'on') ) }}
 #            or is_state('binary_sensor.elpris_very_expensive', 'on')electricity_price_sannesholma_2181_input_low
       ########################################################################
       # Värme
@@ -415,13 +387,6 @@ template:
 #          {{ states('sensor.heatpump_consumption') | float('nan') - states('sensor.heatpump_hotwater_consumption') | float('nan') }}
       #
       ####################################################################################################################################################
-      ### Kostnad test
-#      - name: heatpump_kostnad_test
-#        unique_id: heatpump_kostnad_test
-#        unit_of_measurement: "SEK"
-#        state_class: measurement
-#        availability: "{{ is_number(states('sensor.heatpump_timme_test')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-#        state: "{{ ( states('sensor.heatpump_timme_test') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
       ### Kostnad
       - name: heatpump_kostnad
         unique_id: heatpump_kostnad
