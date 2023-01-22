@@ -34,9 +34,6 @@ utility_meter:
     source: sensor.ehl75l9h_accumulated_total_cost_hour
     cycle: yearly
 #
-# Kostnad elbil
-  ehl75l9h_manad_tibber_kostnad:
-    source: sensor.ehl75l9h_accumulated_total_cost_hour
 #
 #
 template:
@@ -85,17 +82,17 @@ template:
         state: "{{ ( states('sensor.ehl75l9h_manad_tibber_kostnad') | float(0.0) / states('sensor.ehl75l9h_manad') | float(0.0) ) | round(2) }}"
         #
         # Medelpris tibber med garanti 50%
-      - name: ehl75l9h_average_price_tibber_guarantee
-        unique_id: ehl75l9h_average_price_tibber_guarantee
-        unit_of_measurement: "SEK/kWh"
-        state_class: measurement
-        availability: "{{ is_number(states('sensor.ehl75l9h_average_price_tibber')) and states('sensor.average_price_consumption_tibber') | float(0.0) > 0 }}"
-        state: >
-          {% if states('sensor.ehl75l9h_average_price_tibber') | float('naan')  >  states('sensor.average_price_consumption_tibber') | float('naan') %}
-            {{ states('sensor.ehl75l9h_average_price_tibber') | float('naan') / 2.0 }}
-          {% elif is_state('binary_sensor.barnrum_belysning_automation_control', 'off') %}
-            {{ states('sensor.ehl75l9h_average_price_tibber') | float('naan') }}
-          {% endif %}
+#      - name: ehl75l9h_average_price_tibber_guarantee
+#        unique_id: ehl75l9h_average_price_tibber_guarantee
+#        unit_of_measurement: "SEK/kWh"
+#        state_class: measurement
+#        availability: "{{ is_number(states('sensor.ehl75l9h_average_price_tibber')) and states('sensor.average_price_consumption_tibber') | float(0.0) > 0 }}"
+#        state: >
+#          {% if states('sensor.ehl75l9h_average_price_tibber') | float('naan')  >  states('sensor.average_price_consumption_tibber') | float('naan') %}
+#            {{ states('sensor.ehl75l9h_average_price_tibber') | float('naan') / 2.0 }}
+#          {% elif is_state('binary_sensor.barnrum_belysning_automation_control', 'off') %}
+#            {{ states('sensor.ehl75l9h_average_price_tibber') | float('naan') }}
+#          {% endif %}
       #
       - name: ehl75l9h_cellRSSI
         unique_id: ehl75l9h_cellRSSI
