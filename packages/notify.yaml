@@ -1,7 +1,0 @@
-notify:
-  - name: pushbullet
-    platform: pushbullet
-    api_key: !secret pushbullet_api_key
-#  - name: pushbullet Lina
-#    platform: pushbullet
-#    api_key: !secret pushbullet_lina_api_key
