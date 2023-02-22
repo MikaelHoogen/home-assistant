@@ -1,0 +1,43 @@
+automation:
+############## Tvättmaskin ######################################################
+  #
+  #
+  - alias: Sophämtning kärl 1
+    id: Sophämtning kärl 1
+    trigger:
+      platform: state
+      entity_id: sensor.karl_1
+      to: "tomorrow"
+    action:
+      - service: persistent_notification.create
+        data_template:
+          message: "Sophämtning"
+          title: "Imorgon tömts kärl 1"
+      - service: notify.mobile_app_sm_n975f
+        data_template:
+          message: "Sophämtning"
+          title: "Imorgon tömts kärl 1"
+      - service: notify.mobile_app_sm_g998b
+        data_template:
+          message: "Sophämtning"
+          title: "Imorgon tömts kärl 1"
+#
+  - alias: Sophämtning kärl 2
+    id: Sophämtning kärl 2
+    trigger:
+      platform: state
+      entity_id: sensor.karl_2
+      to: "tomorrow"
+    action:
+      - service: persistent_notification.create
+        data_template:
+          message: "Sophämtning"
+          title: "Imorgon tömts kärl 2"
+      - service: notify.mobile_app_sm_n975f
+        data_template:
+          message: "Sophämtning"
+          title: "Imorgon tömts kärl 2"
+      - service: notify.mobile_app_sm_g998b
+        data_template:
+          message: "Sophämtning"
+          title: "Imorgon tömts kärl 2"
