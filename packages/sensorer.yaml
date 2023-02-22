@@ -1,140 +1,140 @@
 template:
   - sensor:
-    ### Tvättstuga
-    - name: sensorer_tvattstuga
-      unique_id: sensorer_tvattstuga
-      state: "{{ states('sensor.time') }}"
-      attributes:
-        temperature: "{{ states('sensor.tvattstuga_temperatur') | round(1,'round-to-even', '-') }}"
-        humidity: "{{ states('sensor.tvattstuga_humidity') | round(0, 'round-to-even', '-') }}"
-        co2: "0"
-        v: "{{ states('sensor.tvattstuga_v') | round(1, 'round-to-even', '-') }}"
-#
-    ### Snickarboa
-    - name: sensorer_snickarboa
-      unique_id: sensorer_snickarboa
-      state: "{{ states('sensor.time') }}"
-      attributes:
-        temperature: "{{ states('sensor.snickarboa_temperature') | round(1,'round-to-even', '-' ) }}"
-        humidity: "{{ states('sensor.snickarboa_humidity') | round(0, 'round-to-even', '-') }}"
-        co2: "0"
-        v: "{{ states('sensor.snickarboa_v') | round(1, 'round-to-even', '-') }}"
-#
-    ### Mikaels rum
-    - name: sensorer_mikaels_rum
-      unique_id: sensorer_mikaels_rum
-      state: "{{ states('sensor.time') }}"
-      attributes:
-        temperature: "{{ states('sensor.mikaels_rum_temperature') | round(1,'round-to-even', '-' ) }}"
-        humidity: "{{ states('sensor.mikaels_rum_humidity') | round(0, 'round-to-even', '-') }}"
-        co2: "---"
-        v: "{{ states('sensor.mikaels_rum_v') | round(1, 'round-to-even', '-') }}"
-#
-sensor:
-  - platform: template
-    sensors:
-      ### Sovrum
-      sensorer_sovrum:
-        friendly_name: "1 Sovrum"
-        value_template: "{{ states('sensor.time') }}"
-        attribute_templates:
-          temperature: "{{ states('sensor.netatmo_rosa_van_temperature') }}"
-          humidity: "{{ states('sensor.netatmo_rosa_van_humidity') }}"
-          co2: "{{ states('sensor.netatmo_rosa_van_co2') }}"
-          v: "{{ states('sensor.sovrum_v') | round(1) }}"
-      ### Hall
-      sensorer_hall:
-        friendly_name: "0 Hall"
-        value_template: "{{ states('sensor.time') }}"
-        attribute_templates:
-          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_temperature') }}"
-          humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_humidity') }}"
-          co2: "{{ states('sensor.netatmo_sannesholma_weather_station_co2') }}"
-          v: "{{ states('sensor.indoor_v') | round(1) }}"
-      ### Tvättstuga
-#      sensorer_tvattstuga:
-#        friendly_name: "0 Tvättstuga"
-#        value_template: "{{ states('sensor.time') }}"
-#        attribute_templates:
-#          temperature: "{{ states('sensor.tvattstuga_temperatur') }}"
-#          humidity: "{{ states('sensor.tvattstuga_humidity') | round(0) }}"
-#          co2: "0"
-#          v: "{{ states('sensor.tvattstuga_v') | round(1) }}"
-      ### Badrum
-      sensorer_badrum:
-        friendly_name: "0 Badrum"
-        value_template: "{{ states('sensor.time') }}"
-        attribute_templates:
-          temperature: "{{ states('sensor.badrum_temperature') }}"
-          humidity: "{{ states('sensor.badrum_humidity') | round(0) }}"
-          co2: "0"
-          v: "{{ states('sensor.badrum_v') | round(1) }}"
-      ### Allrum
-      sensorer_allrum:
-        friendly_name: "1 Allrum"
-        value_template: "{{ states('sensor.time') }}"
-        attribute_templates:
-          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') }}"
-          humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_humidity') | round(0) }}"
-          co2: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_co2') | round(0) }}" 
-          v: "{{ states('sensor.allrum_v') | round(1) }}"
-      #
-      sensorer_ute:
-        friendly_name: "Utomhus"
-        value_template: "{{ states('sensor.time') }}"
-        attribute_templates:
-          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') }}"
-          humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_humidity') }}"
-          co2: "400"
-          v: "{{ states('sensor.utomhus_v') | round(1) }}"
-          vs: "{{ states('sensor.utomhus_vs') | float | round(2) }}"
-      #
+      - name: sensorer_tvattstuga
+        unique_id: sensorer_tvattstuga
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.tvattstuga_temperatur') | round(1,'round-to-even', '-') }} °C"
+          humidity: "{{ states('sensor.tvattstuga_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: ""
+          v: "{{ states('sensor.tvattstuga_v') | round(1, 'round-to-even', '-') }} g/m³"
+  #
       ### Snickarboa
-#      sensorer_snickarboa:
-#        friendly_name: "Snickarboa"
-#        value_template: "{{ states('sensor.time') }}"
-#        attribute_templates:
-#          temperature: "{{ states('sensor.snickarboa_temperature') }}"
-#          humidity: "{{ states('sensor.snickarboa_humidity') | round(0) }}"
-#          co2: "0"
-#          v: "{{ states('sensor.snickarboa_v') | round(1) }}"
+      - name: sensorer_snickarboa
+        unique_id: sensorer_snickarboa
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.snickarboa_temperature') | round(1,'round-to-even', '-' ) }} °C"
+          humidity: "{{ states('sensor.snickarboa_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: ""
+          v: "{{ states('sensor.snickarboa_v') | round(1, 'round-to-even', '-') }} g/m³"
+  #
+      ### Mikaels rum
+      - name: sensorer_mikaels_rum
+        unique_id: sensorer_mikaels_rum
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.mikaels_rum_temperature') | round(1,'round-to-even', '-' ) }} °C"
+          humidity: "{{ states('sensor.mikaels_rum_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: " "
+          v: "{{ states('sensor.mikaels_rum_v') | round(1, 'round-to-even', '-') }} g/m³"
+      ### Teknikrum
+      - name: sensorer_teknikrum
+        unique_id: sensorer_teknikrum
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.teknikrum_temperature') | round(1,'round-to-even', '-' ) }} °C"
+          humidity: "{{ states('sensor.teknikrum_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: " "
+          v: "{{ states('sensor.teknikrum_v') | round(1, 'round-to-even', '-') }} g/m³"
+  #
+      ### Sovrum
+      - name: sensorer_sovrum
+        unique_id: sensorer_sovrum
+      #  #friendly_name: "1 Sovrum"
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.netatmo_rosa_van_temperature') | round(1,'round-to-even', '-') }} °C"
+          humidity: "{{ states('sensor.netatmo_rosa_van_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: "{{ states('sensor.netatmo_rosa_van_co2') | round(0, 'round-to-even', '-')}} ppm"
+          v: "{{ states('sensor.sovrum_v') | round(1, 'round-to-even', '-') }} g/m³"
+#
+
+      ### Hall
+      - name: sensorer_hall
+        unique_id: sensorer_hall
+        ##friendly_name: "0 Hall"
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_temperature') | round(1,'round-to-even', '-') }} °C"
+          humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: "{{ states('sensor.netatmo_sannesholma_weather_station_co2') | round(0, 'round-to-even', '-')}} ppm"
+          v: "{{ states('sensor.indoor_v') | round(1, 'round-to-even', '-') }} g/m³"
+#
+
+      ### Badrum
+      - name: sensorer_badrum
+        unique_id: sensorer_badrum
+        #friendly_name: "0 Badrum"
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.badrum_temperature') | round(1,'round-to-even', '-') }} °C"
+          humidity: "{{ states('sensor.badrum_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: ""
+          v: "{{ states('sensor.badrum_v') | round(1, 'round-to-even', '-') }} g/m³"
+      ### Allrum
+      - name: sensorer_allrum
+        unique_id: sensorer_allrum
+        #friendly_name: "1 Allrum"
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | round(1,'round-to-even', '-') }} °C"
+          humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_co2') | round(0, 'round-to-even', '-')}} ppm"
+          v: "{{ states('sensor.allrum_v') | round(1, 'round-to-even', '-') }} g/m³"
+      #
+      - name: sensorer_ute
+        unique_id: sensorer_ute
+        #friendly_name: "Utomhus"
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | round(1,'round-to-even', '-') }} °C"
+          humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: "400 ppm"
+          v: "{{ states('sensor.utomhus_v') | round(1, 'round-to-even', '-') }} g/m³"
+#          vs: "{{ states('sensor.utomhus_vs') | float | round(2) }}"
+      #
       #
       ### Vardagsrum
-      sensorer_vardagsrum:
-        friendly_name: "0 Vardagsrum"
-        value_template: "{{ states('sensor.time') }}"
-        attribute_templates:
-          temperature: "{{ states('sensor.vardagsrum_temperature') }}"
-          humidity: "{{ states('sensor.vardagsrum_humidity') | round(0) }}"
-          co2: "0"
-          v: "{{ states('sensor.vardagsrum_v') | round(1) }}"
+      - name: sensorer_vardagsrum
+        unique_id: sensorer_vardagsrum
+        #friendly_name: "0 Vardagsrum"
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.vardagsrum_temperature') | round(1,'round-to-even', '-') }} °C"
+          humidity: "{{ states('sensor.vardagsrum_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: ""
+          v: "{{ states('sensor.vardagsrum_v') | round(1, 'round-to-even', '-') }} g/m³"
 #
           ### barnrum
-      sensorer_barnrum:
-        friendly_name: "0 Barnrum"
-        value_template: "{{ states('sensor.time') }}"
-        attribute_templates:
-          temperature: "{{ states('sensor.barnrum_temperature') }}"
-          humidity: "{{ states('sensor.barnrum_humidity') | round(0) }}"
-          co2: "0"
-          v: "{{ states('sensor.barnrum_v') | round(1) }}"
+      - name: sensorer_barnrum
+        unique_id: sensorer_barnrum
+        #friendly_name: "0 Barnrum"
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.barnrum_temperature') | round(1,'round-to-even', '-') }} °C"
+          humidity: "{{ states('sensor.barnrum_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: ""
+          v: "{{ states('sensor.barnrum_v') | round(1, 'round-to-even', '-') }} g/m³"
 #
           ### gastrum
-      sensorer_gastrum:
-        friendly_name: "0 Gästrum"
-        value_template: "{{ states('sensor.time') }}"
-        attribute_templates:
-          temperature: "{{ states('sensor.gastrum_temperature') }}"
-          humidity: "{{ states('sensor.gastrum_humidity') | round(0) }}"
-          co2: "0"
-          v: "{{ states('sensor.gastrum_v') | round(1) }}"
+      - name: sensorer_gastrum
+        unique_id: sensorer_gastrum
+        #friendly_name: "0 Gästrum"
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.gastrum_temperature') | round(1,'round-to-even', '-') }} °C"
+          humidity: "{{ states('sensor.gastrum_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: ""
+          v: "{{ states('sensor.gastrum_v') | round(1, 'round-to-even', '-') }} g/m³"
 #
           ### kok
-      sensorer_kok:
-        friendly_name: "0 Kök"
-        value_template: "{{ states('sensor.time') }}"
-        attribute_templates:
-          temperature: "{{ states('sensor.kok_temperature') }}"
-          humidity: "{{ states('sensor.kok_humidity') | round(0) }}"
-          co2: "0"
-          v: "{{ states('sensor.kok_v') | round(1) }}"
+      - name: sensorer_kok
+        unique_id: sensorer_kok
+        #friendly_name: "0 Kök"
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.kok_temperature') | round(1,'round-to-even', '-') }} °C"
+          humidity: "{{ states('sensor.kok_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: ""
+          v: "{{ states('sensor.kok_v') | round(1, 'round-to-even', '-') }} g/m³"
