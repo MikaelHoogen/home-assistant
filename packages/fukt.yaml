@@ -1,220 +1,231 @@
 template:
   - sensor:
     ### Mikaels rum
-    - name: mikaels_rum_ps
-      unique_id: mikaels_rum_ps
-      device_class: humidity
-      availability: "{{ is_number(states('sensor.mikaels_rum_temperature')) }}"
-      state: "{{ 288.68 * ( 1.098 + states('sensor.mikaels_rum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
-    #
-    - name: mikaels_rum_vs
-      unique_id: mikaels_rum_vs
-      device_class: humidity
-      availability: "{{ is_number(states('sensor.mikaels_rum_ps')) and is_number(states('sensor.mikaels_rum_temperature')) }}"
-      state: "{{ states('sensor.mikaels_rum_ps') | float(0.0) / ( 461.4 * ( states('sensor.mikaels_rum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
-    #
-    - name: mikaels_rum_v
-      unique_id: mikaels_rum_v
-      device_class: humidity
-      availability: "{{ is_number(states('sensor.mikaels_rum_vs')) and is_number(states('sensor.mikaels_rum_humidity')) }}"
-      state: "{{ ( states('sensor.mikaels_rum_vs') | float(0.0) * ( states('sensor.mikaels_rum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
-
-      ### Snickarboa
-    - name: snickarboa_ps
-      unique_id: snickarboa_ps
-      #friendly_name: "Ånghalt snickarboa ps"
-      device_class: "humidity"
-      state: "{{ 288.68 * ( 1.098 + states('sensor.snickarboa_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+      - name: mikaels_rum_ps
+        unique_id: mikaels_rum_ps
+        availability: "{{ is_number(states('sensor.mikaels_rum_temperature')) }}"
+        state: "{{ 288.68 * ( 1.098 + states('sensor.mikaels_rum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
       #
-    - name: snickarboa_vs
-      unique_id: snickarboa_vs
-      #friendly_name: "Ånghalt snickarboa vs"
-      device_class: "humidity"
-      state: "{{ states('sensor.snickarboa_ps') | float(0.0) / ( 461.4 * ( states('sensor.snickarboa_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+      - name: mikaels_rum_vs
+        unique_id: mikaels_rum_vs
+        availability: "{{ is_number(states('sensor.mikaels_rum_ps')) and is_number(states('sensor.mikaels_rum_temperature')) }}"
+        state: "{{ states('sensor.mikaels_rum_ps') | float(0.0) / ( 461.4 * ( states('sensor.mikaels_rum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
-    - name: snickarboa_v
-      unique_id: snickarboa_v
-      #  friendly_name: "Ånghalt snickarboa v"
-      unit_of_measurement: "g/m3"
-      device_class: "humidity"
-      state: "{{ ( states('sensor.snickarboa_vs') | float(0.0) * ( states('sensor.snickarboa_humidity') | float(0.0) / 100 ) ) | round(2) }}"
-#
-
-sensor:
-  - platform: template
-    sensors:
-      ### Indoor
-      indoor_ps:
-        friendly_name: "Ånghalt inomhus ps"
-        device_class: "humidity"
-        value_template: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_temperature') | float(0.0) / 100 ) ** 8.02 }}"
-      #
-      indoor_vs:
-        friendly_name: "Ånghalt inomhus vs"
-        device_class: "humidity"
-        value_template: "{{ states('sensor.indoor_ps') | float(0.0) / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
-      #
-      indoor_v:
-        friendly_name: "Ånghalt inomhus v"
+      - name: mikaels_rum_v
+        unique_id: mikaels_rum_v
         unit_of_measurement: "g/m3"
-        device_class: "humidity"
-        value_template: "{{ ( states('sensor.indoor_vs') | float(0.0) * ( states('sensor.netatmo_sannesholma_weather_station_humidity') | float(0.0) / 100 ) ) | round(2) }}"
-      #
-      ### Utomhus
-      utomhus_ps:
-        friendly_name: "Ånghalt utomhus ps"
-        device_class: "humidity"
-        value_template: >
+        availability: "{{ is_number(states('sensor.mikaels_rum_vs')) and is_number(states('sensor.mikaels_rum_humidity')) }}"
+        state: "{{ ( states('sensor.mikaels_rum_vs') | float(0.0) * ( states('sensor.mikaels_rum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+
+        ### Snickarboa
+      - name: snickarboa_ps
+        unique_id: snickarboa_ps
+        ##friendly_name: "Ånghalt snickarboa ps"
+        state: "{{ 288.68 * ( 1.098 + states('sensor.snickarboa_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+        #
+      - name: snickarboa_vs
+        unique_id: snickarboa_vs
+        ##friendly_name: "Ånghalt snickarboa vs"
+        state: "{{ states('sensor.snickarboa_ps') | float(0.0) / ( 461.4 * ( states('sensor.snickarboa_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+        #
+      - name: snickarboa_v
+        unique_id: snickarboa_v
+        #  #friendly_name: "Ånghalt snickarboa v"
+        unit_of_measurement: "g/m3"
+        state: "{{ ( states('sensor.snickarboa_vs') | float(0.0) * ( states('sensor.snickarboa_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+  #
+
+
+        ### Indoor
+      - name: indoor_ps
+        unique_id: indoor_ps
+        #  #friendly_name: "Ånghalt inomhus ps"
+        #  
+        state: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+        #
+      - name: indoor_vs
+        unique_id: indoor_vs
+        #  #friendly_name: "Ånghalt inomhus vs"
+        #  
+        state: "{{ states('sensor.indoor_ps') | float(0.0) / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+        #
+      - name: indoor_v
+        unique_id: indoor_v
+        #  #friendly_name: "Ånghalt inomhus v"
+        unit_of_measurement: "g/m3"
+        #  
+        state: "{{ ( states('sensor.indoor_vs') | float(0.0) * ( states('sensor.netatmo_sannesholma_weather_station_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+        #
+
+        ### Utomhus
+      - name: utomhus_ps
+        unique_id: utomhus_ps
+        #  #friendly_name: "Ånghalt utomhus ps"
+        #  
+        state: >
           {% if states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float(0.0) >= 0.0 %}
           {{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float(0.0) / 100 ) ** 8.02 }}
           {% else %}
           {{ 4.689 * ( 1.486 + states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float(0.0) / 100 ) ** 12.3 }}
           {% endif %}
       #
-      utomhus_vs:
-        friendly_name: "Ånghalt utomhus vs"
+      - name: utomhus_vs
+        unique_id: utomhus_vs
+        #friendly_name: "Ånghalt utomhus vs"
         unit_of_measurement: "g/m3"
-        device_class: "humidity"
-        value_template: "{{ states('sensor.utomhus_ps') | float(0.0) / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+        state: "{{ states('sensor.utomhus_ps') | float(0.0) / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
-      utomhus_v:
-        friendly_name: "Ånghalt utomhus v"
+      - name: utomhus_v
+        unique_id: utomhus_v
+        #friendly_name: "Ånghalt utomhus v"
         unit_of_measurement: "g/m3"
-        device_class: "humidity"
-        value_template: "{{ ( states('sensor.utomhus_vs') | float(0.0) * ( states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+        state: "{{ ( states('sensor.utomhus_vs') | float(0.0) * ( states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_humidity') | float(0.0) / 100 ) ) | round(2) }}"
       #
       ### Tvättstuga
-      tvattstuga_ps:
-        friendly_name: "Ånghalt tvättstuga ps"
-        device_class: "humidity"
-        value_template: "{{ 288.68 * ( 1.098 + states('sensor.tvattstuga_temperatur') | float(0.0) / 100 ) ** 8.02 }}"
+      - name: tvattstuga_ps
+        unique_id: tvattstuga_ps
+        #friendly_name: "Ånghalt tvättstuga ps"
+        state: "{{ 288.68 * ( 1.098 + states('sensor.tvattstuga_temperatur') | float(0.0) / 100 ) ** 8.02 }}"
       #
-      tvattstuga_vs:
-        friendly_name: "Ånghalt tvättstuga vs"
-        device_class: "humidity"
-        value_template: "{{ states('sensor.tvattstuga_ps') | float(0.0) / ( 461.4 * ( states('sensor.tvattstuga_temperatur') | float(0.0) + 273.2 ) ) * 1000 }}"
+      - name: tvattstuga_vs
+        unique_id: tvattstuga_vs
+        #friendly_name: "Ånghalt tvättstuga vs"
+        state: "{{ states('sensor.tvattstuga_ps') | float(0.0) / ( 461.4 * ( states('sensor.tvattstuga_temperatur') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
-      tvattstuga_v:
-        friendly_name: "Ånghalt tvättstuga v"
+      - name: tvattstuga_v
+        unique_id: tvattstuga_v
+        #friendly_name: "Ånghalt tvättstuga v"
         unit_of_measurement: "g/m3"
-        device_class: "humidity"
-        value_template: "{{ ( states('sensor.tvattstuga_vs') | float(0.0) * ( states('sensor.tvattstuga_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+        state: "{{ ( states('sensor.tvattstuga_vs') | float(0.0) * ( states('sensor.tvattstuga_humidity') | float(0.0) / 100 ) ) | round(2) }}"
       #
       ### Sovrum
-      sovrum_ps:
-        friendly_name: "Ånghalt sovrum ps"
-        device_class: "humidity"
-        value_template: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_rosa_van_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+      - name: sovrum_ps
+        unique_id: sovrum_ps
+        #friendly_name: "Ånghalt sovrum ps"
+        state: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_rosa_van_temperature') | float(0.0) / 100 ) ** 8.02 }}"
       #
-      sovrum_vs:
-        friendly_name: "Ånghalt sovrum vs"
-        device_class: "humidity"
-        value_template: "{{ states('sensor.sovrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.netatmo_rosa_van_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+      - name: sovrum_vs
+        unique_id: sovrum_vs
+        #friendly_name: "Ånghalt sovrum vs"
+        state: "{{ states('sensor.sovrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.netatmo_rosa_van_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
-      sovrum_v:
-        friendly_name: "Ånghalt sovrum v"
+      - name: sovrum_v
+        unique_id: sovrum_v
+        ##friendly_name: "Ånghalt sovrum v"
         unit_of_measurement: "g/m3"
-        device_class: "humidity"
-        value_template: "{{ ( states('sensor.sovrum_vs') | float(0.0) * ( states('sensor.netatmo_rosa_van_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+        state: "{{ ( states('sensor.sovrum_vs') | float(0.0) * ( states('sensor.netatmo_rosa_van_humidity') | float(0.0) / 100 ) ) | round(2) }}"
       #
       ### Allrum
-      allrum_ps:
-        friendly_name: "Ånghalt allrum ps"
-        device_class: "humidity"
-        value_template: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+      - name: allrum_ps
+        unique_id: allrum_ps
+        #friendly_name: "Ånghalt allrum ps"
+        state: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
       #
-      allrum_vs:
-        friendly_name: "Ånghalt allrum vs"
-        device_class: "humidity"
-        value_template: "{{ states('sensor.allrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+      - name: allrum_vs
+        unique_id: allrum_vs
+        #friendly_name: "Ånghalt allrum vs"
+        state: "{{ states('sensor.allrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
-      allrum_v:
-        friendly_name: "Ånghalt allrum v"
+      - name: allrum_v
+        unique_id: allrum_v
+        #friendly_name: "Ånghalt allrum v"
         unit_of_measurement: "g/m3"
-        device_class: "humidity"
-        value_template: "{{ ( states('sensor.allrum_vs') | float(0.0) * ( states('sensor.netatmo_sannesholma_weather_station_allrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+        state: "{{ ( states('sensor.allrum_vs') | float(0.0) * ( states('sensor.netatmo_sannesholma_weather_station_allrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
       ### Badrum
-      badrum_ps:
-        friendly_name: "Ånghalt badrum ps"
-        device_class: "humidity"
-        value_template: "{{ 288.68 * ( 1.098 + states('sensor.badrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+      - name: badrum_ps
+        unique_id: badrum_ps
+        #friendly_name: "Ånghalt badrum ps"
+        state: "{{ 288.68 * ( 1.098 + states('sensor.badrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
       #
-      badrum_vs:
-        friendly_name: "Ånghalt badrum vs"
-        device_class: "humidity"
-        value_template: "{{ states('sensor.badrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.badrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+      - name: badrum_vs
+        unique_id: badrum_vs
+        #friendly_name: "Ånghalt badrum vs"
+        state: "{{ states('sensor.badrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.badrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
-      badrum_v:
-        friendly_name: "Ånghalt badrum v"
+      - name: badrum_v
+        unique_id: badrum_v
+        #friendly_name: "Ånghalt badrum v"
         unit_of_measurement: "g/m3"
-        device_class: "humidity"
-        value_template: "{{ ( states('sensor.badrum_vs') | float(0.0) * ( states('sensor.badrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+        state: "{{ ( states('sensor.badrum_vs') | float(0.0) * ( states('sensor.badrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
 #
       ### Vardagsrum
-      vardagsrum_ps:
-        friendly_name: "Ånghalt vardagsrum ps"
-        device_class: "humidity"
-        value_template: "{{ 288.68 * ( 1.098 + states('sensor.vardagsrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+      - name: vardagsrum_ps
+        unique_id: vardagsrum_ps
+        #friendly_name: "Ånghalt vardagsrum ps"
+        state: "{{ 288.68 * ( 1.098 + states('sensor.vardagsrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
       #
-      vardagsrum_vs:
-        friendly_name: "Ånghalt vardagsrum vs"
-        device_class: "humidity"
-        value_template: "{{ states('sensor.vardagsrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.vardagsrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+      - name: vardagsrum_vs
+        unique_id: vardagsrum_vs
+        #friendly_name: "Ånghalt vardagsrum vs"
+        state: "{{ states('sensor.vardagsrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.vardagsrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
-      vardagsrum_v:
-        friendly_name: "Ånghalt vardagsrum v"
+      - name: vardagsrum_v
+        unique_id: vardagsrum_v
+        #friendly_name: "Ånghalt vardagsrum v"
         unit_of_measurement: "g/m3"
-        device_class: "humidity"
-        value_template: "{{ ( states('sensor.vardagsrum_vs') | float(0.0) * ( states('sensor.vardagsrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+        state: "{{ ( states('sensor.vardagsrum_vs') | float(0.0) * ( states('sensor.vardagsrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
 #
       ### barnrum
-      barnrum_ps:
-        friendly_name: "Ånghalt barnrum ps"
-        device_class: "humidity"
-        value_template: "{{ 288.68 * ( 1.098 + states('sensor.barnrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+      - name: barnrum_ps
+        unique_id: barnrum_ps
+        #friendly_name: "Ånghalt barnrum ps"
+        state: "{{ 288.68 * ( 1.098 + states('sensor.barnrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
       #
-      barnrum_vs:
-        friendly_name: "Ånghalt barnrum vs"
-        device_class: "humidity"
-        value_template: "{{ states('sensor.barnrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.barnrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+      - name: barnrum_vs
+        unique_id: barnrum_vs
+        #friendly_name: "Ånghalt barnrum vs"
+        state: "{{ states('sensor.barnrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.barnrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
-      barnrum_v:
-        friendly_name: "Ånghalt barnrum v"
+      - name: barnrum_v
+        unique_id: barnrum_v
+        #friendly_name: "Ånghalt barnrum v"
         unit_of_measurement: "g/m3"
-        device_class: "humidity"
-        value_template: "{{ ( states('sensor.barnrum_vs') | float(0.0) * ( states('sensor.barnrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+        state: "{{ ( states('sensor.barnrum_vs') | float(0.0) * ( states('sensor.barnrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
 #
       ### gastrum
-      gastrum_ps:
-        friendly_name: "Ånghalt gästrum ps"
-        device_class: "humidity"
-        value_template: "{{ 288.68 * ( 1.098 + states('sensor.gastrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+      - name: gastrum_ps
+        unique_id: gastrum_ps
+        #friendly_name: "Ånghalt gästrum ps"
+        state: "{{ 288.68 * ( 1.098 + states('sensor.gastrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
       #
-      gastrum_vs:
-        friendly_name: "Ånghalt gästrum vs"
-        device_class: "humidity"
-        value_template: "{{ states('sensor.gastrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.gastrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+      - name: gastrum_vs
+        unique_id: gastrum_vs
+        #friendly_name: "Ånghalt gästrum vs"
+        state: "{{ states('sensor.gastrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.gastrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
-      gastrum_v:
-        friendly_name: "Ånghalt gästrum v"
+      - name: gastrum_v
+        unique_id: gastrum_v
+        #friendly_name: "Ånghalt gästrum v"
         unit_of_measurement: "g/m3"
-        device_class: "humidity"
-        value_template: "{{ ( states('sensor.gastrum_vs') | float(0.0) * ( states('sensor.gastrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+        state: "{{ ( states('sensor.gastrum_vs') | float(0.0) * ( states('sensor.gastrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
 #
       ### kok
-      kok_ps:
-        friendly_name: "Ånghalt kök ps"
-        device_class: "humidity"
-        value_template: "{{ 288.68 * ( 1.098 + states('sensor.kok_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+      - name: kok_ps
+        unique_id: kok_ps
+        #friendly_name: "Ånghalt kök ps"
+        state: "{{ 288.68 * ( 1.098 + states('sensor.kok_temperature') | float(0.0) / 100 ) ** 8.02 }}"
       #
-      kok_vs:
-        friendly_name: "Ånghalt kök vs"
-        device_class: "humidity"
-        value_template: "{{ states('sensor.kok_ps') | float(0.0) / ( 461.4 * ( states('sensor.kok_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+      - name: kok_vs
+        unique_id: kok_vs
+        #friendly_name: "Ånghalt kök vs"
+        state: "{{ states('sensor.kok_ps') | float(0.0) / ( 461.4 * ( states('sensor.kok_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
-      kok_v:
-        friendly_name: "Ånghalt kök v"
+      - name: kok_v
+        unique_id: kok_v
+        #friendly_name: "Ånghalt kök v"
         unit_of_measurement: "g/m3"
-        device_class: "humidity"
-        value_template: "{{ ( states('sensor.kok_vs') | float(0.0) * ( states('sensor.kok_humidity') | float(0.0) / 100 ) ) | round(2) }}"
-
+        state: "{{ ( states('sensor.kok_vs') | float(0.0) * ( states('sensor.kok_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+#
+      ### Teknikrum
+      - name: teknikrum_ps
+        unique_id: teknikrum_ps
+        state: "{{ 288.68 * ( 1.098 + states('sensor.teknikrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+      #
+      - name: teknikrum_vs
+        unique_id: teknikrum_vs
+        state: "{{ states('sensor.teknikrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.teknikrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+      #
+      - name: teknikrum_v
+        unique_id: teknikrum_v
+        unit_of_measurement: "g/m3"
+        state: "{{ ( states('sensor.teknikrum_vs') | float(0.0) * ( states('sensor.teknikrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
