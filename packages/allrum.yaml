@@ -186,7 +186,7 @@ template:
       - name: allrum_presence_läslampa
         unique_id: allrum_presence_läslampa
         delay_off:
-          minutes: 30
+          minutes: 60
         state: >
           {{ is_state('binary_sensor.allrum_lasning', 'on') }}
 #
