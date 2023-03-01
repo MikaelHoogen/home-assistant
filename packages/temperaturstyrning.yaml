@@ -20,8 +20,8 @@ binary_sensor:
         value_template: >-
           {{ state_attr('weather.smhi_sannesholma', 'forecast')[0]['temperature'] | int >= 20
             or state_attr('weather.smhi_sannesholma', 'forecast')[1]['temperature'] | int >= 20
-            or is_state('binary_sensor.hot_outside', 'on')
-            or state_attr('weather.smhi_sannesholma', 'forecast')[0]['condition'] == 'sunny' }}
+            or is_state('binary_sensor.hot_outside', 'on') }}
+#            or state_attr('weather.smhi_sannesholma', 'forecast')[0]['condition'] == 'sunny' }}
 #          {{ ( state_attr('weather.smhi_home', 'forecast')[0]['temperature'] | int >= 20 and state_attr('weather.smhi_home', 'forecast')[0]['condition'] == 'sunny' )
 #            or ( state_attr('weather.smhi_home', 'forecast')[1]['temperature'] | int >= 20 and state_attr('weather.smhi_home', 'forecast')[1]['condition'] == 'sunny' )
 #            or is_state('binary_sensor.hot_outside', 'on') }}
@@ -51,49 +51,49 @@ binary_sensor:
 automation:
 ##############  ############################################################################################################
 ##############  ###################################################
-- alias: Climate schedule
-  trigger:
-    platform: state
-    entity_id: binary_sensor.climate_schedule
-    to: 'on'
-  action:
-  - service: climate.set_preset_mode
-    data:
-      entity_id:
-      - climate.netatmo_allrum
-      preset_mode: 'Schedule'
-##############  ####################################################
-- alias: Climate away
-  trigger:
-    platform: state
-    entity_id: binary_sensor.climate_away
-    to: 'on'
-  action:
-  - service: climate.set_preset_mode
-    data:
-      entity_id:
-      - climate.netatmo_allrum
-      preset_mode: 'away'
-##############  ####################################################
-- alias: Climate frost
-  trigger:
-    platform: state
-    entity_id: binary_sensor.climate_frost
-    to: 'on'
-  action:
-  - service: climate.set_preset_mode
-    data:
-      entity_id:
-      - climate.netatmo_allrum
-      preset_mode: 'Frost Guard'
-#
-- alias: Hot outside
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.hot_outside
-    to: 'on'
-  action:
-    service: notify.mobile_app_sm_n975f
-    data_template:
-      message: "Det är varmare utomhus än på éntreplanet"
-      title: "Varmt ute"
+  - alias: Climate schedule
+    trigger:
+      platform: state
+      entity_id: binary_sensor.climate_schedule
+      to: 'on'
+    action:
+    - service: climate.set_preset_mode
+      data:
+        entity_id:
+        - climate.netatmo_allrum
+        preset_mode: 'Schedule'
+  ##############  ####################################################
+  - alias: Climate away
+    trigger:
+      platform: state
+      entity_id: binary_sensor.climate_away
+      to: 'on'
+    action:
+    - service: climate.set_preset_mode
+      data:
+        entity_id:
+        - climate.netatmo_allrum
+        preset_mode: 'away'
+  ##############  ####################################################
+  - alias: Climate frost
+    trigger:
+      platform: state
+      entity_id: binary_sensor.climate_frost
+      to: 'on'
+    action:
+    - service: climate.set_preset_mode
+      data:
+        entity_id:
+        - climate.netatmo_allrum
+        preset_mode: 'Frost Guard'
+  #
+  - alias: Climate notify hot
+    trigger:
+    - platform: state
+      entity_id: binary_sensor.hot_outside
+      to: 'on'
+    action:
+      service: notify.mobile_app_sm_n975f
+      data_template:
+        message: "Det är varmare utomhus än på éntreplanet"
+        title: "Varmt ute"
