@@ -7,7 +7,6 @@ adaptive_lighting:
       - light.sovrum_byra
       - light.sovrum_sang_mikael
       - light.sovrum_sang_lina
-    prefer_rgb_color: false
     transition: 30
     initial_transition: 1
     interval: 90
@@ -16,19 +15,10 @@ adaptive_lighting:
     min_color_temp: 2000
     max_color_temp: 4000
     sleep_brightness: 1
-    sleep_color_temp: 2000
     sleep_rgb_or_color_temp: rgb_color
     sleep_rgb_color: [255, 161, 40]
-    #sunrise_time: "07:00:00" # override the sunrise time
-    #    sunrise_offset:
-    #    sunset_time: "20:00:00"
-    #    sunset_offset: 1800  # in seconds or '00:15:00'
-    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
     take_over_control: true
     detect_non_ha_changes: true
-    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-    only_once: false
-    separate_turn_on_commands: false
 #
 #
 input_number:

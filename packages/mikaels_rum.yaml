@@ -13,7 +13,7 @@ adaptive_lighting:
     interval: 90
     min_brightness: 20
     max_brightness: 100
-    min_color_temp: 2100
+    min_color_temp: 2000
     max_color_temp: 4500
     sleep_brightness: 1
     sleep_color_temp: 2000
@@ -31,7 +31,7 @@ adaptive_lighting:
     interval: 90
     min_brightness: 70
     max_brightness: 100
-    min_color_temp: 2100
+    min_color_temp: 2000
     max_color_temp: 4500
     sleep_brightness: 1
     sleep_color_temp: 2000
