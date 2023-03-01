@@ -1,14 +1,18 @@
 utility_meter:
   tvattmaskin_timme:
+    unique_id: tvattmaskin_timme
     source: sensor.tvattmaskin_consumption
     cycle: hourly
   tvattmaskin_dag:
+    unique_id: tvattmaskin_dag
     source: sensor.tvattmaskin_consumption
     cycle: daily
   tvattmaskin_vecka:
+    unique_id: tvattmaskin_vecka
     source: sensor.tvattmaskin_consumption
     cycle: weekly
   tvattmaskin_manad:
+    unique_id: vattmaskin_manad
     source: sensor.tvattmaskin_consumption
     cycle: monthly
 #  tvattmaskin_ar:
@@ -16,9 +20,11 @@ utility_meter:
 #    cycle: yearly
   #
   tvattmaskin_dag_kostnad:
+    unique_id: tvattmaskin_dag_kostnad
     source: sensor.tvattmaskin_timme_kostnad
     cycle: daily
   tvattmaskin_manad_kostnad:
+    unique_id: tvattmaskin_manad_kostnad
     source: sensor.tvattmaskin_timme_kostnad
     cycle: monthly
 #  tvattmaskin_ar_kostnad:
@@ -53,15 +59,6 @@ template:
           minutes: 2
         state: "{{ states('sensor.tvattmaskin_effekt') | float(0.0) > 5 }}"
     #
-    # Determine when the washing machine has a load running.
-      - name: tvattmaskin
-        unique_id: tvattmaskin
-        delay_on:
-          seconds: 10
-        delay_off:
-          minutes: 2
-        state: >
-          {{ states('sensor.tvattmaskin_effekt') | float(0.0) > 5 }}
 #
 #variable:
 ### Tvättmaskin #######################
@@ -85,41 +82,10 @@ template:
 #
 automation:
 ############## Tvättmaskin ######################################################
-  - alias: Energimätning tvättmaskin
-    trigger:
-      platform: state
-      entity_id: sensor.tvattmaskin_consumption
-    condition:
-      - condition: state
-        entity_id: binary_sensor.tvattmaskin
-        state: 'on'
-    action:
-      - service: variable.set_variable
-        data_template:
-          variable: tvattmaskin_consumption
-          value: '{{ ((states.variable.tvattmaskin_consumption.state | float) + (trigger.to_state.state | float - trigger.from_state.state | float)) | round(2) }}'
-      - service: variable.set_variable
-        data_template:
-          variable: tvattmaskin_cost
-          value: "{{ ((states.variable.tvattmaskin_cost.state | float) + ((trigger.to_state.state | float - trigger.from_state.state | float) * states('sensor.elpris_totalt') | float / 100.0 | float )) | round(3)}}"
   #
-  - alias: Energimätning tvättmaskin flytta värden
-    trigger:
-      platform: state
-      entity_id: binary_sensor.tvattmaskin
-      to: "on"
-      from: "off"
-    action:
-      - service: variable.set_variable
-        data_template:
-          variable: tvattmaskin_consumption
-          value: 0.0
-      - service: variable.set_variable
-        data_template:
-          variable: tvattmaskin_cost
-          value: 0.0
   #
   - alias: Tvättmaskin klar
+    id: Tvättmaskin klar
     trigger:
       platform: state
       entity_id: binary_sensor.tvattmaskin
@@ -134,7 +100,7 @@ automation:
         data_template:
           message: "Tvättmaskin klar"
           title: "Tvätten är klar"
-      - service: notify.mobile_app_sm_g960f
+      - service: notify.mobile_app_sm_g998b
         data_template:
           message: "Tvättmaskin klar"
           title: "Tvätten är klar"
