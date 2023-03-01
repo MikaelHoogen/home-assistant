@@ -5,6 +5,7 @@ sensor:
     resource: !secret easyserv
     verify_ssl: false
     name: heatpump
+    unique_id: heatpump
     json_attributes:
       - HotwaterTemp1
       - HotwaterTemp2
