@@ -23,7 +23,7 @@ automation:
     data_template:
       message: "Brandvarnare aktiv"
       title: "Rök detekterad"
-  - service: notify.mobile_app_sm_g960f
+  - service: notify.mobile_app_sm_g998b
     data_template:
       message: "Brandvarnare aktiv"
       title: "Rök detekterad"
@@ -61,7 +61,7 @@ alert:
     skip_first: false
     notifiers:
       - mobile_app_sm_n975f
-      - mobile_app_sm_g960f
+      - mobile_app_sm_g998b
       - persistent_notification
 #
 #
@@ -77,5 +77,20 @@ alert:
     skip_first: false
     notifiers:
       - mobile_app_sm_n975f
-      - mobile_app_sm_g960f
+      - mobile_app_sm_g998b
+      - persistent_notification
+#
+  heatpump_sumalarm:
+    name: Sumalarm Värmepump
+    title: Sumalarm Värmepump
+    message: Sumalart utlöst
+    done_message: Sumalarm återställt
+    entity_id: binary_sensor.heatpump_sumalarm
+    state: 'on'
+    repeat: 10
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - mobile_app_sm_n975f
+      - mobile_app_sm_g998b
       - persistent_notification
