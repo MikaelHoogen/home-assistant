@@ -14,19 +14,13 @@ adaptive_lighting:
     min_brightness: 20
     max_brightness: 100
     min_color_temp: 2100
-    max_color_temp: 4000
+    max_color_temp: 4500
     sleep_brightness: 1
     sleep_color_temp: 2000
-    #sunrise_time: "07:00:00" # override the sunrise time
-    #    sunrise_offset:
-    #    sunset_time: "20:00:00"
-    #    sunset_offset: 1800  # in seconds or '00:15:00'
+    max_sunrise_time: "07:00:00"  # override the sunrise time
     # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
     take_over_control: true
     detect_non_ha_changes: true
-    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-    only_once: false
-    separate_turn_on_commands: false
 
   - name: Mikaels rum ljusslinga
     lights:
@@ -38,32 +32,35 @@ adaptive_lighting:
     min_brightness: 70
     max_brightness: 100
     min_color_temp: 2100
-    max_color_temp: 4000
+    max_color_temp: 4500
     sleep_brightness: 1
     sleep_color_temp: 2000
-#    max_sunrise_time: 07:00:00
-    #sunrise_time: "07:00:00" # override the sunrise time
-    #    sunrise_offset:
-    #    sunset_time: "20:00:00"
-    #    sunset_offset: 1800  # in seconds or '00:15:00'
+    max_sunrise_time: 07:00:00
     # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
     take_over_control: true
     detect_non_ha_changes: true
-    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-    only_once: false
-    separate_turn_on_commands: false
 #
-light:
-  - platform: group
-    name: Mikaels rum
-    unique_id: mikaels_rum
-    entities:
-      - light.mikaels_dator_hue_play_1
-      - light.mikaels_dator_hue_play_2
-      - light.kontor_fonster
-      - light.mikaels_rum_skrivbord
-      - light.mikaels_rum_ljusslinga
-      - light.mikaels_rum_tak
+#light:
+#  - platform: group
+#    name: Mikaels rum
+#    unique_id: mikaels_rum
+#    entities:
+#      - light.mikaels_dator_hue_play_1
+#      - light.mikaels_dator_hue_play_2
+#      - light.kontor_fonster
+#      - light.mikaels_rum_skrivbord
+#      - light.mikaels_rum_ljusslinga
+#      - light.mikaels_rum_tak
+#
+input_number:
+  #
+  mikaels_rum_fonster_light_level:
+    name: Ljusstyrka utomhus för belysning i fönster mikaels rum
+    min: 0
+    max: 1000
+    step: 10
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
 #
 template:
 #
@@ -74,7 +71,7 @@ template:
         delay_off:
           minutes: 5
         state: >
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.fonsterbelysning_light_level') | float }}
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.mikaels_rum_fonster_light_level') | float }}
       #
       - name: mikaels_rum_belysning_automation_control
         unique_id: mikaels_rum_belysning_automation_control
@@ -97,8 +94,8 @@ template:
 #
 automation:
   #
-  - alias: Mikaels rum belysning
-    id: Mikaels rum belysning
+  - alias: Mikaels rum belysning fönster
+    id: Mikaels rum belysning fönster
     trigger:
       - platform: state
         entity_id: binary_sensor.mikaels_rum_belysning_automation_control
@@ -122,4 +119,9 @@ automation:
         to: 'off'
     action:
       - service: light.turn_off
-        entity_id: light.mikaels_rum_hue
+        entity_id:
+          - light.mikaels_dator_hue_play_1
+          - light.mikaels_dator_hue_play_2
+          - light.mikaels_rum_skrivbord
+          - light.mikaels_rum_ljusslinga
+          - light.mikaels_rum_tak
