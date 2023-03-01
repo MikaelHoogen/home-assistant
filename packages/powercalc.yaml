@@ -1,0 +1,11 @@
+powercalc:
+  create_utility_meters: true
+#  energy_sensor_precision: 0
+  create_domain_groups:
+    - light
+
+sensor:
+  - platform: powercalc
+    create_group: Allrum
+    include:
+      area: Allrum
