@@ -34,8 +34,23 @@ template:
         unit_of_measurement: "g/m3"
         state: "{{ ( states('sensor.snickarboa_vs') | float(0.0) * ( states('sensor.snickarboa_humidity') | float(0.0) / 100 ) ) | round(2) }}"
   #
-
-
+        ### Stall
+      - name: stall_ps
+        unique_id: stall_ps
+        ##friendly_name: "Ånghalt stall ps"
+        state: "{{ 288.68 * ( 1.098 + states('sensor.stall_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+        #
+      - name: stall_vs
+        unique_id: stall_vs
+        ##friendly_name: "Ånghalt stall vs"
+        state: "{{ states('sensor.stall_ps') | float(0.0) / ( 461.4 * ( states('sensor.stall_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+        #
+      - name: stall_v
+        unique_id: stall_v
+        #  #friendly_name: "Ånghalt stall v"
+        unit_of_measurement: "g/m3"
+        state: "{{ ( states('sensor.stall_vs') | float(0.0) * ( states('sensor.stall_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+  #
         ### Indoor
       - name: indoor_ps
         unique_id: indoor_ps
