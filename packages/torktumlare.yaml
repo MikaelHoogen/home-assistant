@@ -1,29 +1,37 @@
 utility_meter:
   torktumlare_timme:
+    unique_id: torktumlare_timme
     source: sensor.torktumlare_consumption
     cycle: hourly
   torktumlare_dag:
+    unique_id: torktumlare_dag
     source: sensor.torktumlare_consumption
     cycle: daily
   torktumlare_vecka:
+    unique_id: torktumlare_vecka
     source: sensor.torktumlare_consumption
     cycle: weekly
   torktumlare_manad:
+    unique_id: torktumlare_manad
     source: sensor.torktumlare_consumption
     cycle: monthly
-#  torktumlare_ar:
-#    source: sensor.torktumlare_consumption
-#    cycle: yearly
+  torktumlare_ar:
+    unique_id: torktumlare_ar
+    source: sensor.torktumlare_consumption
+    cycle: yearly
   #
   torktumlare_dag_kostnad:
+    unique_id: torktumlare_dag_kostnad
     source: sensor.torktumlare_timme_kostnad
     cycle: daily
   torktumlare_manad_kostnad:
+    unique_id: torktumlare_manad_kostnad
     source: sensor.torktumlare_timme_kostnad
     cycle: monthly
-#  torktumlare_ar_kostnad:
-#    source: sensor.torktumlare_timme_kostnad
-#    cycle: yearly
+  torktumlare_ar_kostnad:
+    unique_id: torktumlare_ar_kostnad
+    source: sensor.torktumlare_timme_kostnad
+    cycle: yearly
 #
 #
 template:
@@ -52,6 +60,7 @@ binary_sensor:
 #
 automation:
   - alias: Torktumlare klar
+    id: Torktumlare klar
     trigger:
       platform: state
       entity_id: binary_sensor.torktumlare
@@ -66,7 +75,7 @@ automation:
         data_template:
           message: "Torktumlare klar"
           title: "Torktumlaren är klar"
-      - service: notify.mobile_app_sm_g960f
+      - service: notify.mobile_app_sm_g998b
         data_template:
           message: "Torktumlare"
           title: "Torktumlaren är klar"
