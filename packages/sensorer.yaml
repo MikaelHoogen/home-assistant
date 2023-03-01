@@ -19,6 +19,16 @@ template:
           co2: ""
           v: "{{ states('sensor.snickarboa_v') | round(1, 'round-to-even', '-') }} g/m³"
   #
+      ### stall
+      - name: sensorer_stall
+        unique_id: sensorer_stall
+        state: "{{ states('sensor.time') }}"
+        attributes:
+          temperature: "{{ states('sensor.stall_temperature') | round(1,'round-to-even', '-' ) }} °C"
+          humidity: "{{ states('sensor.stall_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: ""
+          v: "{{ states('sensor.stall_v') | round(1, 'round-to-even', '-') }} g/m³"
+#
       ### Mikaels rum
       - name: sensorer_mikaels_rum
         unique_id: sensorer_mikaels_rum
