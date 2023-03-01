@@ -16,8 +16,6 @@ adaptive_lighting:
     #    sunset_offset: 1800  # in seconds or '00:15:00'
     # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
     take_over_control: true
-    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-    only_once: false
 #
 #
 #generic_hygrostat:
@@ -30,20 +28,23 @@ adaptive_lighting:
 climate:
   - platform: generic_thermostat
     name: Snickarboa
+    unique_id: Snickarboa
     cold_tolerance: 0.5
     hot_tolerance: 1
     precision: 0.1
-    heater: input_boolean.snickarboa_heater
+    heater: switch.motorvarmare
     target_sensor: sensor.snickarboa_temperature
     min_temp: 0
+    activity_temp: 7
 #
-#switch.avfuktare
-input_boolean:
-  avfuktare:
-    name: Avfuktare
-    #
-  snickarboa_heater:
-    name: Snickarboa värmare
+#
+#
+#input_boolean:
+#  avfuktare:
+#    name: Avfuktare
+#    #
+#  snickarboa_heater:
+#    name: Snickarboa värmare
 #
 sensor:
   - platform: integration
@@ -127,19 +128,19 @@ input_number:
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
 #
+#
 template:
   - binary_sensor:
-      - name: "Avfuktare"
-        unique_id: avfuktare
-        state: >
-          {{ is_state('input_boolean.avfuktare', 'on')
-          and is_state('binary_sensor.elpris_cheap', 'on') }}
+#      - name: "Avfuktare"
+#        unique_id: avfuktare
+#        state: >
+#          {{ is_state('input_boolean.avfuktare', 'on')
+#          and is_state('binary_sensor.elpris_cheap', 'on') }}
 #
       - name: snickarboa_heater
         unique_id: snickarboa_heater
         state: >
-          {{ is_state('input_boolean.snickarboa_heater', 'on')
-          and is_state('binary_sensor.electricity_price_sannesholma_2181_max_4', 'off') }}
+          {{ is_state('binary_sensor.electricity_price_sannesholma_2181_max_4', 'off') }}
 #
       ### Light level
       - name: snickarboa_lightlevel
@@ -216,14 +217,37 @@ automation:
       - platform: homeassistant
         event: start
     action:
-      - service: >
-          {% if is_state('binary_sensor.snickarboa_heater', 'on') %}
-          switch.turn_on
-          {% elif is_state('binary_sensor.snickarboa_heater', 'off') %}
-          switch.turn_off
-          {% endif %}
-        entity_id:
-          - switch.motorvarmare
+      - choose:
+        #
+        - conditions:
+            - condition: state
+              state: 'on'
+              entity_id: binary_sensor.snickarboa_heater
+          sequence:
+            - service: climate.set_hvac_mode
+              target:
+                entity_id: climate.snickarboa
+              data:
+                hvac_mode: 'heat'
+        #
+        - conditions:
+            - condition: state
+              state: 'off'
+              entity_id: binary_sensor.snickarboa_heater
+          sequence:
+            - service: climate.set_hvac_mode
+              target:
+                entity_id: climate.snickarboa
+              data:
+                hvac_mode: 'off'
+#      - service: >
+#          {% if is_state('binary_sensor.snickarboa_heater', 'on') %}
+#          switch.turn_on
+#          {% elif is_state('binary_sensor.snickarboa_heater', 'off') %}
+#          switch.turn_off
+#          {% endif %}
+#        entity_id:
+#          - switch.motorvarmare
     #
   - alias: Snickarboa belysning
     trigger:
