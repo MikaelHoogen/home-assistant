@@ -112,54 +112,60 @@ input_number:
 #
 
 #
-binary_sensor:
-  - platform: template
-    sensors:
+#binary_sensor:
+#  - platform: template
+#    sensors:
+template:
+  - binary_sensor:
+      #
       ### Närvaro
-      entre_presence:
+      - name: entre_presence
+        unique_id: entre_presence
         device_class: motion
-        friendly_name: Entré
         delay_off:
           minutes: 5
-        value_template: >-
+        state: >
           {{ is_state('binary_sensor.entre_hue_outdoor_motion_sensor_motion', 'on')
             or is_state('binary_sensor.hall_dorrtrigger', 'on') }}
+      #
       ################# Ljus ###################################################
-      utomhusbelysning_light_level:
-#        device_class: light
-        friendly_name: Utomhus
+      - name: utomhusbelysning_light_level
+        unique_id: utomhusbelysning_light_level
         delay_off:
           minutes: 10
-        value_template: >-
+        state: >
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.utomhusbelysning_light_level') | float }}
+      #
       ### Utomhusbelysning
-      utomhusbelysning_automation_control:
-        friendly_name: Utomhusbelysning
-        value_template: >-
+      - name: utomhusbelysning_automation_control
+        unique_id: utomhusbelysning_automation_control
+        state: >
           {{ is_state('binary_sensor.utomhusbelysning_light_level', 'on') }}
+      #
       ### Entré
-      entre_presence_automation_control:
-        friendly_name: Entrébelysning
-        value_template: >-
+      - name: entre_presence_automation_control
+        state: >
           {{ is_state('binary_sensor.utomhusbelysning_light_level', 'on')
             and is_state('binary_sensor.entre_presence', 'on') }}
+      #
       ### Utomhusbelysning film
-      utomhusbelysning_film_automation_control:
-        friendly_name: Utomhusbelysning film
-        value_template: >-
+      - name: utomhusbelysning_film_automation_control
+        unique_id: utomhusbelysning_film_automation_control
+        state: >
           {{ is_state('binary_sensor.utomhusbelysning_light_level', 'on')
             and is_state('input_boolean.film_spelar', 'off') }}
       #
       ### Ljusslingor
-      utomhus_ljusslingor_light_level:
-        friendly_name: Utomhusbelysning ljusslingor
+      - name: utomhus_ljusslingor_light_level
+        unique_id: utomhus_ljusslingor_light_level
         delay_off:
           minutes: 10
-        value_template: >-
+        state: >
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.ljusslingor_light_level') | float }}
-      utomhusbelysning_ljusslingor_automation_control:
-        friendly_name: Utomhusbelysning ljusslingor
-        value_template: >-
+      #
+      - name: utomhusbelysning_ljusslingor_automation_control
+        unique_id: utomhusbelysning_ljusslingor_automation_control
+        state: >
           {{ is_state('binary_sensor.utomhus_ljusslingor_light_level', 'on')
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('input_boolean.sovdags', 'off') }}
@@ -181,11 +187,27 @@ automation:
           light.turn_off
           {% endif %}
         entity_id:
-          - light.entre_dorr
           - light.groventre_dorr
           - light.carport_entre
           - light.stolpe_gang
           - light.stolpe_grind
+    #
+    # Entré
+  - alias: Entré belysning
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.utomhusbelysning_automation_control
+      - platform: homeassistant
+        event: start
+    action:
+      - service: >
+          {% if is_state('binary_sensor.utomhusbelysning_automation_control', 'on') %}
+          light.turn_on
+          {% elif is_state('binary_sensor.utomhusbelysning_automation_control', 'off') %}
+          light.turn_off
+          {% endif %}
+        entity_id:
+          - light.entre_dorr
 #
   - alias: Entré närvarobelysning
     trigger:
@@ -193,26 +215,32 @@ automation:
         entity_id: binary_sensor.entre_presence_automation_control
       - platform: homeassistant
         event: start
-    condition: "{{ is_state('binary_sensor.entre_presence_automation_control', 'on') }}"
     action:
-      - service: light.turn_on
-        entity_id:
-            - light.entre_dorr
-        data:
-          brightness_pct: 100
-      - service: switch.turn_off
-        entity_id: switch.adaptive_lighting_adapt_brightness_utomhusbelysning_hue
-#
-  - alias: Entré ingen närvaro
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.entre_presence_automation_control
-      - platform: homeassistant
-        event: start
-    condition: "{{ is_state('binary_sensor.entre_presence_automation_control', 'off') }}"
-    action:
-      - service: switch.turn_on
-        entity_id: switch.adaptive_lighting_adapt_brightness_utomhusbelysning_hue
+      - choose:
+          #
+          - conditions:
+              - condition: state
+                state: 'on'
+                entity_id: binary_sensor.entre_presence_automation_control
+            sequence:
+              - service: switch.turn_off
+                entity_id: switch.adaptive_lighting_adapt_brightness_utomhusbelysning_hue
+              - service: light.turn_on
+                entity_id:
+                    - light.entre_dorr
+                data:
+                  brightness_pct: 100
+          #
+          - conditions:
+              - condition: state
+                state: 'off'
+                entity_id: binary_sensor.entre_presence_automation_control
+            sequence:
+#              - service: light.turn_off
+#                entity_id:
+#                    - light.entre_dorr
+              - service: switch.turn_on
+                entity_id: switch.adaptive_lighting_adapt_brightness_utomhusbelysning_hue
 #
 #
   - alias: Utomhusbelysning film
