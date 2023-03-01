@@ -12,44 +12,32 @@ automation:
 ### Movie playing ###
   - alias: Film play
     trigger: 
-    - platform: state
-      entity_id: media_player.allrum
-      to: 'playing'
-      for:
-        seconds: 10
+      - platform: state
+        entity_id: media_player.allrum
+        to: 'playing'
+        for:
+          seconds: 10
     condition:
-    - condition: state
-      entity_id: input_boolean.film
-      state: 'on'
+      - condition: state
+        entity_id: input_boolean.film
+        state: 'on'
     action:
-    - service: input_boolean.turn_on
-      entity_id: input_boolean.film_spelar
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.film_spelar
   #
   ### Movie not playing ###
-  - alias: Film pause
+  - alias: Film pause/off
     trigger: 
       # Chromecast
-    - platform: state
-      entity_id: media_player.allrum
-      from: 'playing'
-      for:
-        seconds: 5
-    condition:
-      # Condition, movie mode active
-    - condition: state
-      entity_id: input_boolean.film
-      state: 'on'
+      - platform: state
+        entity_id: media_player.allrum
+        from: 'playing'
+        for:
+          seconds: 5
+      - platform: state
+        entity_id: input_boolean.film
+        to: 'off'
     action:
-    - service: input_boolean.turn_off
-      entity_id: input_boolean.film_spelar
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.film_spelar
   #
-  ### Movie not playing ###
-  - alias: Film off
-    trigger: 
-      # Chromecast
-    - platform: state
-      entity_id: input_boolean.film
-      to: 'off'
-    action:
-    - service: input_boolean.turn_off
-      entity_id: input_boolean.film_spelar
