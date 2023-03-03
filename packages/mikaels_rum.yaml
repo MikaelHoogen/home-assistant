@@ -2,9 +2,9 @@
 adaptive_lighting:
   - name: Mikaels rum
     lights:
-      - light.mikaels_dator_hue_play_1
-      - light.mikaels_dator_hue_play_2
-      - light.kontor_fonster
+      - light.mikaels_rum_hue_play_1
+      - light.mikaels_rum_hue_play_2
+      - light.mikaels_rum_fonster
       - light.mikaels_rum_skrivbord
       - light.mikaels_rum_tak
     prefer_rgb_color: false
@@ -40,17 +40,6 @@ adaptive_lighting:
     take_over_control: true
     detect_non_ha_changes: true
 #
-#light:
-#  - platform: group
-#    name: Mikaels rum
-#    unique_id: mikaels_rum
-#    entities:
-#      - light.mikaels_dator_hue_play_1
-#      - light.mikaels_dator_hue_play_2
-#      - light.kontor_fonster
-#      - light.mikaels_rum_skrivbord
-#      - light.mikaels_rum_ljusslinga
-#      - light.mikaels_rum_tak
 #
 input_number:
   #
@@ -109,7 +98,7 @@ automation:
           light.turn_off
           {% endif %}
         entity_id:
-          - light.kontor_fonster
+          - light.mikaels_rum_fonster
 #
   - alias: Mikaels rum belysning av
     id: Mikaels rum belysning av
@@ -120,8 +109,8 @@ automation:
     action:
       - service: light.turn_off
         entity_id:
-          - light.mikaels_dator_hue_play_1
-          - light.mikaels_dator_hue_play_2
+          - light.mikaels_rum_hue_play_1
+          - light.mikaels_rum_hue_play_2
           - light.mikaels_rum_skrivbord
           - light.mikaels_rum_ljusslinga
           - light.mikaels_rum_tak
