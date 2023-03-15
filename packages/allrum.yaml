@@ -11,7 +11,7 @@ adaptive_lighting:
     sleep_transition: 30
     initial_transition: 1
     interval: 90
-    min_brightness: 30
+    min_brightness: 25
     max_brightness: 100
     min_color_temp: 2000
     max_color_temp: 4000
@@ -140,34 +140,29 @@ template:
             or is_state('binary_sensor.allrum_presence_laslampa', 'on') )
             and is_state('input_boolean.film_spelar', 'off') }}
       #
-      - name: allrum_presence_kort
-        unique_id: allrum_presence_kort
-        delay_off:
-          seconds: 60
-        state: >
-          {{ is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on') }}
       #
       - name: allrum_presence_lang
         unique_id: allrum_presence_lang
         delay_on:
-          seconds: 90
+          seconds: 180
         delay_off:
           minutes: 10
         state: >
-          {{ is_state('binary_sensor.allrum_presence_kort', 'on')
-          or is_state('media_player.allrum', 'playing') }}
+          {{ is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on') }}
       #
       - name: allrum_presence
         unique_id: allrum_presence
         state: >
-          {{ is_state('binary_sensor.allrum_presence_kort', 'on')
-          or is_state('binary_sensor.allrum_presence_lang', 'on') }}
+          {{ is_state('binary_sensor.allrum_presence_lang', 'on')
+          or is_state('media_player.allrum', 'playing')
+          or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
+          or is_state('binary_sensor.allrum_rorelsesensor', 'on') }}
       #
       #
       - name: allrum_presence_hall
         unique_id: allrum_presence_hall
         delay_off:
-          minutes: 5
+          minutes: 1
         state: >
           {{ is_state('binary_sensor.allrum_rorelsesensor', 'on') }}
       #
