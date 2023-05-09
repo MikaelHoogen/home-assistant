@@ -1,0 +1,97 @@
+automation:
+  - id: Carport rörelse
+    alias: Carport rörelse
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.carport_motion
+        to: 'on'
+    action:
+      - service: camera.snapshot
+        target:
+          entity_id: camera.carport_main
+        data:
+          filename: '/media/snapshots/Carport_rörelse_{{ now().strftime("%Y-%m-%d_%H:%M") }}.jpg'
+      #
+      - service: notify.mobile_app_sm_n975f
+        data:
+          message: Något rör sig
+          title: Rörelse
+          data:
+            image: /api/camera_proxy/camera.carport_main
+#
+#
+  - id: Carport rörelse person notifiering
+    alias: Carport rörelse person
+    mode: single
+    max_exceeded: silent
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.carport_person
+        to: 'on'
+    action:
+      - service: notify.mobile_app_sm_n975f
+        data:
+          message: Någon rör sig
+          title: Rörelse person
+          data:
+            image: /api/camera_proxy/camera.carport_main
+      - delay:
+          minutes: 5
+      #
+      #
+#
+  - id: Carport rörelse bil notifiering
+    alias: Carport rörelse bil notfiering
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.carport_vehicle
+        to: 'on'
+    action:
+      - service: notify.mobile_app_sm_n975f
+        data:
+          message: Bil uptäckt
+          title: Rörelse bil
+          data:
+            image: /api/camera_proxy/camera.carport_main
+      #
+      #
+#
+  - id: Carport snapshot
+    alias: Carport snapshot
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.carport_vehicle
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.carport_person
+        to: 'on'
+    action:
+      #
+      - service: camera.snapshot
+        target:
+          entity_id: camera.carport_main
+        data:
+          filename: '/media/snapshots/{{ trigger.to_state.object_id }}_{{ now().strftime("%Y-%m-%d_%H:%M") }}.jpg'
+#
+  - mode: single
+    max_exceeded: silent
+    id: Carport inspelning
+    alias: Carport inspelning
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.carport_vehicle
+        to: 'on'
+#
+      - platform: state
+        entity_id: binary_sensor.carport_person
+        to: 'on'
+#
+    action:
+      - service: camera.record
+        data:
+          filename: '/media/recordings/{{ trigger.to_state.object_id }}_{{ now().strftime("%Y-%m-%d_%H:%M") }}.mp4'
+          duration: 60
+        target:
+          entity_id: camera.carport_sub
+      - delay: 60
+          #object_id
