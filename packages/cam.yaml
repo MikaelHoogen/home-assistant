@@ -71,7 +71,7 @@ automation:
         target:
           entity_id: camera.carport_main
         data:
-          filename: '/media/snapshots/{{ trigger.to_state.object_id }}_{{ now().strftime("%Y-%m-%d_%H:%M") }}.jpg'
+          filename: '/media/snapshots/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.jpg'
 #
   - mode: single
     max_exceeded: silent
