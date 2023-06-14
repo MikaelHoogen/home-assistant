@@ -33,8 +33,8 @@ automation:
         data:
           message: Någon rör sig
           title: Rörelse person
-          data:
-            image: /api/camera_proxy/camera.carport_main
+#          data:
+#            image: /api/camera_proxy/camera.carport_main
       - delay:
           minutes: 5
       #
@@ -42,6 +42,8 @@ automation:
 #
   - id: Carport rörelse bil notifiering
     alias: Carport rörelse bil notfiering
+    mode: single
+    max_exceeded: silent
     trigger:
       - platform: state
         entity_id: binary_sensor.carport_vehicle
@@ -53,6 +55,8 @@ automation:
           title: Rörelse bil
           data:
             image: /api/camera_proxy/camera.carport_main
+      - delay:
+          minutes: 5
       #
       #
 #
@@ -89,9 +93,9 @@ automation:
     action:
       - service: camera.record
         data:
-          filename: '/media/recordings/{{ trigger.to_state.object_id }}_{{ now().strftime("%Y-%m-%d_%H:%M") }}.mp4'
-          duration: 60
+          filename: '/media/recordings/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.mp4'
+          duration: 180
         target:
           entity_id: camera.carport_sub
-      - delay: 60
+      - delay: 180
           #object_id
