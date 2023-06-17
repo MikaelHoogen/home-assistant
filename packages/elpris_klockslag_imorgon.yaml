@@ -1,7 +1,6 @@
-
-
 template:
   - sensor:
+    
     
     - name: elpris_imorgon_00
       unique_id: elpris_imorgon_00
@@ -29,7 +28,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[0] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[0] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[0] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -37,6 +36,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[0] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[0]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_01
       unique_id: elpris_imorgon_01
@@ -64,7 +78,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[1] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[1] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[1] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[1] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -72,6 +86,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[1] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[1]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_02
       unique_id: elpris_imorgon_02
@@ -99,7 +128,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[2] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[2] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[2] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[2] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -107,6 +136,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[2] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[2]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_03
       unique_id: elpris_imorgon_03
@@ -134,7 +178,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[3] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[3] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[3] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[3] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -142,6 +186,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[3] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[3]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_04
       unique_id: elpris_imorgon_04
@@ -169,7 +228,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[4] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[4] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[4] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[4] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -177,6 +236,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[4] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[4]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_05
       unique_id: elpris_imorgon_05
@@ -204,7 +278,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[5] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[5] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[5] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[5] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -212,6 +286,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[5] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[5]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_06
       unique_id: elpris_imorgon_06
@@ -239,7 +328,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[6] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[6] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[6] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[6] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -247,6 +336,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[6] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[6]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_07
       unique_id: elpris_imorgon_07
@@ -274,7 +378,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[7] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[7] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[7] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[7] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -282,6 +386,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[7] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[7]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_08
       unique_id: elpris_imorgon_08
@@ -309,7 +428,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[8] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[8] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[8] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[8] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -317,6 +436,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[8] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[8]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_09
       unique_id: elpris_imorgon_09
@@ -344,7 +478,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[9] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[9] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[9] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[9] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -352,6 +486,20 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[9] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[9]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
     
     
     - name: elpris_imorgon_10
@@ -380,7 +528,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[10] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[10] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[10] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[10] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -388,6 +536,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[10] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[10]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_11
       unique_id: elpris_imorgon_11
@@ -415,7 +578,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[11] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[11] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[11] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[11] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -423,6 +586,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[11] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[11]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_12
       unique_id: elpris_imorgon_12
@@ -450,7 +628,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[12] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[12] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[12] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[12] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -458,6 +636,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[12] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[12]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_13
       unique_id: elpris_imorgon_13
@@ -485,7 +678,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[13] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[13] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[13] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[13] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -493,6 +686,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[13] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[13]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_14
       unique_id: elpris_imorgon_14
@@ -520,7 +728,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[14] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[14] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[14] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[14] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -528,6 +736,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[14] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[14]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_15
       unique_id: elpris_imorgon_15
@@ -555,7 +778,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[15] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[15] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[15] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[15] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -563,6 +786,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[15] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[15]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_16
       unique_id: elpris_imorgon_16
@@ -590,7 +828,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[16] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[16] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[16] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[16] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -598,6 +836,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[16] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[16]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_17
       unique_id: elpris_imorgon_17
@@ -625,7 +878,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[17] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[17] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[17] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[17] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -633,6 +886,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[17] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[17]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_18
       unique_id: elpris_imorgon_18
@@ -660,7 +928,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[18] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[18] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[18] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[18] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -668,6 +936,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[18] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[18]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_19
       unique_id: elpris_imorgon_19
@@ -695,7 +978,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[19] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[19] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[19] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[19] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -703,6 +986,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[19] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[19]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_20
       unique_id: elpris_imorgon_20
@@ -730,7 +1028,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[20] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[20] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[20] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[20] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -738,6 +1036,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[20] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[20]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_21
       unique_id: elpris_imorgon_21
@@ -765,7 +1078,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[21] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[21] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[21] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[21] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -773,6 +1086,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[21] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[21]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_22
       unique_id: elpris_imorgon_22
@@ -800,7 +1128,7 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[22] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[22] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[22] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[22] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
@@ -808,6 +1136,21 @@ template:
           {% else %}
           Pris saknas
           {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[22] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[22]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
+          {% endif %} 
+    
     
     - name: elpris_imorgon_23
       unique_id: elpris_imorgon_23
@@ -818,7 +1161,7 @@ template:
         -
         {% endif %}
       attributes:
-        timme: "23:00 - 00:00"
+        timme: "23:00 - 24:00"
         tibber: >
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
             {{ state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[23]['total'] | round(3) }}
@@ -835,11 +1178,25 @@ template:
           {% endif %}
         kommentar: >
           {% if is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[23] != None %}
-            {% if state_attr('sensor.elpris', 'tomorrow')[23] == states('elpris_imorgon_max') %}
+            {% if state_attr('sensor.elpris', 'tomorrow')[23] == states('sensor.elpris_imorgon_max') | float('naan') %}
             Högsta pris
             {% elif state_attr('sensor.elpris', 'tomorrow')[23] < states('sensor.elpris_imorgon_medel') | float('naan') %}
             Under medel
             {% endif %}
           {% else %}
           Pris saknas
+          {% endif %}
+        sälj: > 
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[23] + 0.6 ) | round(3) }}
+          {% else %}
+          -
+          {% endif %}         
+        köp: >
+          {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
+            {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[23]['total'] | float('naan')
+            + states('sensor.avgift_elnat') | float('naan') / 100 
+            + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)  }}
+          {% else %}
+          -
           {% endif %}
