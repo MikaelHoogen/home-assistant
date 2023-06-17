@@ -128,19 +128,25 @@ utility_meter:
     source: sensor.heatpump_consumption_today
     cycle: yearly
   # Kostnad
+  #
   heatpump_timme_kostnad:
+    unique_id: heatpump_timme_kostnad
     source: sensor.heatpump_kostnad
     cycle: hourly
   heatpump_dag_kostnad:
+    unique_id: heatpump_dag_kostnad
     source: sensor.heatpump_kostnad
     cycle: daily
   heatpump_vecka_kostnad:
+    unique_id: heatpump_vecka_kostnad
     source: sensor.heatpump_kostnad
     cycle: weekly
   heatpump_manad_kostnad:
+    unique_id: heatpump_manad_kostnad
     source: sensor.heatpump_kostnad
     cycle: monthly
   heatpump_ar_kostnad:
+    unique_id: heatpump_ar_kostnad
     source: sensor.heatpump_kostnad
     cycle: yearly
 #
@@ -164,18 +170,23 @@ utility_meter:
   #
   # Varmvatten kostnad
   heatpump_hotwater_timme_kostnad:
+    unique_id: heatpump_hotwater_timme_kostnad
     source: sensor.heatpump_hotwater_kostnad
     cycle: hourly
   heatpump_hotwater_dag_kostnad:
+    unique_id: heatpump_hotwater_dag_kostnad
     source: sensor.heatpump_hotwater_kostnad
     cycle: daily
   heatpump_hotwater_vecka_kostnad:
+    unique_id: heatpump_hotwater_vecka_kostnad
     source: sensor.heatpump_hotwater_kostnad
     cycle: weekly
   heatpump_hotwater_manad_kostnad:
+    unique_id: eatpump_hotwater_manad_kostnad
     source: sensor.heatpump_hotwater_kostnad
     cycle: monthly
   heatpump_hotwater_ar_kostnad:
+    unique_id: heatpump_hotwater_ar_kostnad
     source: sensor.heatpump_hotwater_kostnad
     cycle: yearly
 #
@@ -197,16 +208,21 @@ utility_meter:
     source: sensor.heatpump_heat_consumption_today
     cycle: yearly
 # Värme kostnad
+#
   heatpump_heat_timme_kostnad:
+    unique_id: heatpump_heat_timme_kostnad
     source: sensor.heatpump_heat_kostnad
     cycle: hourly
   heatpump_heat_dag_kostnad:
+    unique_id: heatpump_heat_dag_kostnad
     source: sensor.heatpump_heat_kostnad
     cycle: daily
   heatpump_heat_manad_kostnad:
+    unique_id: heatpump_heat_manad_kostnad
     source: sensor.heatpump_heat_kostnad
     cycle: monthly
   heatpump_heat_ar_kostnad:
+    unique_id: eatpump_heat_ar_kostnad
     source: sensor.heatpump_heat_kostnad
     cycle: yearly
 ################################################################################
@@ -222,7 +238,17 @@ template:
             or is_state('binary_sensor.heatpump_run_time', 'off')
             or ( is_state('binary_sensor.electricity_price_sannesholma_2181_above_avg_price', 'on') 
             and is_state('binary_sensor.electricity_price_sannesholma_2181_input_low', 'on') ) }}
-#            or is_state('binary_sensor.elpris_very_expensive', 'on')electricity_price_sannesholma_2181_input_low
+#
+      - name: varmegolv_block
+        unique_id: varmegolv_block
+        delay_off:
+          minutes: 10
+        state: >
+          {{ is_state('binary_sensor.electricity_price_sannesholma_2181_max', 'on')
+            or is_state('binary_sensor.heatpump_run_time', 'off')
+            or ( is_state('binary_sensor.electricity_price_sannesholma_2181_above_avg_price', 'on') 
+            and is_state('binary_sensor.electricity_price_sannesholma_2181_input_low', 'on') ) }}
+#
       ########################################################################
       # Värme
       - name: heatpump_heat
