@@ -11,7 +11,7 @@ adaptive_lighting:
     transition: 30
     initial_transition: 5
     interval: 90
-    min_brightness: 20
+    min_brightness: 10
     max_brightness: 100
     min_color_temp: 2000
     max_color_temp: 4000
@@ -90,6 +90,8 @@ automation:
         - light.gastrum_fonster_2
         # Julstjärna
   #      - light.gastrum_fonster
+      - delay:
+          seconds: 5
       - service: >
           {% if is_state('input_boolean.sovdags_gastrum', 'on') %}
           switch.turn_off
@@ -97,6 +99,12 @@ automation:
           switch.turn_on
           {% endif %}
         entity_id: switch.adaptive_lighting_gastrum
+      - condition: state
+        entity_id: input_boolean.sovdags_gastrum
+        state: 'off'
+      - service: light.turn_off
+        entity_id: light.linas_skrivbord
+          
 #
 #
   - alias: Gästrum knapp vid säng
