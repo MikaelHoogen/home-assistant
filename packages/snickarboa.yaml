@@ -163,10 +163,21 @@ template:
         unique_id: snickarboa_presence
         device_class: motion
         delay_off:
-          minutes: 10
+          minutes: 5
         state: >-
-          {{ is_state('binary_sensor.snickarboa_hue_motion_sensor_motion', 'on') }}
-      #
+          {{ is_state('binary_sensor.snickarboa_hue_motion_sensor_motion', 'on')
+          or is_state('binary_sensor.snickarboa_dorrtrigger', 'on') }}
+#
+  - trigger:
+      - platform: state
+        to: 'on'
+        from: 'off'
+        entity_id: binary_sensor.snickarboa_dorrbrytare
+    binary_sensor:
+      - name: Snickarboa dörrtrigger
+        unique_id: Snickarboa dörrtrigger
+        auto_off: 30
+        state: "true"
 #
   - sensor:
     ### Förbrukning
