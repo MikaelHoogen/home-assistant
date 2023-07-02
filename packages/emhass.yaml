@@ -1,0 +1,85 @@
+shell_command:
+  trigger_nordpool_forecast: "curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{ state_attr('sensor.elpris_sb', 'köp') | list }},\"prod_price_forecast\":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},\"solar_forecast_kwp\":12.8}' http://localhost:5000/action/dayahead-optim"
+  #
+  trigger_nordpool_forecast_test: >
+      curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list  + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24] }},
+      \"prod_price_forecast\":{{((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list  + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24]}} http://localhost:5000/action/dayahead-optim
+    #
+  trigger_nordpool_forecast_solar_forecast: "curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list  + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24] }},\"prod_price_forecast\":{{((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list  + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24]}},\"solar_forecast_kwp\":12.8}' http://localhost:5000/action/dayahead-optim"
+  #test: curl -i -H "Content-Type:application/json" -X POST -d '{"solar_forecast_kwp":5.0}' http://localhost:5000/action/dayahead-optim
+  publish_data: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"custom_deferrable_forecast_id\": [{\"entity_id\": \"sensor.p_deferrable0\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Värmepump\"},{\"entity_id\": \"sensor.p_deferrable1\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Deferrable Load 1\"}]}' http://localhost:5000/action/publish-data"
+#
+template:
+  - sensor:
+      # 
+      - name: power_sannesholma_2181_no_var_loads
+        unique_id: power_sannesholma_2181_no_var_loads
+        availability: >
+          {{ is_number(states('sensor.power_sannesholma_2181'))
+          and is_number(states('sensor.heatpump_compressor_real_power'))
+          and is_number(states('sensor.ehl75l9h_power'))
+          }}
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {{ ( states('sensor.power_sannesholma_2181') | float('naan') - states('sensor.heatpump_compressor_real_power') | float('naan') - states('sensor.ehl75l9h_power') | float('naan') * 1000 ) | round(0) }}
+#
+      - name: elpris_sb
+        unique_id: elpris_sb
+        state: >
+          {{ states('sensor.elpris') }}
+        attributes:
+          sälj: >
+            {% set ns = namespace(x=[]) %}
+            {% for i in ((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24] %}
+              {% set ns.x = ns.x + [(i + 0.6) | round(3)] %}
+            {% endfor %}
+            {{ ns.x }}
+          #
+          köp: >
+            {% set ns = namespace(x=[]) %}
+            {% for i in ((state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today') | map(attribute='total') | list + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24] %}
+              {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100 
+              + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)] %}
+            {% endfor %}
+            {{ ns.x }}
+#
+#
+automation:
+#
+#
+  - alias: EMHASS publicera data
+    id: EMHASS publicera data
+    trigger:
+      - platform: homeassistant
+        event: start
+      - minutes: /5
+        platform: time_pattern
+    action:
+      - service: shell_command.publish_data
+#
+  #
+  - alias: EMHASS forecast
+    id: EMHASS forecast
+    trigger:
+      - platform: time
+        at: "14:00"
+      - platform: time
+        at: "18:00"
+      - platform: time
+        at: "23:00"
+    condition:
+      - condition: state
+        entity_id: sensor.elpris
+        attribute: tomorrow_valid
+        state: "true"
+    action:
+      - service: shell_command.trigger_nordpool_forecast
+      - delay:
+          minutes: 1
+      - service: shell_command.publish_data
+      - service: notify.mobile_app_sm_n975f
+        data:
+          message: EMHASS är uppdaterad
+          title: EMHASS är uppdaterad
