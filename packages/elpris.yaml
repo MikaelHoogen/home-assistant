@@ -1,5 +1,4 @@
 #
-#
 input_number:
   electricity_price_sannesholma_2181_input_low:
     name: Elpris lågt
@@ -11,18 +10,21 @@ input_number:
 #
 template:
   - sensor:
+      #
       # Avgift elnät
     - name: avgift_elnat
       unique_id: avgift_elnat
       unit_of_measurement: "Öre/kWh"
       state_class: measurement
-      state: "{{ 13.85 }}"
+      state: "{{ 13.8 }}"
+      #
       # Avgift energiskatt
     - name: avgift_energiskatt
       unique_id: avgift_energiskatt
       unit_of_measurement: "Öre/kWh"
       state_class: measurement
       state: "{{ 49.0 }}"
+      #
       # Elnätsabonnemang
     - name: elpris_abonnemang
       unique_id: elpris_abonnemang
@@ -32,14 +34,6 @@ template:
       state: >
         {{ ( 8010 / 13983 ) | round (3) }}
 #        {{ ( 612.5 / state_attr('sensor.electricity_price_sannesholma_2181', 'estimated_annual_consumption') ) | round (3) }}
-      # Abonnemang tibber
-    - name: elpris_abonnemang_tibber
-      unique_id: elpris_abonnemang_tibber
-      unit_of_measurement: "SEK/kWh"
-      state_class: measurement
-      availability: "{{ is_number(states('sensor.electricity_price_sannesholma_2181')) }}"
-      state: >
-        {{ ( 39.0 * 12 / state_attr('sensor.electricity_price_sannesholma_2181', 'estimated_annual_consumption') ) | round (3) }}
       #
       ############# El totalpris ######################### TODO, hantera om någon faller bort
       # Öre
@@ -48,27 +42,35 @@ template:
       unit_of_measurement: "Öre/kWh"
       state_class: measurement
       availability: "{{ is_number(states('sensor.electricity_price_sannesholma_2181')) }}"
-      state: "{{ ( states('sensor.avgift_elnat') | float + states('sensor.avgift_energiskatt') | float + states('sensor.electricity_price_sannesholma_2181') | float('naan') * 100 + states('sensor.elpris_abonnemang') | float * 100 ) | round(2) }}"
+      state: "{{ ( states('sensor.avgift_elnat') | float + states('sensor.avgift_energiskatt') | float + states('sensor.electricity_price_sannesholma_2181') | float('naan') * 100 ) | round(2) }}"
       # SEK
     - name: elpris_totalt_sek
       unique_id: elpris_totalt_sek
       unit_of_measurement: "SEK/kWh"
       state_class: measurement
       availability: "{{ is_number(states('sensor.electricity_price_sannesholma_2181')) }}"
-      state: "{{ ( states('sensor.avgift_elnat') | float / 100 + states('sensor.avgift_energiskatt') | float / 100 + states('sensor.electricity_price_sannesholma_2181') | float('naan') + states('sensor.elpris_abonnemang') | float ) | round(3) }}"
-
+      state: "{{ ( states('sensor.avgift_elnat') | float / 100 + states('sensor.avgift_energiskatt') | float / 100 + states('sensor.electricity_price_sannesholma_2181') | float('naan') ) | round(3) }}"
+#
     - name: elpris_grid
       unique_id: elpris_grid
       unit_of_measurement: "SEK/kWh"
       state_class: measurement
       availability: >
-        {{ is_number(states('sensor.avgift_elnat')) 
+        {{ is_number(states('sensor.avgift_elnat'))
         and is_number(states('sensor.avgift_energiskatt'))
         and is_number(states('sensor.elpris_abonnemang')) }}
       state: >
         {{ ( states('sensor.avgift_elnat') | float('naan') / 100 
         + states('sensor.avgift_energiskatt') | float('naan') / 100 
         + states('sensor.elpris_abonnemang') | float('naan') ) | round(3) }}
+      #
+    - name: elpris_produktion
+      unique_id: elpris_produktion
+      unit_of_measurement: "SEK/kWh"
+      state_class: measurement
+      availability: "{{ is_number(states('sensor.elpris')) }}"
+      state: "{{ ( states('sensor.elpris') | float + 0.6 ) | round(3) }}"
+      #
       # Prisnivå
     - name: elpris_price_level
       unique_id: elpris_price_level
@@ -76,68 +78,34 @@ template:
         {{ state_attr('sensor.electricity_price_sannesholma_2181', 'price_level') }}
 #
   - binary_sensor:
-      - name: "Elpris very cheap"
-        unique_id: electricity_price_sannesholma_2181_very_cheap
-        state: >
-          {{ is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'VERY_CHEAP')
-            or states('sensor.elpris') | float <= 0.1 }}
 #
-      - name: "Elpris cheap"
-        unique_id: electricity_price_sannesholma_2181_cheap
-        state: >
-          {{ is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'VERY_CHEAP')
-            or is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'CHEAP')
-            or states('sensor.elpris') | float <= 0.2 }}
-#
-      - name: "Elpris normal"
-        unique_id: electricity_price_sannesholma_2181_normal
-        state: >
-          {{ is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'NORMAL')
-            or states('sensor.elpris') | float <= 0.2 }}
-#
-      - name: "Elpris expensive"
-        unique_id: electricity_price_sannesholma_2181_expensive
-        state: >
-          {{ is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'EXPENSIVE') }}
-#
-      - name: "Elpris very expensive"
-        unique_id: electricity_price_sannesholma_2181_very_expensive
-        state: >
-          {{ is_state_attr('sensor.electricity_price_sannesholma_2181', 'price_level', 'VERY_EXPENSIVE') }}
         # Maxpris
       - name: electricity_price_sannesholma_2181_max
         unique_id: electricity_price_sannesholma_2181_max
         delay_on:
           minutes: 1
-        state: >-
+        state: >
           {{ states('sensor.electricity_price_sannesholma_2181') | float(0.0) == state_attr('sensor.electricity_price_sannesholma_2181', 'max_price') | float(0.1) }}
 #          {{ states('sensor.elpris') | float(0.0) == state_attr('sensor.elpris', 'max') | float(0.1) }}
-        # Max 3
-      - name: electricity_price_sannesholma_2181_max_3
-        unique_id: electricity_price_sannesholma_2181_max_3
-        delay_on:
-          seconds: 5
-        state: >-
-          {{ ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[0] )
-            or ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[1] )
-            or ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[2] ) }}
+        #
         # Max 4
       - name: electricity_price_sannesholma_2181_max_4
         unique_id: electricity_price_sannesholma_2181_max_4
         delay_on:
           seconds: 5
-        state: >-
+        state: >
           {{ ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[0] )
             or ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[1] )
             or ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[2] )
             or ( states('sensor.elpris') | float(0.0) == ( state_attr('sensor.elpris', 'today') | sort(reverse=true))[3] ) }}
+        #
         # Above avg
       - name: electricity_price_sannesholma_2181_above_avg_price
         unique_id: electricity_price_sannesholma_2181_above_avg_price
         availability: "{{ is_number(states('sensor.elpris')) }}"
         delay_on:
           seconds: 5
-        state: >-
+        state: >
           {{ states('sensor.elpris') | float('naan') > state_attr('sensor.elpris', 'average') }}
 #          {{ states('sensor.electricity_price_sannesholma_2181') | float('naan') > state_attr('sensor.electricity_price_sannesholma_2181', 'avg_price') }}
       #
@@ -147,7 +115,7 @@ template:
         availability: "{{ is_number(states('input_number.electricity_price_sannesholma_2181_input_low')) }}"
         delay_on:
           seconds: 5
-        state: >-
+        state: >
           {{ states('input_number.electricity_price_sannesholma_2181_input_low') | float('naan') < states('sensor.elpris') | float('naan') }}
 #
 #
