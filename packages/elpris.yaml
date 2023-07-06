@@ -152,29 +152,6 @@ template:
 #
 #
 #
-  - sensor:
-      # Elförbrukning prognos
-      # Estimated annual consumption
-      - name: electricity_estimated_annual_consumption
-        unique_id: electricity_estimated_annual_consumption
-        unit_of_measurement: "kWh"
-        state_class: measurement
-        device_class: energy
-        state: >
-          {{ state_attr('sensor.electricity_price_sannesholma_2181', 'estimated_annual_consumption') }}
-#
-binary_sensor:
-  - platform: trend
-    sensors:
-      electricity_consumption_trend_higher:
-        entity_id: sensor.electricity_price_sannesholma_2181
-        attribute: estimated_annual_consumption
-      electricity_consumption_trend_lower:
-        entity_id: sensor.electricity_price_sannesholma_2181
-        attribute: estimated_annual_consumption
-        invert: true
-#
-#
 sensor:
   - platform: average
     name: elpris_totalt_medel
