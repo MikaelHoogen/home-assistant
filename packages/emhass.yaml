@@ -1,13 +1,12 @@
 shell_command:
   trigger_nordpool_forecast: "curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{ state_attr('sensor.elpris_sb', 'köp') | list }},\"prod_price_forecast\":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},\"solar_forecast_kwp\":12.8}' http://localhost:5000/action/dayahead-optim"
   #
-  trigger_nordpool_forecast_test: >
-      curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list  + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24] }},
-      \"prod_price_forecast\":{{((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list  + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24]}} http://localhost:5000/action/dayahead-optim
+  trigger_nordpool_forecast_test: "curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{ state_attr('sensor.elpris_sb', 'köp') | list }},\"prod_price_forecast\":{{ state_attr('sensor.elpris_sb', 'sälj') | list }}}' http://localhost:5000/action/dayahead-optim"
     #
   trigger_nordpool_forecast_solar_forecast: "curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list  + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24] }},\"prod_price_forecast\":{{((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list  + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24]}},\"solar_forecast_kwp\":12.8}' http://localhost:5000/action/dayahead-optim"
   #test: curl -i -H "Content-Type:application/json" -X POST -d '{"solar_forecast_kwp":5.0}' http://localhost:5000/action/dayahead-optim
-  publish_data: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"custom_deferrable_forecast_id\": [{\"entity_id\": \"sensor.p_deferrable0\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Värmepump\"},{\"entity_id\": \"sensor.p_deferrable1\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Deferrable Load 1\"}]}' http://localhost:5000/action/publish-data"
+  publish_data: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"custom_deferrable_forecast_id\": [{\"entity_id\": \"sensor.p_deferrable0\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Värmepump\"},{\"entity_id\": \"sensor.p_deferrable1\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Deferrable Load 1\"}], \"custom_unit_load_cost_id\": {\"entity_id\": \"sensor.unit_load_cost\",\"unit_of_measurement\": \"SEK/kWH\", \"friendly_name\": \"Unit load cost\"}}' http://localhost:5000/action/publish-data"
+
 #
 template:
   - sensor:
@@ -39,7 +38,7 @@ template:
           #
           köp: >
             {% set ns = namespace(x=[]) %}
-            {% for i in ((state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today') | map(attribute='total') | list + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24] %}
+            {% for i in ((state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today') | map(attribute='total') | list + state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow') | map(attribute='total') | list))[now().hour:][:24] %}
               {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100 
               + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)] %}
             {% endfor %}
@@ -69,11 +68,11 @@ automation:
         at: "18:00"
       - platform: time
         at: "23:00"
-    condition:
-      - condition: state
-        entity_id: sensor.elpris
-        attribute: tomorrow_valid
-        state: "true"
+#    condition:
+#      - condition: state
+#        entity_id: sensor.elpris
+#        attribute: tomorrow_valid
+#        state: "true"
     action:
       - service: shell_command.trigger_nordpool_forecast
       - delay:
