@@ -1,6 +1,6 @@
 template:
   - sensor:
-   
+  
     
     - name: elpris_idag_00
       unique_id: elpris_idag_00
