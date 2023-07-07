@@ -4,7 +4,7 @@ template:
         unique_id: sensorer_tvattstuga
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.tvattstuga_temperatur') | round(1,'round-to-even', '-') }} °C"
+          temperature: "{{ states('sensor.tvattstuga_temperatur') | round(1,'round-to-even', '-') }}°C"
           humidity: "{{ states('sensor.tvattstuga_humidity') | round(0, 'round-to-even', '-') }}"
           co2: ""
           v: "{{ states('sensor.tvattstuga_v') | round(1, 'round-to-even', '-') }} g/m³"
@@ -14,7 +14,7 @@ template:
         unique_id: sensorer_snickarboa
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.snickarboa_temperature') | round(1,'round-to-even', '-' ) }} °C"
+          temperature: "{{ states('sensor.snickarboa_temperature') | round(1,'round-to-even', '-' ) }}°C"
           humidity: "{{ states('sensor.snickarboa_humidity') | round(0, 'round-to-even', '-') }}"
           co2: ""
           v: "{{ states('sensor.snickarboa_v') | round(1, 'round-to-even', '-') }} g/m³"
@@ -24,7 +24,7 @@ template:
         unique_id: sensorer_stall
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.stall_temperature') | round(1,'round-to-even', '-' ) }} °C"
+          temperature: "{{ states('sensor.stall_temperature') | round(1,'round-to-even', '-' ) }}°C"
           humidity: "{{ states('sensor.stall_humidity') | round(0, 'round-to-even', '-') }}"
           co2: ""
           v: "{{ states('sensor.stall_v') | round(1, 'round-to-even', '-') }} g/m³"
@@ -34,7 +34,7 @@ template:
         unique_id: sensorer_mikaels_rum
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.mikaels_rum_temperature') | round(1,'round-to-even', '-' ) }} °C"
+          temperature: "{{ states('sensor.mikaels_rum_temperature') | round(1,'round-to-even', '-' ) }}°C"
           humidity: "{{ states('sensor.mikaels_rum_humidity') | round(0, 'round-to-even', '-') }}"
           co2: " "
           v: "{{ states('sensor.mikaels_rum_v') | round(1, 'round-to-even', '-') }} g/m³"
@@ -43,7 +43,7 @@ template:
         unique_id: sensorer_teknikrum
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.teknikrum_temperature') | round(1,'round-to-even', '-' ) }} °C"
+          temperature: "{{ states('sensor.teknikrum_temperature') | round(1,'round-to-even', '-' ) }}°C"
           humidity: "{{ states('sensor.teknikrum_humidity') | round(0, 'round-to-even', '-') }}"
           co2: " "
           v: "{{ states('sensor.teknikrum_v') | round(1, 'round-to-even', '-') }} g/m³"
@@ -54,7 +54,7 @@ template:
       #  #friendly_name: "1 Sovrum"
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.netatmo_rosa_van_temperature') | round(1,'round-to-even', '-') }} °C"
+          temperature: "{{ states('sensor.netatmo_rosa_van_temperature') | round(1,'round-to-even', '-') }}°C"
           humidity: "{{ states('sensor.netatmo_rosa_van_humidity') | round(0, 'round-to-even', '-') }}"
           co2: "{{ states('sensor.netatmo_rosa_van_co2') | round(0, 'round-to-even', '-')}} ppm"
           v: "{{ states('sensor.sovrum_v') | round(1, 'round-to-even', '-') }} g/m³"
@@ -66,7 +66,7 @@ template:
         ##friendly_name: "0 Hall"
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_temperature') | round(1,'round-to-even', '-') }} °C"
+          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_temperature') | round(1,'round-to-even', '-') }}°C"
           humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_humidity') | round(0, 'round-to-even', '-') }}"
           co2: "{{ states('sensor.netatmo_sannesholma_weather_station_co2') | round(0, 'round-to-even', '-')}} ppm"
           v: "{{ states('sensor.indoor_v') | round(1, 'round-to-even', '-') }} g/m³"
@@ -78,7 +78,7 @@ template:
         #friendly_name: "0 Badrum"
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.badrum_temperature') | round(1,'round-to-even', '-') }} °C"
+          temperature: "{{ states('sensor.badrum_temperature') | round(1,'round-to-even', '-') }}°C"
           humidity: "{{ states('sensor.badrum_humidity') | round(0, 'round-to-even', '-') }}"
           co2: ""
           v: "{{ states('sensor.badrum_v') | round(1, 'round-to-even', '-') }} g/m³"
@@ -88,7 +88,7 @@ template:
         #friendly_name: "1 Allrum"
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | round(1,'round-to-even', '-') }} °C"
+          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | round(1,'round-to-even', '-') }}°C"
           humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_humidity') | round(0, 'round-to-even', '-') }}"
           co2: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_co2') | round(0, 'round-to-even', '-')}} ppm"
           v: "{{ states('sensor.allrum_v') | round(1, 'round-to-even', '-') }} g/m³"
@@ -98,7 +98,7 @@ template:
         #friendly_name: "Utomhus"
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | round(1,'round-to-even', '-') }} °C"
+          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_temperature') | round(1,'round-to-even', '-') }}°C"
           humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_utomhus_entre_humidity') | round(0, 'round-to-even', '-') }}"
           co2: "400 ppm"
           v: "{{ states('sensor.utomhus_v') | round(1, 'round-to-even', '-') }} g/m³"
@@ -111,7 +111,7 @@ template:
         #friendly_name: "0 Vardagsrum"
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.vardagsrum_temperature') | round(1,'round-to-even', '-') }} °C"
+          temperature: "{{ states('sensor.vardagsrum_temperature') | round(1,'round-to-even', '-') }}°C"
           humidity: "{{ states('sensor.vardagsrum_humidity') | round(0, 'round-to-even', '-') }}"
           co2: ""
           v: "{{ states('sensor.vardagsrum_v') | round(1, 'round-to-even', '-') }} g/m³"
@@ -122,7 +122,7 @@ template:
         #friendly_name: "0 Barnrum"
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.barnrum_temperature') | round(1,'round-to-even', '-') }} °C"
+          temperature: "{{ states('sensor.barnrum_temperature') | round(1,'round-to-even', '-') }}°C"
           humidity: "{{ states('sensor.barnrum_humidity') | round(0, 'round-to-even', '-') }}"
           co2: ""
           v: "{{ states('sensor.barnrum_v') | round(1, 'round-to-even', '-') }} g/m³"
@@ -133,7 +133,7 @@ template:
         #friendly_name: "0 Gästrum"
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.gastrum_temperature') | round(1,'round-to-even', '-') }} °C"
+          temperature: "{{ states('sensor.gastrum_temperature') | round(1,'round-to-even', '-') }}°C"
           humidity: "{{ states('sensor.gastrum_humidity') | round(0, 'round-to-even', '-') }}"
           co2: ""
           v: "{{ states('sensor.gastrum_v') | round(1, 'round-to-even', '-') }} g/m³"
@@ -144,7 +144,7 @@ template:
         #friendly_name: "0 Kök"
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.kok_temperature') | round(1,'round-to-even', '-') }} °C"
+          temperature: "{{ states('sensor.kok_temperature') | round(1,'round-to-even', '-') }}°C"
           humidity: "{{ states('sensor.kok_humidity') | round(0, 'round-to-even', '-') }}"
           co2: ""
           v: "{{ states('sensor.kok_v') | round(1, 'round-to-even', '-') }} g/m³"
