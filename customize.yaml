@@ -1,7 +1,3 @@
-light.mikaels_rum_tak:
-  icon: hue:ceiling-fugato-three-alt
-light.mikaels_dator_hue_play:
-  icon: hue:play-bar
 light.datorrum_skrivbord:
   supported_color_modes:
   - color_temp
@@ -14,11 +10,5 @@ light.koksentre_dorr:
   max_mireds: 455
 sensor.elpris_totalt_sek:
   icon: mdi:cash-multiple
-light.kok_tak:
-  icon: hue:bulb-spot
-light.kok_bankbelysning:
-  icon: hue:bulb-spot
 #
 #
-sensor.accumulated_consumption_sannesholma_2181:
-  state_class: total_increasing
