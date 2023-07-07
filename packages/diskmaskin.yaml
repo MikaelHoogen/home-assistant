@@ -1,27 +1,35 @@
 utility_meter:
   diskmaskin_timme:
+    unique_id: diskmaskin_timme
     source: sensor.diskmaskin_consumption
     cycle: hourly
   diskmaskin_dag:
+    unique_id: diskmaskin_dag
     source: sensor.diskmaskin_consumption
     cycle: daily
   diskmaskin_vecka:
+    unique_id: diskmaskin_vecka
     source: sensor.diskmaskin_consumption
     cycle: weekly
   diskmaskin_manad:
+    unique_id: diskmaskin_manad
     source: sensor.diskmaskin_consumption
     cycle: monthly
   diskmaskin_ar:
+    unique_id: diskmaskin_ar
     source: sensor.diskmaskin_consumption
     cycle: yearly
 #
   diskmaskin_dag_kostnad:
+    unique_id: diskmaskin_dag_kostnad
     source: sensor.diskmaskin_timme_kostnad
     cycle: daily
   diskmaskin_manad_kostnad:
+    unique_id: diskmaskin_manad_kostnad
     source: sensor.diskmaskin_timme_kostnad
     cycle: monthly
   diskmaskin_ar_kostnad:
+    unique_id: diskmaskin_ar_kostnad
     source: sensor.diskmaskin_timme_kostnad
     cycle: yearly
 #
