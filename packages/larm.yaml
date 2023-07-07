@@ -94,3 +94,18 @@ alert:
       - mobile_app_sm_n975f
       - mobile_app_sm_g998b
       - persistent_notification
+#
+  snickarboa_temperature_low:
+    name: Låg temperatur i snickarboa
+    title: Låg temperatur i snickarboa
+    message: Risk för frysskador
+    done_message: Temperaturen är bra igen
+    entity_id: binary_sensor.snickarboa_tempterature_low
+    state: 'on'
+    repeat: 10
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - mobile_app_sm_n975f
+      - mobile_app_sm_g998b
+      - persistent_notification
