@@ -33,7 +33,7 @@ automation:
                   - light.sovrum
                   # Mikaels rum
                   - light.mikaels_rum_tak
-                  - light.mikaels_dator_hue_play
+                  - light.mikaels_rum_hue_play
                   - light.mikaels_rum_ljusslinga
                   - light.mikaels_rum_skrivbord
                   # Gästrum
