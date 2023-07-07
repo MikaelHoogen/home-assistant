@@ -39,12 +39,6 @@ climate:
 #
 #
 #
-#input_boolean:
-#  avfuktare:
-#    name: Avfuktare
-#    #
-#  snickarboa_heater:
-#    name: Snickarboa värmare
 #
 sensor:
   - platform: integration
@@ -127,6 +121,13 @@ input_number:
     step: 10
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
+  # Låg temperatur i snickarboa
+  snickarboa_temperature_low:
+    name: Snickarboa låg temperatur
+    min: 0
+    max: 7
+    step: 1
+    unit_of_measurement: °C
 #
 #
 template:
@@ -134,8 +135,7 @@ template:
 #      - name: "Avfuktare"
 #        unique_id: avfuktare
 #        state: >
-#          {{ is_state('input_boolean.avfuktare', 'on')
-#          and is_state('binary_sensor.elpris_cheap', 'on') }}
+#          {{ is_state('input_boolean.avfuktare', 'on') }}
 #
       - name: snickarboa_heater
         unique_id: snickarboa_heater
@@ -148,13 +148,13 @@ template:
         device_class: light
         delay_on:
           minutes: 10
-        state: >-
+        state: >
           {{ states('sensor.snickarboa_hue_motion_sensor_light_level') | float > states('input_number.snickarboa_light_level') | float }}
       #
       # Belysning närvaro
       - name: snickarboa_presence_light_automation_control
         unique_id: snickarboa_presence_light_automation_control
-        state: >-
+        state: >
           {{ is_state('binary_sensor.snickarboa_presence', 'on')
             and is_state('binary_sensor.snickarboa_lightlevel', 'off') }}
             
@@ -164,9 +164,18 @@ template:
         device_class: motion
         delay_off:
           minutes: 5
-        state: >-
+        state: >
           {{ is_state('binary_sensor.snickarboa_hue_motion_sensor_motion', 'on')
           or is_state('binary_sensor.snickarboa_dorrtrigger', 'on') }}
+#
+      - name: snickarboa_tempterature_low
+        unique_id: snickarboa_tempterature_low
+        delay_on:
+          minutes: 1
+        delay_off:
+          minutes: 10
+        state: >
+          {{ states('sensor.snickarboa_temperature') | float < states('input_number.snickarboa_temperature_low') | float }}
 #
   - trigger:
       - platform: state
