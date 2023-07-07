@@ -12,7 +12,7 @@ adaptive_lighting:
     transition: 30
     initial_transition: 3
     interval: 90
-    min_brightness: 30
+    min_brightness: 1
     max_brightness: 100
     min_color_temp: 2000
     max_color_temp: 4000
@@ -34,7 +34,7 @@ adaptive_lighting:
     initial_transition: 5
     interval: 90
     min_brightness: 1
-    max_brightness: 45
+    max_brightness: 35
     min_color_temp: 2000
     max_color_temp: 4000
     sleep_brightness: 1
@@ -262,7 +262,7 @@ automation:
     id: Kök värme
     trigger:
       - platform: state
-        entity_id: binary_sensor.heatpump_block
+        entity_id: binary_sensor.varmegolv_block
       - platform: homeassistant
         event: start
     action:
@@ -271,7 +271,7 @@ automation:
         - conditions:
             - condition: state
               state: 'on'
-              entity_id: binary_sensor.heatpump_block
+              entity_id: binary_sensor.varmegolv_block
           sequence:
             - service: climate.set_hvac_mode
               target:
@@ -282,7 +282,7 @@ automation:
         - conditions:
             - condition: state
               state: 'off'
-              entity_id: binary_sensor.heatpump_block
+              entity_id: binary_sensor.varmegolv_block
           sequence:
             - service: climate.set_hvac_mode
               target:
