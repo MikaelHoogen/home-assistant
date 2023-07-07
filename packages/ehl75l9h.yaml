@@ -2,35 +2,45 @@ utility_meter:
 #
 # Förbrukning elbil
   ehl75l9h_timme:
+    unique_id: hl75l9h_timme
     source: sensor.ehl75l9h_session_energy
     cycle: hourly
   ehl75l9h_dag:
+    unique_id: ehl75l9h_dag
     source: sensor.ehl75l9h_session_energy
     cycle: daily
   ehl75l9h_vecka:
+    unique_id: ehl75l9h_vecka
     source: sensor.ehl75l9h_session_energy
     cycle: weekly
   ehl75l9h_manad:
+    unique_id: ehl75l9h_manad
     source: sensor.ehl75l9h_session_energy
     cycle: monthly
   ehl75l9h_ar:
+    unique_id: ehl75l9h_ar
     source: sensor.ehl75l9h_session_energy
     cycle: yearly
 #
 # Kostnad elbil
   ehl75l9h_timme_kostnad:
+    unique_id: ehl75l9h_timme_kostnad
     source: sensor.ehl75l9h_accumulated_total_cost_hour
     cycle: hourly
   ehl75l9h_dag_kostnad:
+    unique_id: ehl75l9h_dag_kostnad
     source: sensor.ehl75l9h_accumulated_total_cost_hour
     cycle: daily
   ehl75l9h_vecka_kostnad:
+    unique_id: ehl75l9h_vecka_kostnad
     source: sensor.ehl75l9h_accumulated_total_cost_hour
     cycle: weekly
   ehl75l9h_manad_kostnad:
+    unique_id: ehl75l9h_manad_kostnad
     source: sensor.ehl75l9h_accumulated_total_cost_hour
     cycle: monthly
   ehl75l9h_ar_kostnad:
+    unique_id: ehl75l9h_ar_kostnad
     source: sensor.ehl75l9h_accumulated_total_cost_hour
     cycle: yearly
 #
@@ -73,26 +83,7 @@ template:
         availability: "{{ is_number(states('sensor.ehl75l9h_manad_kostnad')) and states('sensor.ehl75l9h_manad') | float(0.0) > 0 }}"
         state: "{{ ( states('sensor.ehl75l9h_manad_kostnad') | float(0.0) / states('sensor.ehl75l9h_manad') | float(0.0) ) | round(2) }}"
         #
-        # Medelpris tibber
-      - name: ehl75l9h_average_price_tibber
-        unique_id: ehl75l9h_average_price_tibber
-        unit_of_measurement: "SEK/kWh"
-        state_class: measurement
-        availability: "{{ is_number(states('sensor.ehl75l9h_manad_tibber_kostnad')) and states('sensor.ehl75l9h_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.ehl75l9h_manad_tibber_kostnad') | float(0.0) / states('sensor.ehl75l9h_manad') | float(0.0) ) | round(2) }}"
         #
-        # Medelpris tibber med garanti 50%
-#      - name: ehl75l9h_average_price_tibber_guarantee
-#        unique_id: ehl75l9h_average_price_tibber_guarantee
-#        unit_of_measurement: "SEK/kWh"
-#        state_class: measurement
-#        availability: "{{ is_number(states('sensor.ehl75l9h_average_price_tibber')) and states('sensor.average_price_consumption_tibber') | float(0.0) > 0 }}"
-#        state: >
-#          {% if states('sensor.ehl75l9h_average_price_tibber') | float('naan')  >  states('sensor.average_price_consumption_tibber') | float('naan') %}
-#            {{ states('sensor.ehl75l9h_average_price_tibber') | float('naan') / 2.0 }}
-#          {% elif is_state('binary_sensor.barnrum_belysning_automation_control', 'off') %}
-#            {{ states('sensor.ehl75l9h_average_price_tibber') | float('naan') }}
-#          {% endif %}
       #
       - name: ehl75l9h_cellRSSI
         unique_id: ehl75l9h_cellRSSI
