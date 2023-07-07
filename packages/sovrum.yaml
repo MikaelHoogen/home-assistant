@@ -20,6 +20,13 @@ adaptive_lighting:
     take_over_control: true
     detect_non_ha_changes: true
 #
+light:
+  - platform: group
+    name: Sovrum grupp
+    unique_id: Sovrum grupp
+    entities:
+      - light.sovrum
+      - light.walk_in_closet
 #
 input_number:
   sovrum_light_level:
@@ -30,29 +37,28 @@ input_number:
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
 #
-sensor:
-  - platform: template
-    sensors:
+#sensor:
+#  - platform: template
+#    sensors:
       ############# Temperatur #########################
-      netatmo_sovrum_temperature:
-        unit_of_measurement: "°C"
-        friendly_name: Sovrum termostat temperatur
-        value_template: "{{ state_attr('climate.netatmo_sovrum', 'current_temperature') }}"
+#      netatmo_sovrum_temperature:
+#        unit_of_measurement: "°C"
+#        friendly_name: Sovrum termostat temperatur
+#        value_template: "{{ state_attr('climate.netatmo_sovrum', 'current_temperature') }}"
 #
-binary_sensor:
-  #
-  - platform: template
-    sensors:
-      sovrum_belysning_lightlevel:
-        friendly_name: Sovrum
+template:
+  - binary_sensor:
+      - name: sovrum_belysning_lightlevel
+        unique_id: sovrum_belysning_lightlevel
         device_class: light
         delay_off:
           minutes: 30
-        value_template: >-
+        state: >-
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.sovrum_light_level') | float }}
-      sovrum_belysning_automation_control:
-        friendly_name: Sovrum
-        value_template: >-
+      #
+      - name: sovrum_belysning_automation_control
+        unique_id: sovrum_belysning_automation_control
+        state: >-
           {{ is_state('binary_sensor.sovrum_belysning_lightlevel', 'on')
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('input_boolean.sovdags', 'off') }}
@@ -60,6 +66,7 @@ binary_sensor:
 automation:
   #
   - alias: Sovrum belysning
+    id: Sovrum belysning
     trigger:
       - platform: state
         entity_id: binary_sensor.sovrum_belysning_automation_control
@@ -77,6 +84,7 @@ automation:
           - light.sovrum_byra
 #
   - alias: Sovrum Säng Mikael Knapp
+    id: Sovrum Säng Mikael Knapp
     trigger:
       - platform: event
         event_type: deconz_event
