@@ -8,7 +8,7 @@ adaptive_lighting:
   initial_transition: 0
   interval: 90
   min_brightness: 1
-  max_brightness: 45
+  max_brightness: 35
   sleep_brightness: 2
   take_over_control: true
   detect_non_ha_changes: false
