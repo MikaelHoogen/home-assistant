@@ -1,35 +1,35 @@
 #
-binary_sensor:
-  - platform: template
-    sensors:
+template:
+  - binary_sensor:
       ### Närvaro
-      walk_in_closet_presence:
+      - name: walk_in_closet_presence
+        unique_id: walk_in_closet_presence
         device_class: motion
-        friendly_name: Walk in closet
         delay_off:
           minutes: 2
-        value_template: >
+        state: >
           {{ is_state('binary_sensor.walk_in_closet_hue_motion_sensor_motion', 'on') }}
       ### Närvarostyrd belysning
-      walk_in_closet_presence_light_automation_control:
-        friendly_name: Walk in closet
-        value_template: >
+      - name: walk_in_closet_presence_light_automation_control
+        unique_id: walk_in_closet_presence_light_automation_control
+        state: >
           {{ is_state('binary_sensor.walk_in_closet_presence', 'on') }}
 #
 automation:
 #
-- alias: Walk in closet belysning
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.walk_in_closet_presence_light_automation_control
-  - platform: homeassistant
-    event: start
-  action:
-  - service: >
-      {% if is_state('binary_sensor.walk_in_closet_presence_light_automation_control', 'on') %}
-      light.turn_on
-      {% elif is_state('binary_sensor.walk_in_closet_presence_light_automation_control', 'off') %}
-      light.turn_off
-      {% endif %}
-    entity_id:
-      - light.walk_in_closet
+  - alias: Walk in closet belysning
+    id: Walk in closet belysning
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.walk_in_closet_presence_light_automation_control
+      - platform: homeassistant
+        event: start
+    action:
+      - service: >
+          {% if is_state('binary_sensor.walk_in_closet_presence_light_automation_control', 'on') %}
+          light.turn_on
+          {% elif is_state('binary_sensor.walk_in_closet_presence_light_automation_control', 'off') %}
+          light.turn_off
+          {% endif %}
+        entity_id:
+          - light.walk_in_closet
