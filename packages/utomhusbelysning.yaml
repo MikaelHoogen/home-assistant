@@ -61,7 +61,7 @@ adaptive_lighting:
     transition: 30
     initial_transition: 5
     interval: 90
-    min_brightness: 50
+    min_brightness: 40
     max_brightness: 100
     sleep_brightness: 1
     sleep_color_temp: 2200
@@ -72,9 +72,6 @@ adaptive_lighting:
     # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
     take_over_control: true
     detect_non_ha_changes: false
-    # Whether to keep adapting the lights (false) or to only adapt the lights as soon as they are turned on (true).
-    only_once: false
-    separate_turn_on_commands: false
     #
 light:
   - platform: group
@@ -92,6 +89,7 @@ light:
       - light.kackorna_entre
       - light.stall_entre
       - light.stolpe_gang
+      - light.stolpe_grind
 #
 input_number:
   utomhusbelysning_light_level:
