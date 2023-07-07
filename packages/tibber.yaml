@@ -5,7 +5,7 @@ sensor:
     method: POST
     scan_interval: 60
     payload: '{ "query": "{ viewer { homes { currentSubscription { priceInfo { today { total startsAt } tomorrow { total startsAt }}}}}}" }'
-    json_attributes_path: "$.data.viewer.homes[1].currentSubscription.priceInfo"
+    json_attributes_path: "$.data.viewer.homes[0].currentSubscription.priceInfo"
     json_attributes:
       - today
       - tomorrow
