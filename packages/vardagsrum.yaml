@@ -14,7 +14,7 @@ adaptive_lighting:
     initial_transition: 5
     interval: 90
     min_brightness: 1
-    max_brightness: 45
+    max_brightness: 35
     sleep_brightness: 1
     take_over_control: true
     detect_non_ha_changes: true
@@ -183,7 +183,7 @@ automation:
     id: Vardagsrum värme
     trigger:
       - platform: state
-        entity_id: binary_sensor.heatpump_block
+        entity_id: binary_sensor.varmegolv_block
       - platform: homeassistant
         event: start
     action:
@@ -192,7 +192,7 @@ automation:
         - conditions:
             - condition: state
               state: 'on'
-              entity_id: binary_sensor.heatpump_block
+              entity_id: binary_sensor.varmegolv_block
           sequence:
             - service: climate.set_hvac_mode
               target:
@@ -203,7 +203,7 @@ automation:
         - conditions:
             - condition: state
               state: 'off'
-              entity_id: binary_sensor.heatpump_block
+              entity_id: binary_sensor.varmegolv_block
           sequence:
             - service: climate.set_hvac_mode
               target:
