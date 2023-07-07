@@ -4,6 +4,7 @@ adaptive_lighting:
     lights:
       - light.mikaels_rum_hue_play_1
       - light.mikaels_rum_hue_play_2
+      - light.mikaels_rum_hue_play_3
       - light.mikaels_rum_fonster
       - light.mikaels_rum_skrivbord
       - light.mikaels_rum_tak
@@ -11,7 +12,7 @@ adaptive_lighting:
     transition: 30
     initial_transition: 5
     interval: 90
-    min_brightness: 20
+    min_brightness: 10
     max_brightness: 100
     min_color_temp: 2000
     max_color_temp: 4500
@@ -111,6 +112,7 @@ automation:
         entity_id:
           - light.mikaels_rum_hue_play_1
           - light.mikaels_rum_hue_play_2
+          - light.mikaels_rum_hue_play_3
           - light.mikaels_rum_skrivbord
           - light.mikaels_rum_ljusslinga
           - light.mikaels_rum_tak
