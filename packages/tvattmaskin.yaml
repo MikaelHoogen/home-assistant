@@ -60,25 +60,6 @@ template:
         state: "{{ states('sensor.tvattmaskin_effekt') | float(0.0) > 5 }}"
     #
 #
-#variable:
-### Tvättmaskin #######################
-#  tvattmaskin_consumption:
-#    value: 0.0
-#    restore: true
-#    attributes:
-#      friendly_name: "Tvättmaskin energiförbrukning"
-#      icon: mdi:power-plug
-#      unit_of_measurement: "kWh"
-#
-#  tvattmaskin_cost:
-#    value: 0.0
-#    restore: true
-#    attributes:
-#      friendly_name: "Tvättmaskin kostnad"
-#      icon: mdi:cash-multiple
-#      unit_of_measurement: "SEK"
-#
-
 #
 automation:
 ############## Tvättmaskin ######################################################
