@@ -117,7 +117,7 @@ template:
       #
       ### Medelpris nordpool imorgon
       #
-      - name: elpris_imorgon_medel 
+      - name: elpris_imorgon_medel
         unique_id: elpris_imorgon_medel
         unit_of_measurement: SEK
         state_class: measurement
@@ -269,9 +269,6 @@ homeassistant:
     sensor.avfuktare_manad_kostnad:
       friendly_name: Avfuktare
       icon: mdi:air-humidifier
-    sensor.snickarboa_heater_manad_kostnad:
-      friendly_name: Snickarboa värme
-      icon: mdi:radiator
     sensor.diskmaskin_manad_kostnad:
       friendly_name: Diskmaskin
     sensor.torktumlare_manad_kostnad:
