@@ -11,7 +11,7 @@ adaptive_lighting:
     sleep_transition: 30
     initial_transition: 1
     interval: 90
-    min_brightness: 10
+    min_brightness: 1
     max_brightness: 100
     min_color_temp: 2000
     max_color_temp: 4000
@@ -54,6 +54,14 @@ light:
 #
 input_number:
 #
+  allrum_light_level:
+    name: Ljusstyrka allrum för belysning
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
+#
   allrum_huslampa_light_level:
     name: Ljusstyrka allrum för belysning huslampa
     min: 0
@@ -85,6 +93,7 @@ template:
         state: "true"
 #
   - binary_sensor:
+      #### Filament ##############
       # Fömsterbeysning ljusstyrka
       - name: allrum_belysning_filament_lightlevel
         unique_id: allrum_belysning_filament_lightlevel
@@ -115,6 +124,16 @@ template:
           {{ is_state('binary_sensor.allrum_huslampa_lightlevel', 'on')
             and is_state('input_boolean.film_spelar', 'off') }}
       #
+      #### Tak #########################################
+      #
+      - name: allrum_lightlevel
+        unique_id: allrum_lightlevel
+        device_class: light
+        state: >
+          {{ ( states('sensor.allrum_hue_motion_sensor_light_level') | float > states('input_number.allrum_light_level') | float
+            and is_state('light.allrum_tak_1', 'off') ) 
+            or ( is_state('binary_sensor.allrum_lightlevel', 'on')
+            and is_state('light.allrum_tak_1', 'on') ) }}
       #
       ### Närvarostyrd belysning i tak
       - name: allrum_presence_light_automation_control
