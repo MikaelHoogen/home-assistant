@@ -63,11 +63,11 @@ automation:
     id: EMHASS forecast
     trigger:
       - platform: time
-        at: "14:00"
+        at: "14:30"
       - platform: time
-        at: "18:00"
+        at: "18:30"
       - platform: time
-        at: "23:00"
+        at: "23:30"
 #    condition:
 #      - condition: state
 #        entity_id: sensor.elpris
@@ -82,3 +82,8 @@ automation:
         data:
           message: EMHASS är uppdaterad
           title: EMHASS är uppdaterad
+#
+homeassistant:
+  customize:
+    sensor.p_pv_forecast:
+      state_class: measurement
