@@ -69,7 +69,29 @@ utility_meter:
 template:
     - sensor:
       #
-#
+      ### Effektförbrukning
+      - name: power_usage
+        unique_id: power_usage
+        unit_of_measurement: W
+        state_class: measurement
+        availability: >
+          {{ is_number(states('sensor.power_production_sannesholma_2181')) and is_number(states('sensor.power_sannesholma_2181')) and is_number(states('sensor.solarnet_power_photovoltaics')) }}
+        state: >
+          {{ ( states('sensor.solarnet_power_photovoltaics') | float('not_a_number')
+          + states('sensor.power_sannesholma_2181') | float('not_a_number')
+          - states('sensor.power_production_sannesholma_2181') | float('not_a_number') ) | round(0) }}
+      #
+      ### Självförbrukad effekt från solceller
+      - name: power_solar_self_usage
+        unique_id: power_solar_self_usage
+        unit_of_measurement: W
+        state_class: measurement
+        availability: >
+          {{ is_number(states('sensor.power_production_sannesholma_2181')) and is_number(states('sensor.solarnet_power_photovoltaics')) }}
+        state: >
+          {{ ( states('sensor.solarnet_power_photovoltaics') | float('not_a_number')
+          - states('sensor.power_production_sannesholma_2181') | float('not_a_number') ) | round(0) }}
+      #
       ### Total Kostnad
       - name: accumulated_total_cost_hour
         unique_id: accumulated_total_cost_hour
@@ -167,13 +189,6 @@ template:
         availability: "{{ is_number(states('sensor.monthly_cost_sannesholma_2181')) and is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) }}"
         state: "{{ ( states('sensor.monthly_cost_sannesholma_2181') | float('naan') / states('sensor.monthly_net_consumption_sannesholma_2181') | float('naan') ) | round(2) }}"
       #
-      ### Medel totalt # Tas bort?
-#      - name: average_total_price
-#        unique_id: average_total_price
-#        unit_of_measurement: "SEK/kWh"
-#        state_class: measurement
-#        state: "{{ ( states('sensor.accumulated_cost_total_month_sannesholma_2181') | float(0.0) / states('sensor.accumulated_consumption_month_sannesholma_2181') | float(0.0) ) | round(2) }}"
-      #
       #
       - name: average_total_price_new
         unique_id: average_total_price_new
@@ -182,7 +197,6 @@ template:
         availability: "{{ is_number(states('sensor.accumulated_total_cost_month')) and is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) }}"
         state: "{{ ( states('sensor.accumulated_total_cost_month') | float('naan') / states('sensor.monthly_net_consumption_sannesholma_2181') | float('naan') ) | round(2) }}"
       #
-
         #
         # Värmepump ##########################################################################
       - name: heatpump_heat_average_price
@@ -199,14 +213,6 @@ template:
         availability: "{{ is_number(states('sensor.heatpump_hotwater_manad_kostnad')) and states('sensor.heatpump_hotwater_manad') | float(0.0) > 0 }}"
         state: "{{ ( states('sensor.heatpump_hotwater_manad_kostnad') | float(0.0) / states('sensor.heatpump_hotwater_manad') | float(0.0) ) | round(2) }}"
         #
-        #
-        # Eaton ##########################################################################
-#      - name: eaton3s_average_price
-#        unique_id: eaton3s_average_price
-#        unit_of_measurement: "SEK/kWh"
-#        state_class: measurement
-#        availability: "{{ is_number(states('sensor.eaton3s_manad_kostnad')) and states('sensor.eaton3s_manad') | float(0.0) > 0 }}"
-#        state: "{{ ( states('sensor.eaton3s_manad_kostnad') | float(0.0) / states('sensor.eaton3s_manad') | float(0.0) ) | round(2) }}"
         #
         # Avfuktare ##########################################################################
       - name: avfuktare_average_price
@@ -257,23 +263,3 @@ homeassistant:
     sensor.elpris:
       state_class: measurement
     #
-    sensor.heatpump_heat_manad_kostnad:
-      friendly_name: Värmepump värme
-      icon: mdi:radiator
-#    sensor.eaton3s_manad_kostnad:
-#      friendly_name: Eaton3s
-#      icon: mdi:server
-    sensor.heatpump_hotwater_manad_kostnad:
-      friendly_name: Varmvatten
-      icon: mdi:water
-    sensor.avfuktare_manad_kostnad:
-      friendly_name: Avfuktare
-      icon: mdi:air-humidifier
-    sensor.diskmaskin_manad_kostnad:
-      friendly_name: Diskmaskin
-    sensor.torktumlare_manad_kostnad:
-      friendly_name: Torktumlare
-      icon: mdi:tumble-dryer
-    sensor.tvattmaskin_manad_kostnad:
-      friendly_name: Tvättmaskin
-      icon: mdi:washing-machine
