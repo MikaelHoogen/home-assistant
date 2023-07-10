@@ -1,7 +1,12 @@
 shell_command:
   trigger_nordpool_forecast: "curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{ state_attr('sensor.elpris_sb', 'köp') | list }},\"prod_price_forecast\":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},\"solar_forecast_kwp\":12.8}' http://localhost:5000/action/dayahead-optim"
   #
-  trigger_nordpool_forecast_test: "curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{ state_attr('sensor.elpris_sb', 'köp') | list }},\"prod_price_forecast\":{{ state_attr('sensor.elpris_sb', 'sälj') | list }}}' http://localhost:5000/action/dayahead-optim"
+  trigger_nordpool_solcast_forecast: "curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{ state_attr('sensor.elpris_sb', 'köp') | list }},\"prod_price_forecast\":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},\"solcast_rooftop_id\":\"fdcd-5254-4cde-49e7\",\"solcast_api_key\":\"z_x3OJCwQiQb7SY9MGHTv0XeqrabketJ\"}' http://localhost:5000/action/dayahead-optim"
+  #
+#{"solcast_rooftop_id":"fdcd-5254-4cde-49e7","solcast_api_key":!secret maria}
+#!secret maria
+  #
+  #trigger_nordpool_forecast_test: "curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{ state_attr('sensor.elpris_sb', 'köp') | list }},\"prod_price_forecast\":{{ state_attr('sensor.elpris_sb', 'sälj') | list }}}' http://localhost:5000/action/dayahead-optim"
     #
   trigger_nordpool_forecast_solar_forecast: "curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list  + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24] }},\"prod_price_forecast\":{{((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list  + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24]}},\"solar_forecast_kwp\":12.8}' http://localhost:5000/action/dayahead-optim"
   #test: curl -i -H "Content-Type:application/json" -X POST -d '{"solar_forecast_kwp":5.0}' http://localhost:5000/action/dayahead-optim
@@ -22,7 +27,7 @@ template:
         state_class: measurement
         device_class: power
         state: >
-          {{ ( states('sensor.power_sannesholma_2181') | float('naan') - states('sensor.heatpump_compressor_real_power') | float('naan') - states('sensor.ehl75l9h_power') | float('naan') * 1000 ) | round(0) }}
+          {{ ( states('sensor.power_usage') | float('naan') - states('sensor.heatpump_compressor_real_power') | float('naan') - states('sensor.ehl75l9h_power') | float('naan') * 1000 ) | round(0) }}
 #
       - name: elpris_sb
         unique_id: elpris_sb
@@ -66,8 +71,8 @@ automation:
         at: "14:30"
       - platform: time
         at: "18:30"
-      - platform: time
-        at: "23:30"
+#      - platform: time
+#        at: "23:30"
 #    condition:
 #      - condition: state
 #        entity_id: sensor.elpris
@@ -75,13 +80,10 @@ automation:
 #        state: "true"
     action:
       - service: shell_command.trigger_nordpool_forecast
-      - delay:
-          minutes: 1
-      - service: shell_command.publish_data
-      - service: notify.mobile_app_sm_n975f
-        data:
-          message: EMHASS är uppdaterad
-          title: EMHASS är uppdaterad
+#      - service: notify.mobile_app_sm_n975f
+#        data:
+#          message: EMHASS är uppdaterad
+#          title: EMHASS är uppdaterad
 #
 homeassistant:
   customize:
