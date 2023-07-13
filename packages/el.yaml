@@ -73,6 +73,21 @@ utility_meter:
 #
 #
 template:
+    - trigger:
+        - platform: state
+          entity_id: sensor.solar_total_energy_hour
+        ### Självförbrukad energi från solceller
+      sensor:
+        - name: solar_energy_self_usage_hour
+          unique_id: solar_energy_self_usage_hour
+          unit_of_measurement: kWh
+          state_class: measurement
+          availability: >
+            {{ is_number(states('sensor.solar_total_energy_hour')) and is_number(states('sensor.accumulated_production_current_hour_sannesholma_2181')) }}
+          state: >
+            {{ ( states('sensor.solar_total_energy_hour') | float('not_a_number')
+            - states('sensor.accumulated_production_current_hour_sannesholma_2181') | float('not_a_number') ) | round(3) }}
+        #
     - sensor:
       #
       ### Effektförbrukning
@@ -87,17 +102,7 @@ template:
           + states('sensor.power_sannesholma_2181') | float('not_a_number')
           - states('sensor.power_production_sannesholma_2181') | float('not_a_number') ) | round(0) }}
       #
-      ### Självförbrukad energi från solceller
-      - name: solar_energy_self_usage_hour
-        unique_id: solar_energy_self_usage_hour
-        unit_of_measurement: kWh
-        state_class: measurement
-        availability: >
-          {{ is_number(states('sensor.solar_total_energy_hour')) and is_number(states('sensor.accumulated_production_current_hour_sannesholma_2181')) }}
-        state: >
-          {{ ( states('sensor.solar_total_energy_hour') | float('not_a_number')
-          - states('sensor.accumulated_production_current_hour_sannesholma_2181') | float('not_a_number') ) | round(3) }}
-      #
+
       ### Självförbrukad effekt från solceller
       - name: solar_power_self_usage
         unique_id: solar_power_self_usage
@@ -125,7 +130,7 @@ template:
         availability: "{{ is_number(states('sensor.solar_energy_self_usage_hour')) and is_number(states('sensor.elpris_totalt_sek')) }}"
         state: "{{ ( states('sensor.solar_energy_self_usage_hour') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
       #
-      ### Total förtjänst
+      ### Total förtjänst, FIXA med cash från Tibber
       - name: solar_accumulated_total_earnings_hour
         unique_id: solar_accumulated_total_earnings_hour
         unit_of_measurement: "SEK"
@@ -223,7 +228,7 @@ template:
         availability: "{{ is_number(states('sensor.monthly_cost_sannesholma_2181')) and is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) }}"
         state: "{{ ( states('sensor.monthly_cost_sannesholma_2181') | float('naan') / states('sensor.monthly_net_consumption_sannesholma_2181') | float('naan') ) | round(2) }}"
       #
-      # Medel totalt
+      # Medel totalt, FEL FIXA!
       - name: average_total_price_new
         unique_id: average_total_price_new
         unit_of_measurement: "SEK/kWh"
