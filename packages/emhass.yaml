@@ -17,9 +17,12 @@ sensor:
     unique_id: power_sannesholma_2181_no_var_loads_filtered
     entity_id: sensor.power_sannesholma_2181_no_var_loads
     filters:
+      - filter: outlier
+        window_size: 4
+        radius: 4.0
       - filter: lowpass
         time_constant: 10
-        precision: 0
+        precision: 2
 #
 template:
   - sensor:
@@ -27,7 +30,7 @@ template:
       - name: power_sannesholma_2181_no_var_loads
         unique_id: power_sannesholma_2181_no_var_loads
         availability: >
-          {{ is_number(states('sensor.power_sannesholma_2181'))
+          {{ is_number(states('sensor.power_usage'))
           and is_number(states('sensor.heatpump_compressor_real_power'))
           and is_number(states('sensor.ehl75l9h_power'))
           }}
@@ -60,6 +63,14 @@ template:
             {% endfor %}
             {{ ns.x }}
 #
+  - binary_sensor:
+      ### Kör kompressor
+      - name: heatpump_emhass
+        unique_id: heatpump_emhass
+        availability: >
+          {{ is_number(states('sensor.p_deferrable0')) }}
+        state: >
+          {{ states('sensor.p_deferrable0') | float('not_a_number') > 0}}
 #
 #
 automation:
