@@ -109,3 +109,18 @@ alert:
       - mobile_app_sm_n975f
       - mobile_app_sm_g998b
       - persistent_notification
+#
+  snickarboa_frys_temperature_low:
+    name: Hög temperatur frys i snickarboa
+    title: Hög temperatur frys i snickarboa
+    message: Risk för att det tinar
+    done_message: Temperaturen är bra igen
+    entity_id: binary_sensor.snickarboa_frys_tempterature_low
+    state: 'on'
+    repeat: 10
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - mobile_app_sm_n975f
+      - mobile_app_sm_g998b
+      - persistent_notification
