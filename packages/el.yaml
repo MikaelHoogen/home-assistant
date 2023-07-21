@@ -88,7 +88,9 @@ utility_meter:
 template:
     - trigger:
         - platform: state
-          entity_id: sensor.solar_total_energy
+          entity_id: sensor.fronius_total_energy
+        - platform: state
+          entity_id: sensor.last_meter_production_sannesholma_2181
         ### Självförbrukad energi från solceller
       sensor:
         - name: solar_energy_self_usage
@@ -96,9 +98,13 @@ template:
           unit_of_measurement: kWh
           state_class: measurement
           availability: >
-            {{ is_number(states('sensor.solar_total_energy')) and is_number(states('sensor.last_meter_production_sannesholma_2181')) }}
+            {{ is_number(states('sensor.fronius_total_energy')) and is_number(states('sensor.last_meter_production_sannesholma_2181')) }}
           state: >
-            {{ ( states('sensor.fronius_total_energy') | float - states('sensor.last_meter_production_sannesholma_2181') | float ) | round(3)}}
+            {% if states('sensor.solar_energy_self_usage') | float(0) < ( states('sensor.fronius_total_energy') | float(0) - states('sensor.last_meter_production_sannesholma_2181') | float(0) ) %}
+            {{ ( states('sensor.fronius_total_energy') | float('not_a_number') - states('sensor.last_meter_production_sannesholma_2181') | float('not_a_number') ) | round(3)}}
+            {% else %}
+            {{ states('sensor.solar_energy_self_usage') | float('not_a_number') | round(3)}}
+            {% endif %}
         #
     - sensor:
       #
