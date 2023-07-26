@@ -63,6 +63,15 @@ template:
             {% endfor %}
             {{ ns.x }}
 #
+      - name: p_pv_forecast_measure
+        unique_id: p_pv_forecast_measure
+        availability: >
+          {{ is_number(states('sensor.p_pv_forecast')) }}
+        unit_of_measurement: "W"
+        state_class: measurement
+        state: >
+          {{ states('sensor.p_pv_forecast') }}
+#
   - binary_sensor:
       ### Kör kompressor
       - name: heatpump_emhass
