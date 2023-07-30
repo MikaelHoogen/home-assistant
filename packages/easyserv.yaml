@@ -33,33 +33,6 @@ sensor:
     value_template: '{{ value_json.CompressorState }}'
 #
 #
-#  - platform: integration
-#    source: sensor.heatpump_compressor_real_power
-#    name: heatpump_compressor_consumption
-#    unit_prefix: k
-#    round: 2
-#    method: left
-#
-#  - platform: integration
-#    source: sensor.heatpump_coldcircuitpump_real_power
-#    name: heatpump_coldcircuitpump_consumption
-#    unit_prefix: k
-#    round: 2
-#    method: left
-#
-#  - platform: integration
-#    source: sensor.heatpump_hotwater_power
-#    name: heatpump_hotwater_consumption
-#    unit_prefix: k
-#    round: 2
-#    method: left
-#
-#  - platform: integration
-#    source: sensor.heatpump_heat_power
-#    name: heatpump_heat_consumption
-#    unit_prefix: k
-#    round: 2
-#    method: left
 #
   - platform: history_stats
     name: heatpump_compressor_today
@@ -119,12 +92,15 @@ utility_meter:
     source: sensor.heatpump_consumption_today
     cycle: daily
   heatpump_vecka:
+    unique_id: heatpump_vecka
     source: sensor.heatpump_consumption_today
     cycle: weekly
   heatpump_manad:
+    unique_id: heatpump_manad
     source: sensor.heatpump_consumption_today
     cycle: monthly
   heatpump_ar:
+    unique_id: heatpump_ar
     source: sensor.heatpump_consumption_today
     cycle: yearly
   # Kostnad
@@ -152,6 +128,7 @@ utility_meter:
 #
 # Varmvatten förbrukning
   heatpump_hotwater_timme:
+    unique_id: heatpump_hotwater_timme
     source: sensor.heatpump_hotwater_consumption_today
     cycle: hourly
   heatpump_hotwater_dag:
@@ -159,12 +136,15 @@ utility_meter:
     source: sensor.heatpump_hotwater_consumption_today
     cycle: daily
   heatpump_hotwater_vecka:
+    unique_id: heatpump_hotwater_vecka
     source: sensor.heatpump_hotwater_consumption_today
     cycle: weekly
   heatpump_hotwater_manad:
+    unique_id: heatpump_hotwater_manad
     source: sensor.heatpump_hotwater_consumption_today
     cycle: monthly
   heatpump_hotwater_ar:
+    unique_id: heatpump_hotwater_ar
     source: sensor.heatpump_hotwater_consumption_today
     cycle: yearly
   #
@@ -192,6 +172,7 @@ utility_meter:
 #
 # Värme förbrukning
   heatpump_heat_timme:
+    unique_id: heatpump_heat_timme
     source: sensor.heatpump_heat_consumption_today
     cycle: hourly
   heatpump_heat_dag:
@@ -199,12 +180,15 @@ utility_meter:
     source: sensor.heatpump_heat_consumption_today
     cycle: daily
   heatpump_heat_vecka:
+    unique_id: heatpump_heat_vecka
     source: sensor.heatpump_heat_consumption_today
     cycle: weekly
   heatpump_heat_manad:
+    unique_id: heatpump_heat_manad
     source: sensor.heatpump_heat_consumption_today
     cycle: monthly
   heatpump_heat_ar:
+    unique_id: heatpump_heat_ar
     source: sensor.heatpump_heat_consumption_today
     cycle: yearly
 # Värme kostnad
@@ -351,15 +335,6 @@ template:
         state: >
           {{ ( 400.0 * 5.5 * states('sensor.heatpump_compressor_today') | float('nan') / 1000.0 + 400.0 * 1.5 * states('sensor.heatpump_coldcircuitpump_today') | float('nan') / 1000.0 ) | round(3) }}
       ##
-#      - name: heatpump_consumption
-#        unique_id: heatpump_consumption
-#        unit_of_measurement: "kWh"
-#        state_class: total_increasing
-#        device_class: energy
-#        availability: "{{ is_number(states('sensor.heatpump_compressor_consumption')) and is_number(states('sensor.heatpump_coldcircuitpump_consumption')) }}"
-#        state: >
-#          {{ states('sensor.heatpump_compressor_consumption') | float('not_a_number') + states('sensor.heatpump_coldcircuitpump_consumption') | float('not_a_number') }}
-      #
       # Varmvatten
       - name: heatpump_hotwater_power
         unique_id: heatpump_hotwater_power
@@ -403,15 +378,6 @@ template:
         availability: "{{ is_number(states('sensor.heatpump_heat_today')) }}"
         state: >
           {{ 400.0 * 7.0 * states('sensor.heatpump_heat_today') | float('nan') / 1000.0  | round(3) }}
-      #
-#      - name: heatpump_heat_consumption
-#        unique_id: heatpump_heat_consumption
-#        unit_of_measurement: "kWh"
-#        state_class: total_increasing
-#        device_class: energy
-#        availability: "{{ is_number(states('sensor.heatpump_consumption')) and is_number(states('sensor.heatpump_hotwater_consumption')) }}"
-#        state: >
-#          {{ states('sensor.heatpump_consumption') | float('nan') - states('sensor.heatpump_hotwater_consumption') | float('nan') }}
       #
       ####################################################################################################################################################
       ### Kostnad
@@ -502,9 +468,7 @@ template:
       # Gradminuter
       - name: heatpump_integral
         unique_id: heatpump_integral
-#        unit_of_measurement: "°C"
         state_class: measurement
-#        device_class: temperature
         state: "{{ state_attr('sensor.heatpump', 'Integral') }}"
 #
 homeassistant:
