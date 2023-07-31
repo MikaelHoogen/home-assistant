@@ -99,12 +99,6 @@ automation:
           filename: '/media/disk_f/recordings/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.mp4'
           duration: 180
         target:
-          entity_id: camera.carport_sub
-      - service: camera.record
-        data:
-          filename: '/media/disk_f/recordings/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}_main.mp4'
-          duration: 180
-        target:
           entity_id: camera.carport_main
       - delay: 180
           #object_id
