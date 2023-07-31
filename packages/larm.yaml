@@ -87,12 +87,12 @@ alert:
     done_message: Sumalarm återställt
     entity_id: binary_sensor.heatpump_sumalarm
     state: 'on'
-    repeat: 10
+    repeat: 1440
     can_acknowledge: true
     skip_first: false
     notifiers:
       - mobile_app_sm_n975f
-      - mobile_app_sm_g998b
+#      - mobile_app_sm_g998b
       - persistent_notification
 #
   snickarboa_temperature_low:
@@ -102,7 +102,7 @@ alert:
     done_message: Temperaturen är bra igen
     entity_id: binary_sensor.snickarboa_tempterature_low
     state: 'on'
-    repeat: 10
+    repeat: 30
     can_acknowledge: true
     skip_first: false
     notifiers:
