@@ -73,6 +73,28 @@ template:
         state: >
           {{ states('sensor.p_pv_forecast') }}
 #
+      - name: p_forecast
+        unique_id: p_forecast
+        availability: >
+          {{ is_number(states('sensor.p_pv_forecast')) }}
+        state: >
+          {{ states('sensor.p_pv_forecast') }}
+        attributes:
+          date: >
+            {{ state_attr('sensor.p_deferrable0', 'deferrables_schedule') | map(attribute='date') | list }}
+          p_deferrable0: >
+            {{ state_attr('sensor.p_deferrable0', 'deferrables_schedule') | map(attribute='p_deferrable0') | list }}
+          p_pv_forecast: >
+            {{ state_attr('sensor.p_pv_forecast', 'forecasts') | map(attribute='p_pv_forecast') | list }}
+          p_load_forecast: >
+            {{ state_attr('sensor.p_load_forecast', 'forecasts') | map(attribute='p_load_forecast') | list }}
+          p_grid_forecast: >
+            {{ state_attr('sensor.p_grid_forecast', 'forecasts') | map(attribute='p_grid_forecast') | list }}
+          unit_prod_price: >
+            {{ state_attr('sensor.unit_prod_price', 'unit_prod_price_forecasts') | map(attribute='unit_prod_price') | list }}
+          unit_load_cost: >
+            {{ state_attr('sensor.unit_load_cost', 'unit_load_cost_forecasts') | map(attribute='unit_load_cost') | list }}
+#
   - binary_sensor:
       ### Kör kompressor
       - name: heatpump_emhass
