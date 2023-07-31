@@ -128,6 +128,13 @@ input_number:
     max: 7
     step: 1
     unit_of_measurement: °C
+  # Låg temperatur frys i snickarboa
+  snickarboa_frys_temperature_low:
+    name: Snickarboa frys låg temperatur
+    min: -20
+    max: -14
+    step: 1
+    unit_of_measurement: °C
 #
 #
 template:
@@ -176,6 +183,15 @@ template:
           minutes: 10
         state: >
           {{ states('sensor.snickarboa_temperature') | float < states('input_number.snickarboa_temperature_low') | float }}
+#
+      - name: snickarboa_frys_tempterature_low
+        unique_id: snickarboa_frys_tempterature_low
+        delay_on:
+          minutes: 1
+        delay_off:
+          minutes: 10
+        state: >
+          {{ states('sensor.snickarboa_frys_temperature') | float > states('input_number.snickarboa_frys_temperature_low') | float }}
 #
   - trigger:
       - platform: state
