@@ -22,68 +22,10 @@ utility_meter:
     source: sensor.ehl75l9h_session_energy
     cycle: yearly
 #
-# Kostnad elbil
-  ehl75l9h_timme_kostnad:
-    unique_id: ehl75l9h_timme_kostnad
-    source: sensor.ehl75l9h_accumulated_total_cost_hour
-    cycle: hourly
-  ehl75l9h_dag_kostnad:
-    unique_id: ehl75l9h_dag_kostnad
-    source: sensor.ehl75l9h_accumulated_total_cost_hour
-    cycle: daily
-  ehl75l9h_vecka_kostnad:
-    unique_id: ehl75l9h_vecka_kostnad
-    source: sensor.ehl75l9h_accumulated_total_cost_hour
-    cycle: weekly
-  ehl75l9h_manad_kostnad:
-    unique_id: ehl75l9h_manad_kostnad
-    source: sensor.ehl75l9h_accumulated_total_cost_hour
-    cycle: monthly
-  ehl75l9h_ar_kostnad:
-    unique_id: ehl75l9h_ar_kostnad
-    source: sensor.ehl75l9h_accumulated_total_cost_hour
-    cycle: yearly
-#
 #
 #
 template:
     - sensor:
-      ######## Kostnad elbil #######################################################################
-      - name: ehl75l9h_accumulated_total_cost_hour
-        unique_id: ehl75l9h_accumulated_total_cost_hour
-        unit_of_measurement: "SEK"
-        state_class: measurement
-        availability: > 
-          {{ ( is_number(states('sensor.ehl75l9h_timme')) and is_number(states('sensor.elpris_totalt_sek')) )
-            and is_state('binary_sensor.ehl75l9h_online', 'on') }}
-        state: >
-          {{ ( states('sensor.ehl75l9h_timme') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(2) }}
-      #
-      - name: ehl75l9h_accumulated_tibber_cost_hour
-        unique_id: ehl75l9h_accumulated_tibber_cost_hour
-        unit_of_measurement: "SEK"
-        state_class: measurement
-        availability: > 
-          {{ ( is_number(states('sensor.ehl75l9h_timme')) and is_number(states('sensor.electricity_price_sannesholma_2181')) )
-            and is_state('binary_sensor.ehl75l9h_online', 'on') }}
-        state: >
-          {{ ( states('sensor.ehl75l9h_timme') | float('not_a_number') * states('sensor.electricity_price_sannesholma_2181') | float('not_a_number') ) | round(2) }}
-        #
-      - name: ehl75l9h_average_price_last_month
-        unique_id: ehl75l9h_average_price_last_month
-        unit_of_measurement: "SEK/kWh"
-        state_class: measurement
-        availability: "{{ is_number(state_attr('sensor.ehl75l9h_manad_kostnad', 'last_period')) and state_attr('sensor.ehl75l9h_manad', 'last_period') | float(0.0) > 0 }}"
-        state: "{{ ( state_attr('sensor.ehl75l9h_manad_kostnad', 'last_period') | float(0.0) / state_attr('sensor.ehl75l9h_manad', 'last_period') | float(0.0) ) | round(2) }}"
-        #
-      - name: ehl75l9h_average_price
-        unique_id: ehl75l9h_average_price
-        unit_of_measurement: "SEK/kWh"
-        state_class: measurement
-        availability: "{{ is_number(states('sensor.ehl75l9h_manad_kostnad')) and states('sensor.ehl75l9h_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.ehl75l9h_manad_kostnad') | float(0.0) / states('sensor.ehl75l9h_manad') | float(0.0) ) | round(2) }}"
-        #
-        #
       #
       - name: ehl75l9h_cellRSSI
         unique_id: ehl75l9h_cellRSSI
@@ -91,9 +33,3 @@ template:
         availability: "{{ is_number(state_attr('binary_sensor.ehl75l9h_online', 'state_cellRSSI') ) }}"
         state: >
           {{ state_attr('binary_sensor.ehl75l9h_online', 'state_cellRSSI') | float('naan') }}
-#
-homeassistant:
-  customize:
-    sensor.ehl75l9h_manad_kostnad:
-      friendly_name: Elbil
-      icon: mdi:car
