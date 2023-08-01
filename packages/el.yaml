@@ -54,6 +54,7 @@ utility_meter:
     cycle: yearly
 #
 #
+#
 # Självförbrukning Sol
   solar_energy_self_usage_hour:
     unique_id: solar_energy_self_usage_hour
@@ -137,8 +138,8 @@ template:
         unique_id: solar_accumulated_total_return_day
         unit_of_measurement: "SEK"
         state_class: total_increasing
-        availability: "{{ is_number(states('sensor.solar_accumulated_total_savings_day')) and is_number(states('sensor.solar_accumulated_total_earnings_day')) }}"
-        state: "{{ ( states('sensor.solar_accumulated_total_savings_day') | float('not_a_number') + states('sensor.solar_accumulated_total_earnings_day') | float('not_a_number') ) | round(3) }}"
+        availability: "{{ is_number(states('sensor.solar_accumulated_total_earnings_day')) }}"
+        state: "{{ ( states('sensor.solar_accumulated_total_savings_day') | float(0) + states('sensor.solar_accumulated_total_earnings_day') | float('not_a_number') ) | round(3) }}"
 #
       ### Total spar
       - name: solar_accumulated_total_savings_hour
@@ -190,7 +191,6 @@ template:
         availability: " {{ is_number(states('sensor.accumulated_total_cost_month')) and is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) and is_number(states('sensor.elpris_totalt_medel')) }}"
         state: >
           {{ ( states('sensor.monthly_net_consumption_sannesholma_2181') | float('not_a_number') * states('sensor.elpris_totalt_medel') | float('not_a_number') - states('sensor.accumulated_total_cost_month') | float('not_a_number') ) | round(2) }}
-      #
       #
       ### Kostnad exl moms och påslag
       - name: accumulated_cost_ex_moms_hour
