@@ -253,14 +253,7 @@ template:
         availability: "{{ is_number(states('sensor.snickarboa_heater_manad_kostnad')) and states('sensor.snickarboa_heater_manad') | float(0.0) > 0 }}"
         state: "{{ ( states('sensor.snickarboa_heater_manad_kostnad') | float(0.0) / states('sensor.snickarboa_heater_manad') | float(0.0) ) | round(2) }}"
         #
-        # Diskmaskin ##########################################################################
-      - name: diskmaskin_average_price
-        unique_id: diskmaskin_average_price
-        unit_of_measurement: "SEK/kWh"
-        state_class: measurement
-        availability: "{{ is_number(states('sensor.diskmaskin_manad_kostnad')) and states('sensor.diskmaskin_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.diskmaskin_manad_kostnad') | float(0.0) / states('sensor.diskmaskin_manad') | float(0.0) ) | round(2) }}"
-        #
+
         # Torktumlare ##########################################################################
       - name: torktumlare_average_price
         unique_id: torktumlare_average_price
