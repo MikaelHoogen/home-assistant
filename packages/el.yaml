@@ -39,20 +39,6 @@ utility_meter:
     source: sensor.accumulated_total_cost_hour
     cycle: weekly
 #
-# Kostnad nordpool
-  accumulated_cost_ex_moms_hour_sannesholma_2181:
-    source: sensor.accumulated_cost_ex_moms_hour
-    cycle: hourly
-  accumulated_cost_ex_moms_day_sannesholma_2181:
-    source: sensor.accumulated_cost_ex_moms_hour
-    cycle: daily
-  accumulated_cost_ex_moms_month_sannesholma_2181:
-    source: sensor.accumulated_cost_ex_moms_hour
-    cycle: monthly
-  accumulated_cost_ex_moms_year_sannesholma_2181:
-    source: sensor.accumulated_cost_ex_moms_hour
-    cycle: yearly
-#
 #
 #
 # Självförbrukning Sol
@@ -192,15 +178,6 @@ template:
         state: >
           {{ ( states('sensor.monthly_net_consumption_sannesholma_2181') | float('not_a_number') * states('sensor.elpris_totalt_medel') | float('not_a_number') - states('sensor.accumulated_total_cost_month') | float('not_a_number') ) | round(2) }}
       #
-      ### Kostnad exl moms och påslag
-      - name: accumulated_cost_ex_moms_hour
-        unique_id: accumulated_cost_ex_moms_hour
-        unit_of_measurement: "SEK"
-        state_class: total_increasing
-        availability: "{{ is_number(states('sensor.accumulated_consumption_current_hour_sannesholma_2181')) }}"
-        state: >
-          {{ ( states('sensor.accumulated_consumption_current_hour_sannesholma_2181') | float('not_a_number') * states('sensor.elpris') | float('not_a_number') ) | round(3) }}
-      #
       ### Medelpris nordpool imorgon
       #
       - name: elpris_imorgon_medel
@@ -221,13 +198,6 @@ template:
 #
 ####################### Medelpriser ##########################################################
 #
-      ### Medel exl moms och påslag
-      - name: average_price_ex_moms_last_month
-        unique_id: average_price_ex_moms_last_month
-        unit_of_measurement: "SEK/kWh"
-        state_class: measurement
-        state: "{{ ( state_attr('sensor.accumulated_cost_ex_moms_month_sannesholma_2181', 'last_period') | float(0.0) / state_attr('sensor.accumulated_consumption_month_sannesholma_2181', 'last_period') | float(0.0) ) | round(3) }}"
-      #
       ### Medel med moms och påslag förra månaden
       - name: average_price_last_month
         unique_id: average_price_last_month
@@ -251,7 +221,6 @@ template:
         availability: "{{ is_number(states('sensor.accumulated_total_cost_month')) and is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) }}"
         state: "{{ ( states('sensor.accumulated_total_cost_month') | float('naan') / states('sensor.monthly_net_consumption_sannesholma_2181') | float('naan') ) | round(2) }}"
       #
-        #
 ######## Värmepump ##########################################################################
       - name: heatpump_heat_average_price
         unique_id: heatpump_heat_average_price
