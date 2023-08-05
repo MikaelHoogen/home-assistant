@@ -20,6 +20,33 @@ utility_meter:
     source: sensor.diskmaskin_consumption
     cycle: yearly
 #
+  diskmaskin_timme_from:
+    unique_id: diskmaskin_timme_from
+    source: sensor.diskmaskin_consumption
+    periodically_resetting: false
+    cycle: hourly
+    tariffs:
+      - grid
+      - solar
+  diskmaskin_manad_from:
+    unique_id: diskmaskin_manad_from
+    source: sensor.diskmaskin_consumption
+    periodically_resetting: false
+    cycle: monthly
+    tariffs:
+      - grid
+      - solar
+#
+  test_energy_grid:
+    unique_id: test_energy_grid
+    source: sensor.all_light_energy
+    periodically_resetting: false
+    cycle: hourly
+    tariffs:
+      - grid
+      - solar
+#
+#
   diskmaskin_dag_kostnad:
     unique_id: diskmaskin_dag_kostnad
     source: sensor.diskmaskin_timme_kostnad
@@ -33,28 +60,6 @@ utility_meter:
     source: sensor.diskmaskin_timme_kostnad
     cycle: yearly
 #
-#sensor:
-#  - platform: template
-#    sensors:
-      ###
-#      diskmaskin_timme_kostnad:
-#        friendly_name: "Kostnad"
-#        unit_of_measurement: "SEK"
-#        value_template: "{{ ( states('sensor.diskmaskin_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
-#
-#binary_sensor:
-# Determine when the dishwasher has a load running.
-#  - platform: template
-#    sensors:
-#      diskmaskin:
-#        friendly_name: "Diskmaskin"
-#        delay_off:
-#          minutes: 5
-#        delay_on:
-#          seconds: 30
-#        value_template: >-
-#          {{ states('sensor.diskmaskin_power')|float > 1 }}
-#        icon_template: mdi:dishwasher
 #
 template:
   - sensor:
@@ -62,12 +67,19 @@ template:
       - name: diskmaskin_timme_kostnad
         unique_id: diskmaskin_timme_kostnad
         unit_of_measurement: "SEK"
-#        state_class: measurement
         device_class: monetary
-        availability: "{{ is_number(states('sensor.diskmaskin_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-        state: "{{ ( states('sensor.diskmaskin_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
-
-
+        availability: "{{ is_number(states('sensor.diskmaskin_timme_from_grid')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.diskmaskin_timme_from_grid') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+#
+#     # Medelpris
+      - name: diskmaskin_average_price
+        unique_id: diskmaskin_average_price
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        availability: "{{ is_number(states('sensor.diskmaskin_manad_kostnad')) and states('sensor.diskmaskin_manad_from_grid') | float(0.0) > 0 }}"
+        state: "{{ ( states('sensor.diskmaskin_manad_kostnad') | float(0.0) / states('sensor.diskmaskin_manad_from_grid') | float(0.0) ) | round(2) }}"
+        #
+#
   - binary_sensor:
       - name: diskmaskin
         unique_id: diskmaskin
@@ -78,24 +90,77 @@ template:
         state: >
           {{ states('sensor.diskmaskin_power') | float > 1 }}
 #
-automation:
-- alias: Diskmaskin klar
-  trigger:
-    platform: state
-    entity_id: binary_sensor.diskmaskin
-    from: "on"
-    to: "off"
-  action:
-  - service: persistent_notification.create
-    data_template:
-      message: "Diskmaskin"
-      title: "Diskmaskinen är klar"
-  - service: notify.mobile_app_sm_n975f
-    data_template:
-      message: "Diskmaskin klar"
-      title: "Diskmaskinen är klar"
-  - service: notify.mobile_app_sm_g998b
-    data_template:
-      message: "Diskmaskin klar"
-      title: "Diskmaskinen är klar"
 #
+automation:
+  - alias: Diskmaskin klar
+    id: Diskmaskin klar
+    trigger:
+      platform: state
+      entity_id: binary_sensor.diskmaskin
+      from: "on"
+      to: "off"
+    action:
+    - service: persistent_notification.create
+      data_template:
+        message: "Diskmaskin"
+        title: "Diskmaskinen är klar"
+    - service: notify.mobile_app_sm_n975f
+      data_template:
+        message: "Diskmaskin klar"
+        title: "Diskmaskinen är klar"
+    - service: notify.mobile_app_sm_g998b
+      data_template:
+        message: "Diskmaskin klar"
+        title: "Diskmaskinen är klar"
+#
+#
+  - alias: Diskmaskin energikalla
+    id: Diskmaskin energikalla
+    trigger:
+      - platform: state
+        to: 'on'
+        entity_id:
+          - binary_sensor.power_from_grid
+        variables:
+          tariff: "grid"
+      - platform: state
+        to: 'off'
+        entity_id:
+          - binary_sensor.power_from_grid
+        variables:
+          tariff: "solar"
+    action:
+      - service: select.select_option
+        target:
+          entity_id: select.diskmaskin_timme_from
+        data:
+          option: "{{ tariff }}"
+#
+      - service: select.select_option
+        target:
+          entity_id: select.diskmaskin_manad_from
+        data:
+          option: "{{ tariff }}"
+#
+#
+  - alias: Test energikalla
+    id: Test energikalla
+    trigger:
+      - platform: state
+        to: 'on'
+        entity_id:
+          - binary_sensor.power_from_grid
+        variables:
+          tariff: "grid"
+      - platform: state
+        to: 'off'
+        entity_id:
+          - binary_sensor.power_from_grid
+        variables:
+          tariff: "solar"
+    action:
+      - service: select.select_option
+        target:
+          entity_id: select.test_energy_grid
+        data:
+          option: "{{ tariff }}"
