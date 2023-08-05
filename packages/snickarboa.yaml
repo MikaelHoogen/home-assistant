@@ -33,18 +33,27 @@ climate:
     activity_temp: 7
 #
 #
+binary_sensor:
+  - platform: trend
+    sensors:
+      snickarboa_frys:
+        invert: "true"
+        friendly_name: Snickarboa frys
+        entity_id: sensor.snickarboa_frys_temperature
 #
 #
 sensor:
   - platform: integration
     source: sensor.avfuktare_power
     name: Avfuktare_consumption
+    unique_id: Avfuktare_consumption
     unit_prefix: k
     round: 2
     method: left
     #
 #
   - platform: history_stats
+    unique_id: snickarboa_heater_today
     name: snickarboa_heater_today
     entity_id: switch.motorvarmare
     state: "on"
@@ -54,44 +63,57 @@ sensor:
 #
 utility_meter:
   avfuktare_timme:
+    unique_id: avfuktare_timme
     source: sensor.avfuktare_consumption
     cycle: hourly
   avfuktare_dag:
+    unique_id: avfuktare_dag
     source: sensor.avfuktare_consumption
     cycle: daily
   avfuktare_vecka:
+    unique_id: avfuktare_vecka
     source: sensor.avfuktare_consumption
     cycle: weekly
   avfuktare_manad:
+    unique_id: avfuktare_manad
     source: sensor.avfuktare_consumption
     cycle: monthly
   avfuktare_ar:
+    unique_id: avfuktare_ar
     source: sensor.avfuktare_consumption
     cycle: yearly
   #
   avfuktare_dag_kostnad:
+    unique_id: avfuktare_dag_kostnad
     source: sensor.avfuktare_timme_kostnad
     cycle: daily
   avfuktare_manad_kostnad:
+    unique_id: avfuktare_manad_kostnad
     source: sensor.avfuktare_timme_kostnad
     cycle: monthly
   avfuktare_ar_kostnad:
+    unique_id: avfuktare_ar_kostnad
     source: sensor.avfuktare_timme_kostnad
     cycle: yearly
 #####
   snickarboa_heater_timme:
+    unique_id: snickarboa_heater_timme
     source: sensor.snickarboa_heater_consumption
     cycle: hourly
   snickarboa_heater_dag:
+    unique_id: snickarboa_heater_dag
     source: sensor.snickarboa_heater_consumption
     cycle: daily
   snickarboa_heater_vecka:
+    unique_id: snickarboa_heater_vecka
     source: sensor.snickarboa_heater_consumption
     cycle: weekly
   snickarboa_heater_manad:
+    unique_id: snickarboa_heater_manad
     source: sensor.snickarboa_heater_consumption
     cycle: monthly
   snickarboa_heater_ar:
+    unique_id: snickarboa_heater_ar
     source: sensor.snickarboa_heater_consumption
     cycle: yearly
   #
@@ -226,6 +248,7 @@ template:
 automation:
   #
   - alias: Avfuktare
+    id: Avfuktare
     trigger:
       - platform: state
         entity_id: binary_sensor.avfuktare
@@ -242,6 +265,7 @@ automation:
           - switch.avfuktare
   #
   - alias: Snickarboa värmare
+    id: Snickarboa värmare
     trigger:
       - platform: state
         entity_id: binary_sensor.snickarboa_heater
@@ -271,16 +295,10 @@ automation:
                 entity_id: climate.snickarboa
               data:
                 hvac_mode: 'off'
-#      - service: >
-#          {% if is_state('binary_sensor.snickarboa_heater', 'on') %}
-#          switch.turn_on
-#          {% elif is_state('binary_sensor.snickarboa_heater', 'off') %}
-#          switch.turn_off
-#          {% endif %}
-#        entity_id:
-#          - switch.motorvarmare
+#
     #
   - alias: Snickarboa belysning
+    id: Snickarboa belysning
     trigger:
     - platform: state
       entity_id: binary_sensor.snickarboa_presence_light_automation_control
@@ -296,11 +314,3 @@ automation:
       entity_id:
       - light.snickarboa_arbetsbank
 #
-homeassistant:
-  customize:
-    sensor.avfuktare_consumption:
-      friendly_name: Avfuktare
-    sensor.snickarboa_heater_consumption:
-      friendly_name: Snickarboa värmare
-    sensor.snickarboa_heater_dag:
-      friendly_name: Snickarboa värmare
