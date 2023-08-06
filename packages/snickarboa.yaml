@@ -218,6 +218,23 @@ utility_meter:
     source: sensor.snickarboa_frys_timme_kostnad
     cycle: yearly
 #
+  ################
+  ### Besparing ##
+  ################
+  #
+  snickarboa_frys_dag_from_solar_savings:
+    unique_id: snickarboa_frys_dag_from_solar_savings
+    source: sensor.snickarboa_frys_timme_from_solar_savings
+    cycle: daily
+  snickarboa_frys_manad_from_solar_savings:
+    unique_id: snickarboa_frys_manad_from_solar_savings
+    source: sensor.snickarboa_frys_timme_from_solar_savings
+    cycle: monthly
+  snickarboa_frys_ar_from_solar_savings:
+    unique_id: snickarboa_frys_ar_from_solar_savings
+    source: sensor.snickarboa_frys_timme_from_solar_savings
+    cycle: yearly
+#
   #######################################
   ### Förbrukning från sol eller nät ####
   #######################################
@@ -369,6 +386,14 @@ template:
         device_class: monetary
         availability: "{{ is_number(states('sensor.snickarboa_frys_timme_from_grid')) and is_number(states('sensor.elpris_totalt_sek')) }}"
         state: "{{ ( states('sensor.snickarboa_frys_timme_from_grid') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+      #
+      ### Besparing frys
+      - name: snickarboa_frys_timme_from_solar_savings
+        unique_id: snickarboa_frys_timme_from_solar_savings
+        unit_of_measurement: "SEK"
+        device_class: monetary
+        availability: "{{ is_number(states('sensor.snickarboa_frys_timme_from_solar')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.snickarboa_frys_timme_from_solar') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
       #
       ### Avfuktare kostnad
       - name: avfuktare_timme_kostnad
