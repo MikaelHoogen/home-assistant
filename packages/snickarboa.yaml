@@ -61,7 +61,21 @@ sensor:
     start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
     end: "{{ now().replace(microsecond=0) }}"
 #
+  - platform: history_stats
+    unique_id: snickarboa_frys_time_today
+    name: snickarboa_frys_time_today
+    entity_id: binary_sensor.snickarboa_frys
+    state: "on"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+    end: "{{ now().replace(microsecond=0) }}"
+#
 utility_meter:
+  ######################## Avfuktare #########################################
+  #
+  ###################
+  ### Förbrukning ###
+  ###################
   avfuktare_timme:
     unique_id: avfuktare_timme
     source: sensor.avfuktare_consumption
@@ -82,7 +96,9 @@ utility_meter:
     unique_id: avfuktare_ar
     source: sensor.avfuktare_consumption
     cycle: yearly
-  #
+  ################
+  ### Kostnad ####
+  ################
   avfuktare_dag_kostnad:
     unique_id: avfuktare_dag_kostnad
     source: sensor.avfuktare_timme_kostnad
@@ -95,27 +111,32 @@ utility_meter:
     unique_id: avfuktare_ar_kostnad
     source: sensor.avfuktare_timme_kostnad
     cycle: yearly
-#####
+  #
+  ########### Värmare ########################################################
+  #
+  ###################
+  ### Förbrukning ###
+  ###################
   snickarboa_heater_timme:
     unique_id: snickarboa_heater_timme
-    source: sensor.snickarboa_heater_consumption
+    source: sensor.snickarboa_heater_dag
     cycle: hourly
-  snickarboa_heater_dag:
-    unique_id: snickarboa_heater_dag
-    source: sensor.snickarboa_heater_consumption
-    cycle: daily
   snickarboa_heater_vecka:
     unique_id: snickarboa_heater_vecka
-    source: sensor.snickarboa_heater_consumption
+    source: sensor.snickarboa_heater_dag
     cycle: weekly
   snickarboa_heater_manad:
     unique_id: snickarboa_heater_manad
-    source: sensor.snickarboa_heater_consumption
+    source: sensor.snickarboa_heater_dag
     cycle: monthly
   snickarboa_heater_ar:
     unique_id: snickarboa_heater_ar
-    source: sensor.snickarboa_heater_consumption
+    source: sensor.snickarboa_heater_dag
     cycle: yearly
+  #
+  ################
+  ### Kostnad ####
+  ################
   #
   snickarboa_heater_dag_kostnad:
     unique_id: snickarboa_heater_dag_kostnad
@@ -129,6 +150,101 @@ utility_meter:
     unique_id: snickarboa_heater_ar_kostnad
     source: sensor.snickarboa_heater_timme_kostnad
     cycle: yearly
+#
+  #######################################
+  ### Förbrukning från sol eller nät ####
+  #######################################
+  snickarboa_heater_timme_from:
+    unique_id: snickarboa_heater_timme_from
+    source: sensor.snickarboa_heater_dag
+    periodically_resetting: false
+    cycle: hourly
+    tariffs:
+      - grid
+      - solar
+  snickarboa_heater_dag_from:
+    unique_id: snickarboa_heater_dag_from
+    source: sensor.snickarboa_heater_dag
+    periodically_resetting: false
+    cycle: hourly
+    tariffs:
+      - grid
+      - solar
+  snickarboa_heater_manad_from:
+    unique_id: snickarboa_heater_manad_from
+    source: sensor.snickarboa_heater_dag
+    periodically_resetting: false
+    cycle: monthly
+    tariffs:
+      - grid
+      - solar
+#
+  ########### Frys ########################################################
+  #
+  ###################
+  ### Förbrukning ###
+  ###################
+  snickarboa_frys_timme:
+    unique_id: snickarboa_frys_timme
+    source: sensor.snickarboa_frys_dag
+    cycle: hourly
+  snickarboa_frys_vecka:
+    unique_id: snickarboa_frys_vecka
+    source: sensor.snickarboa_frys_dag
+    cycle: weekly
+  snickarboa_frys_manad:
+    unique_id: snickarboa_frys_manad
+    source: sensor.snickarboa_frys_dag
+    cycle: monthly
+  snickarboa_frys_ar:
+    unique_id: snickarboa_frys_ar
+    source: sensor.snickarboa_frys_dag
+    cycle: yearly
+  #
+  ################
+  ### Kostnad ####
+  ################
+  #
+  snickarboa_frys_dag_kostnad:
+    unique_id: snickarboa_frys_dag_kostnad
+    source: sensor.snickarboa_frys_timme_kostnad
+    cycle: daily
+  snickarboa_frys_manad_kostnad:
+    unique_id: snickarboa_frys_manad_kostnad
+    source: sensor.snickarboa_frys_timme_kostnad
+    cycle: monthly
+  snickarboa_frys_ar_kostnad:
+    unique_id: snickarboa_frys_ar_kostnad
+    source: sensor.snickarboa_frys_timme_kostnad
+    cycle: yearly
+#
+  #######################################
+  ### Förbrukning från sol eller nät ####
+  #######################################
+  snickarboa_frys_timme_from:
+    unique_id: snickarboa_frys_timme_from
+    source: sensor.snickarboa_frys_dag
+    periodically_resetting: false
+    cycle: hourly
+    tariffs:
+      - grid
+      - solar
+  snickarboa_frys_dag_from:
+    unique_id: snickarboa_frys_dag_from
+    source: sensor.snickarboa_frys_dag
+    periodically_resetting: false
+    cycle: hourly
+    tariffs:
+      - grid
+      - solar
+  snickarboa_frys_manad_from:
+    unique_id: snickarboa_frys_manad_from
+    source: sensor.snickarboa_frys_dag
+    periodically_resetting: false
+    cycle: monthly
+    tariffs:
+      - grid
+      - solar
 #
 input_number:
   snickarboa_light_level:
@@ -161,6 +277,7 @@ template:
 #        state: >
 #          {{ is_state('input_boolean.avfuktare', 'on') }}
 #
+# FIXA med EMHASS
       - name: snickarboa_heater
         unique_id: snickarboa_heater
         state: >
@@ -181,7 +298,7 @@ template:
         state: >
           {{ is_state('binary_sensor.snickarboa_presence', 'on')
             and is_state('binary_sensor.snickarboa_lightlevel', 'off') }}
-            
+      #
       ### Närvaro
       - name: snickarboa_presence
         unique_id: snickarboa_presence
@@ -191,7 +308,8 @@ template:
         state: >
           {{ is_state('binary_sensor.snickarboa_hue_motion_sensor_motion', 'on')
           or is_state('binary_sensor.snickarboa_dorrtrigger', 'on') }}
-#
+      #
+      ### Låg tempteratur
       - name: snickarboa_tempterature_low
         unique_id: snickarboa_tempterature_low
         delay_on:
@@ -200,7 +318,8 @@ template:
           minutes: 10
         state: >
           {{ states('sensor.snickarboa_temperature') | float(0.0) < states('input_number.snickarboa_temperature_low') | float(0.0) }}
-#
+      #
+      ### Låg temperatur frys
       - name: snickarboa_frys_tempterature_low
         unique_id: snickarboa_frys_tempterature_low
         delay_on:
@@ -222,28 +341,48 @@ template:
         state: "true"
 #
   - sensor:
-    ### Förbrukning
-    - name: snickarboa_heater_consumption
-      unique_id: snickarboa_heater_consumption
-      unit_of_measurement: "kWh"
-      state_class: total_increasing
-      device_class: energy
-      availability: "{{ is_number(states('sensor.snickarboa_heater_today')) }}"
-      state: >
-        {{ ( 1200.0 * states('sensor.snickarboa_heater_today') | float('nan') / 1000.0 ) | round(3) }}
-#
-      ###
-    - name: avfuktare_timme_kostnad
-      unique_id: avfuktare_timme_kostnad
-      unit_of_measurement: "SEK"
-      availability: "{{ is_number(states('sensor.avfuktare_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-      state: "{{ ( states('sensor.avfuktare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
-      ###
-    - name: snickarboa_heater_timme_kostnad
-      unique_id: snickarboa_heater_timme_kostnad
-      unit_of_measurement: "SEK"
-      availability: "{{ is_number(states('sensor.snickarboa_heater_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-      state: "{{ ( states('sensor.snickarboa_heater_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+      #
+      ### Förbrukning uppvärmning
+      - name: snickarboa_heater_dag
+        unique_id: snickarboa_heater_dag
+        unit_of_measurement: "kWh"
+        state_class: total_increasing
+        device_class: energy
+        availability: "{{ is_number(states('sensor.snickarboa_heater_today')) }}"
+        state: >
+          {{ ( 600.0 * states('sensor.snickarboa_heater_today') | float('nan') / 1000.0 ) | round(3) }}
+      #
+      #### Förbrukning frys
+      - name: snickarboa_frys_dag
+        unique_id: snickarboa_frys_dag
+        unit_of_measurement: "kWh"
+        state_class: total_increasing
+        device_class: energy
+        availability: "{{ is_number(states('sensor.snickarboa_frys_time_today')) }}"
+        state: >
+          {{ ( 75.0 * states('sensor.snickarboa_frys_time_today') | float('nan') / 1000.0 ) | round(3) }}
+      #
+      ### Kostnad frys
+      - name: snickarboa_frys_timme_kostnad
+        unique_id: snickarboa_frys_timme_kostnad
+        unit_of_measurement: "SEK"
+        device_class: monetary
+        availability: "{{ is_number(states('sensor.snickarboa_frys_timme_from_grid')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.snickarboa_frys_timme_from_grid') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+      #
+      ### Avfuktare kostnad
+      - name: avfuktare_timme_kostnad
+        unique_id: avfuktare_timme_kostnad
+        unit_of_measurement: "SEK"
+        availability: "{{ is_number(states('sensor.avfuktare_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.avfuktare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+        #
+        ### Värmare kostnad
+      - name: snickarboa_heater_timme_kostnad
+        unique_id: snickarboa_heater_timme_kostnad
+        unit_of_measurement: "SEK"
+        availability: "{{ is_number(states('sensor.snickarboa_heater_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.snickarboa_heater_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
 #
 automation:
   #
@@ -314,3 +453,37 @@ automation:
       entity_id:
       - light.snickarboa_arbetsbank
 #
+  - alias: Snickarboa frys energikalla
+    id: Snickarboa frys energikalla
+    trigger:
+      - platform: state
+        to: 'on'
+        entity_id:
+          - binary_sensor.power_from_grid
+        variables:
+          tariff: "grid"
+      - platform: state
+        to: 'off'
+        entity_id:
+          - binary_sensor.power_from_grid
+        variables:
+          tariff: "solar"
+    action:
+      - service: select.select_option
+        target:
+          entity_id: select.snickarboa_frys_timme_from
+        data:
+          option: "{{ tariff }}"
+#
+      - service: select.select_option
+        target:
+          entity_id: select.snickarboa_frys_dag_from
+        data:
+          option: "{{ tariff }}"
+#
+#
+      - service: select.select_option
+        target:
+          entity_id: select.snickarboa_frys_manad_from
+        data:
+          option: "{{ tariff }}"
