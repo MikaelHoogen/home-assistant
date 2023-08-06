@@ -1,4 +1,8 @@
 utility_meter:
+  #
+  ###################
+  ### Förbrukning ###
+  ###################
   diskmaskin_timme:
     unique_id: diskmaskin_timme
     source: sensor.diskmaskin_consumption
@@ -19,7 +23,10 @@ utility_meter:
     unique_id: diskmaskin_ar
     source: sensor.diskmaskin_consumption
     cycle: yearly
-#
+  #
+  #######################################
+  ### Förbrukning från sol eller nät ####
+  #######################################
   diskmaskin_timme_from:
     unique_id: diskmaskin_timme_from
     source: sensor.diskmaskin_consumption
@@ -36,17 +43,10 @@ utility_meter:
     tariffs:
       - grid
       - solar
-#
-  test_energy_grid:
-    unique_id: test_energy_grid
-    source: sensor.all_light_energy
-    periodically_resetting: false
-    cycle: hourly
-    tariffs:
-      - grid
-      - solar
-#
-#
+  #
+  ################
+  ### Kostnad ####
+  ################
   diskmaskin_dag_kostnad:
     unique_id: diskmaskin_dag_kostnad
     source: sensor.diskmaskin_timme_kostnad
@@ -60,26 +60,39 @@ utility_meter:
     source: sensor.diskmaskin_timme_kostnad
     cycle: yearly
 #
+### TEST###
+  test_energy_grid:
+    unique_id: test_energy_grid
+    source: sensor.all_light_energy
+    periodically_resetting: false
+    cycle: hourly
+    tariffs:
+      - grid
+      - solar
 #
 template:
   - sensor:
-      # Diskmaskin
+      #######################################
+      #### Kostnad ##########################
+      #######################################
       - name: diskmaskin_timme_kostnad
         unique_id: diskmaskin_timme_kostnad
         unit_of_measurement: "SEK"
         device_class: monetary
         availability: "{{ is_number(states('sensor.diskmaskin_timme_from_grid')) and is_number(states('sensor.elpris_totalt_sek')) }}"
         state: "{{ ( states('sensor.diskmaskin_timme_from_grid') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
-#
-#     # Medelpris
+      #######################################
+      #### Medelpris ########################
+      #######################################
       - name: diskmaskin_average_price
         unique_id: diskmaskin_average_price
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
         availability: "{{ is_number(states('sensor.diskmaskin_manad_kostnad')) and states('sensor.diskmaskin_manad_from_grid') | float(0.0) > 0 }}"
         state: "{{ ( states('sensor.diskmaskin_manad_kostnad') | float(0.0) / states('sensor.diskmaskin_manad_from_grid') | float(0.0) ) | round(2) }}"
-        #
-#
+      #######################################
+      #### Diskar ###########################
+      #######################################
   - binary_sensor:
       - name: diskmaskin
         unique_id: diskmaskin
@@ -92,6 +105,7 @@ template:
 #
 #
 automation:
+  #
   - alias: Diskmaskin klar
     id: Diskmaskin klar
     trigger:
@@ -112,8 +126,7 @@ automation:
       data_template:
         message: "Diskmaskin klar"
         title: "Diskmaskinen är klar"
-#
-#
+  #
   - alias: Diskmaskin energikalla
     id: Diskmaskin energikalla
     trigger:
@@ -142,7 +155,8 @@ automation:
         data:
           option: "{{ tariff }}"
 #
-#
+# TEST
+#################################################
   - alias: Test energikalla
     id: Test energikalla
     trigger:
