@@ -482,33 +482,55 @@ automation:
     id: Snickarboa frys energikalla
     trigger:
       - platform: state
-        to: 'on'
         entity_id:
           - binary_sensor.power_from_grid
-        variables:
-          tariff: "grid"
-      - platform: state
-        to: 'off'
-        entity_id:
-          - binary_sensor.power_from_grid
-        variables:
-          tariff: "solar"
+      - platform: homeassistant
+        event: start
     action:
-      - service: select.select_option
-        target:
-          entity_id: select.snickarboa_frys_timme_from
-        data:
-          option: "{{ tariff }}"
-#
-      - service: select.select_option
-        target:
-          entity_id: select.snickarboa_frys_dag_from
-        data:
-          option: "{{ tariff }}"
-#
-#
-      - service: select.select_option
-        target:
-          entity_id: select.snickarboa_frys_manad_from
-        data:
-          option: "{{ tariff }}"
+      - choose:
+        #
+          - conditions:
+              - condition: state
+                state: 'on'
+                entity_id: binary_sensor.power_from_grid
+            sequence:
+              - service: select.select_option
+                target:
+                  entity_id: select.snickarboa_frys_timme_from
+                data:
+                  option: "grid"
+        #
+              - service: select.select_option
+                target:
+                  entity_id: select.snickarboa_frys_dag_from
+                data:
+                  option: "grid"
+        #
+              - service: select.select_option
+                target:
+                  entity_id: select.snickarboa_frys_manad_from
+                data:
+                  option: "grid"
+          #
+          - conditions:
+              - condition: state
+                state: 'off'
+                entity_id: binary_sensor.power_from_grid
+            sequence:
+              - service: select.select_option
+                target:
+                  entity_id: select.snickarboa_frys_timme_from
+                data:
+                  option: "solar"
+        #
+              - service: select.select_option
+                target:
+                  entity_id: select.snickarboa_frys_dag_from
+                data:
+                  option: "solar"
+        #
+              - service: select.select_option
+                target:
+                  entity_id: select.snickarboa_frys_manad_from
+                data:
+                  option: "solar"
