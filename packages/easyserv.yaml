@@ -191,6 +191,7 @@ utility_meter:
     unique_id: heatpump_heat_ar
     source: sensor.heatpump_heat_consumption_today
     cycle: yearly
+#
 # Värme kostnad
 #
   heatpump_heat_timme_kostnad:
@@ -222,6 +223,7 @@ template:
             or is_state('binary_sensor.heatpump_run_time', 'off')
             or ( is_state('binary_sensor.electricity_price_sannesholma_2181_above_avg_price', 'on') 
             and is_state('binary_sensor.electricity_price_sannesholma_2181_input_low', 'on') ) }}
+#
 #
       - name: varmegolv_block
         unique_id: varmegolv_block
@@ -489,29 +491,20 @@ homeassistant:
       friendly_name: Värmepump varmvattenproduktion
       device_class: energy
     #
-    heatpump_timme_kostnad:
-      state_class: total_increasing
-    heatpump_dag_kostnad:
-      state_class: total_increasing
-    heatpump_vecka_kostnad:
-      state_class: total_increasing
-    heatpump_manad_kostnad:
-      state_class: total_increasing
-    heatpump_ar_kostnad:
-      state_class: total_increasing
 #
 automation:
   - alias: Heatpump blockera
+    id: Heatpump blockera
     trigger:
       - platform: state
-        entity_id: binary_sensor.heatpump_block
-      - platform: homeassistant
-        event: start
+        entity_id: binary_sensor.heatpump_emhass
+#      - platform: homeassistant
+#        event: start
     action:
       - service: >
-          {% if is_state('binary_sensor.heatpump_block', 'on') %}
+          {% if is_state('binary_sensor.heatpump_emhass', 'off') %}
           switch.turn_on
-          {% elif is_state('binary_sensor.heatpump_block', 'off') %}
+          {% elif is_state('binary_sensor.heatpump_emhass', 'on') %}
           switch.turn_off
           {% endif %}
         entity_id:
