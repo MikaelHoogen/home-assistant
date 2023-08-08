@@ -32,7 +32,7 @@ sensor:
       - Integral
     value_template: '{{ value_json.CompressorState }}'
 #
-#
+###############################################################################
 #
   - platform: history_stats
     name: heatpump_compressor_today
@@ -103,6 +103,36 @@ utility_meter:
     unique_id: heatpump_ar
     source: sensor.heatpump_consumption_today
     cycle: yearly
+# Förbrukning från sol eller nät
+  heatpump_timme_from:
+    unique_id: heatpump_timme_from
+    source: sensor.heatpump_heat_consumption_today
+    cycle: hourly
+    tariffs:
+      - grid
+      - solar
+  heatpump_dag_from:
+    unique_id: heatpump_dag_from
+    source: sensor.heatpump_heat_consumption_today
+    cycle: daily
+    tariffs:
+      - grid
+      - solar
+  heatpump_manad_from:
+    unique_id: heatpump_manad_from
+    source: sensor.heatpump_heat_consumption_today
+    cycle: monthly
+    tariffs:
+      - grid
+      - solar
+  heatpump_ar_from:
+    unique_id: heatpump_ar_from
+    source: sensor.heatpump_heat_consumption_today
+    cycle: yearly
+    tariffs:
+      - grid
+      - solar
+  #
   # Kostnad
   #
   heatpump_timme_kostnad:
@@ -147,6 +177,35 @@ utility_meter:
     unique_id: heatpump_hotwater_ar
     source: sensor.heatpump_hotwater_consumption_today
     cycle: yearly
+# Varmvatten förbrukning från sol eller nät
+  heatpump_hotwater_timme_from:
+    unique_id: heatpump_hotwater_timme_from
+    source: sensor.heatpump_hotwater_consumption_today
+    cycle: hourly
+    tariffs:
+      - grid
+      - solar
+  heatpump_hotwater_dag_from:
+    unique_id: heatpump_hotwater_dag_from
+    source: sensor.heatpump_hotwater_consumption_today
+    cycle: daily
+    tariffs:
+      - grid
+      - solar
+  heatpump_hotwater_manad_from:
+    unique_id: heatpump_hotwater_manad_from
+    source: sensor.heatpump_hotwater_consumption_today
+    cycle: monthly
+    tariffs:
+      - grid
+      - solar
+  heatpump_hotwater_ar_from:
+    unique_id: heatpump_hotwater_ar_from
+    source: sensor.heatpump_hotwater_consumption_today
+    cycle: yearly
+    tariffs:
+      - grid
+      - solar
   #
   # Varmvatten kostnad
   heatpump_hotwater_timme_kostnad:
@@ -191,6 +250,36 @@ utility_meter:
     unique_id: heatpump_heat_ar
     source: sensor.heatpump_heat_consumption_today
     cycle: yearly
+#
+# Förbrukning från sol eller nät
+  heatpump_heat_timme_from:
+    unique_id: heatpump_heat_timme_from
+    source: sensor.heatpump_heat_consumption_today
+    cycle: hourly
+    tariffs:
+      - grid
+      - solar
+  heatpump_heat_dag_from:
+    unique_id: heatpump_heat_dag_from
+    source: sensor.heatpump_heat_consumption_today
+    cycle: daily
+    tariffs:
+      - grid
+      - solar
+  heatpump_heat_manad_from:
+    unique_id: heatpump_heat_manad_from
+    source: sensor.heatpump_heat_consumption_today
+    cycle: monthly
+    tariffs:
+      - grid
+      - solar
+  heatpump_heat_ar_from:
+    unique_id: heatpump_heat_ar_from
+    source: sensor.heatpump_heat_consumption_today
+    cycle: yearly
+    tariffs:
+      - grid
+      - solar
 #
 # Värme kostnad
 #
@@ -387,23 +476,58 @@ template:
         unique_id: heatpump_kostnad
         unit_of_measurement: "SEK"
         state_class: measurement
-        availability: "{{ is_number(states('sensor.heatpump_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-        state: "{{ ( states('sensor.heatpump_timme') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
+        availability: "{{ is_number(states('sensor.heatpump_timme_from_grid')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.heatpump_timme_from_grid') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
 #
       - name: heatpump_hotwater_kostnad
         unique_id: heatpump_hotwater_kostnad
         unit_of_measurement: "SEK"
         state_class: measurement
-        availability: "{{ is_number(states('sensor.heatpump_hotwater_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-        state: "{{ ( states('sensor.heatpump_hotwater_timme') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
+        availability: "{{ is_number(states('sensor.heatpump_hotwater_timme_from_grid')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.heatpump_hotwater_timme_from_grid') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
 #
       - name: heatpump_heat_kostnad
         unique_id: heatpump_heat_kostnad
         unit_of_measurement: "SEK"
         state_class: measurement
-        availability: "{{ is_number(states('sensor.heatpump_heat_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-        state: "{{ ( states('sensor.heatpump_heat_timme') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
-#########################################################################################################################################################
+        availability: "{{ is_number(states('sensor.heatpump_heat_timme_from_grid')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.heatpump_heat_timme_from_grid') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
+      ####################################################################################################################################################
+      ### Besparing
+      - name: heatpump_timme_from_solar_savings
+        unique_id: heatpump_from_solar_savings
+        unit_of_measurement: "SEK"
+        state_class: measurement
+        availability: "{{ is_number(states('sensor.heatpump_timme_from_solar')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.heatpump_timme_from_solar') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
+#
+      - name: heatpump_hotwater_timme_from_solar_savings
+        unique_id: heatpump_hotwater_from_solar_savings
+        unit_of_measurement: "SEK"
+        availability: "{{ is_number(states('sensor.heatpump_hotwater_timme_from_solar')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.heatpump_hotwater_timme_from_solar') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
+#
+      - name: heatpump_heat_timme_from_solar_savings
+        unique_id: heatpump_heat_from_solar_savings
+        unit_of_measurement: "SEK"
+        availability: "{{ is_number(states('sensor.heatpump_heat_timme_from_solar')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.heatpump_heat_timme_from_solar') | float('not_a_number') * states('sensor.elpris_totalt_sek') | float('not_a_number') ) | round(3) }}"
+######## Medelpris ##########################################################################
+      - name: heatpump_heat_average_price
+        unique_id: heatpump_heat_average_price
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        availability: "{{ is_number(states('sensor.heatpump_heat_manad_kostnad')) and states('sensor.heatpump_heat_manad') | float(0.0) > 0 }}"
+        state: "{{ ( states('sensor.heatpump_heat_manad_kostnad') | float(0.0) / states('sensor.heatpump_heat_manad') | float(0.0) ) | round(2) }}"
+        #
+      - name: heatpump_hotwater_average_price
+        unique_id: heatpump_hotwater_average_price
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        availability: "{{ is_number(states('sensor.heatpump_hotwater_manad_kostnad')) and states('sensor.heatpump_hotwater_manad') | float(0.0) > 0 }}"
+        state: "{{ ( states('sensor.heatpump_hotwater_manad_kostnad') | float(0.0) / states('sensor.heatpump_hotwater_manad') | float(0.0) ) | round(2) }}"
+        #
+        #########################################################################################################################################################
 #       Returledning
       - name: heatpump_radiator_return
         unique_id: heatpump_radiator_return
@@ -475,20 +599,8 @@ template:
 #
 homeassistant:
   customize:
-    sensor.heatpump_coldcircuitpump_consumption:
-      friendly_name: Värmepump köldbärarpump
-      device_class: energy
-    sensor.heatpump_compressor_consumption:
-      friendly_name: Värmepump kompressor
-      device_class: energy
     sensor.heatpump_timme:
       friendly_name: Värmepump timme
-      device_class: energy
-    sensor.heatpump_heat_consumption:
-      friendly_name: Värmepump värmeproduktion
-      device_class: energy
-    sensor.heatpump_hotwater_consumption:
-      friendly_name: Värmepump varmvattenproduktion
       device_class: energy
     #
 #
@@ -509,3 +621,61 @@ automation:
           {% endif %}
         entity_id:
           - switch.heatpump
+#
+  - alias: Heatpump energikalla
+    id: Heatpump energikalla
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.power_from_grid
+      - platform: homeassistant
+        event: start
+    action:
+      - choose:
+        #
+          - conditions:
+              - condition: state
+                state: 'on'
+                entity_id: binary_sensor.power_from_grid
+            sequence:
+              - service: select.select_option
+                target:
+                  entity_id:
+                    - select.heatpump_timme_from
+                    - select.heatpump_dag_from
+                    - select.heatpump_manad_from
+                    - select.heatpump_ar_from
+                    - select.heatpump_hotwater_timme_from
+                    - select.heatpump_hotwater_dag_from
+                    - select.heatpump_hotwater_manad_from
+                    - select.heatpump_hotwater_ar_from
+                    - select.heatpump_heat_timme_from
+                    - select.heatpump_heat_dag_from
+                    - select.heatpump_heat_manad_from
+                    - select.heatpump_heat_ar_from
+                data:
+                  option: "grid"
+          #
+          - conditions:
+              - condition: state
+                state: 'off'
+                entity_id: binary_sensor.power_from_grid
+            sequence:
+              - service: select.select_option
+                target:
+                  entity_id:
+                    - select.heatpump_timme_from
+                    - select.heatpump_dag_from
+                    - select.heatpump_manad_from
+                    - select.heatpump_ar_from
+                    - select.heatpump_hotwater_timme_from
+                    - select.heatpump_hotwater_dag_from
+                    - select.heatpump_hotwater_manad_from
+                    - select.heatpump_hotwater_ar_from
+                    - select.heatpump_heat_timme_from
+                    - select.heatpump_heat_dag_from
+                    - select.heatpump_heat_manad_from
+                    - select.heatpump_heat_ar_from
+                data:
+                  option: "solar"
+        #
