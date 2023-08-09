@@ -11,9 +11,11 @@ shell_command:
     \"custom_unit_load_cost_id\": {\"entity_id\": \"sensor.unit_load_cost\",\"unit_of_measurement\": \"SEK/kWh\", \"friendly_name\": \"Unit load cost\"},
     \"custom_unit_prod_price_id\": {\"entity_id\": \"sensor.unit_prod_price\",\"unit_of_measurement\": \"SEK/kWh\", \"friendly_name\": \"Unit prod price\"}}' http://localhost:5000/action/publish-data"
 #
-  emhass_machine_learn: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\",\"days_to_retrieve\": 10, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads\"}' http://localhost:5000/action/forecast-model-fit"
+  emhass_machine_learn: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\",\"days_to_retrieve\": 9, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\"}' http://localhost:5000/action/forecast-model-fit"
 #
   emhass_machine_learn_test: "curl -i -H \"Content-Type:application/json\" -X POST -d '{}' http://localhost:5000/action/forecast-model-fit"
+
+  emhass_machine_learn_predict: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\"}' http://localhost:5000/action/forecast-model-predict"
 sensor:
   - platform: filter
     name: power_sannesholma_2181_no_var_loads_filtered
@@ -43,6 +45,8 @@ template:
         state: >
           {{ ( states('sensor.power_usage') | float('naan') - states('sensor.heatpump_compressor_real_power') | float('naan') - states('sensor.ehl75l9h_power') | float('naan') * 1000 ) | round(0) }}
 #
+#
+#
       - name: elpris_sb
         unique_id: elpris_sb
         state: >
@@ -50,7 +54,7 @@ template:
         attributes:
           sälj: >
             {% set ns = namespace(x=[]) %}
-            {% for i in ((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour+1:][:24] %}
+            {% for i in ((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24] %}
               {% set ns.x = ns.x + [(i + 0.6) | round(3)] %}
               {% set ns.x = ns.x + [(i + 0.6) | round(3)] %}
             {% endfor %}
@@ -58,10 +62,10 @@ template:
           #
           köp: >
             {% set ns = namespace(x=[]) %}
-            {% for i in ((state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today') | map(attribute='total') | list + state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow') | map(attribute='total') | list))[now().hour+1:][:24] %}
-              {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100 
+            {% for i in ((state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today') | map(attribute='total') | list + state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow') | map(attribute='total') | list))[now().hour:][:24] %}
+              {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100
               + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)] %}
-              {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100 
+              {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100
               + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)] %}
             {% endfor %}
             {{ ns.x }}
@@ -115,7 +119,7 @@ automation:
     trigger:
       - platform: homeassistant
         event: start
-      - minutes: /5
+      - minutes: /1
         platform: time_pattern
     action:
       - service: shell_command.publish_data
@@ -125,7 +129,7 @@ automation:
     id: EMHASS forecast
     trigger:
       - platform: time
-        at: "22:50"
+        at: "23:01"
     action:
       - service: shell_command.trigger_nordpool_solcast_forecast
         data:
