@@ -141,7 +141,8 @@ template:
         state: >
           {{ ( is_state('binary_sensor.allrum_presence', 'on')
             or is_state('binary_sensor.allrum_presence_laslampa', 'on') )
-            and is_state('input_boolean.film_spelar', 'off') }}
+            and is_state('input_boolean.film_spelar', 'off')
+            and is_state('binary_sensor.allrum_lightlevel', 'off') }}
       #
       # Belysning i hall
       - name: allrum_belysning_hall_automation_control
@@ -231,7 +232,7 @@ automation:
         entity_id:
           - light.allrum_tak_1
           - light.allrum_tak_2
-
+#
 #
   - alias: Allrum belysning hall
     id: Allrum belysning hall
