@@ -127,6 +127,7 @@ template:
 automation:
   #
   - alias: Vardagsrum belysning fönster
+    id: Vardagsrum belysning fönster
     trigger:
       - platform: state
         entity_id: binary_sensor.vardagsrum_belysning_fonster_automation_control
@@ -146,6 +147,7 @@ automation:
           - light.vardagsrum_fonster_vitrinskap
 #
   - alias: Vardagsrum belysning filament
+    id: Vardagsrum belysning filament
     trigger:
       - platform: state
         entity_id: binary_sensor.vardagsrum_belysning_filament_automation_control
@@ -163,6 +165,7 @@ automation:
           - light.vardagsrum_fonster_hangande
 #
   - alias: Vardagsrum belysning tak
+    id: Vardagsrum belysning tak
     trigger:
       - platform: state
         entity_id: binary_sensor.vardagsrum_presence_light_automation_control
