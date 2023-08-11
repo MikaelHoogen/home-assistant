@@ -6,22 +6,27 @@ utility_meter:
   diskmaskin_timme:
     unique_id: diskmaskin_timme
     source: sensor.diskmaskin_consumption
+    periodically_resetting: false
     cycle: hourly
   diskmaskin_dag:
     unique_id: diskmaskin_dag
     source: sensor.diskmaskin_consumption
+    periodically_resetting: false
     cycle: daily
   diskmaskin_vecka:
     unique_id: diskmaskin_vecka
     source: sensor.diskmaskin_consumption
+    periodically_resetting: false
     cycle: weekly
   diskmaskin_manad:
     unique_id: diskmaskin_manad
     source: sensor.diskmaskin_consumption
+    periodically_resetting: false
     cycle: monthly
   diskmaskin_ar:
     unique_id: diskmaskin_ar
     source: sensor.diskmaskin_consumption
+    periodically_resetting: false
     cycle: yearly
   #
   #######################################
@@ -60,15 +65,22 @@ utility_meter:
     source: sensor.diskmaskin_timme_kostnad
     cycle: yearly
 #
-### TEST###
-  test_energy_grid:
-    unique_id: test_energy_grid
-    source: sensor.all_light_energy
-    periodically_resetting: false
-    cycle: hourly
-    tariffs:
-      - grid
-      - solar
+  ################
+  ### Besparing ##
+  ################
+  diskmaskin_dag_from_solar_savings:
+    unique_id: diskmaskin_dag_from_solar_savings
+    source: sensor.diskmaskin_timme_from_solar_savings
+    cycle: daily
+  diskmaskin_manad_from_solar_savings:
+    unique_id: diskmaskin_manad_from_solar_savings
+    source: sensor.diskmaskin_timme_from_solar_savings
+    cycle: monthly
+  diskmaskin_ar_from_solar_savings:
+    unique_id: diskmaskin_ar_from_solar_savings
+    source: sensor.diskmaskin_timme_from_solar_savings
+    cycle: yearly
+#
 #
 template:
   - sensor:
@@ -81,6 +93,15 @@ template:
         device_class: monetary
         availability: "{{ is_number(states('sensor.diskmaskin_timme_from_grid')) and is_number(states('sensor.elpris_totalt_sek')) }}"
         state: "{{ ( states('sensor.diskmaskin_timme_from_grid') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+      #######################################
+      #### Besparing ###########################
+      #######################################
+      - name: diskmaskin_timme_from_solar_savings
+        unique_id: diskmaskin_timme_from_solar_savings
+        unit_of_measurement: "SEK"
+        device_class: monetary
+        availability: "{{ is_number(states('sensor.diskmaskin_timme_from_solar')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.diskmaskin_timme_from_solar') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
       #######################################
       #### Medelpris ########################
       #######################################
@@ -155,26 +176,3 @@ automation:
         data:
           option: "{{ tariff }}"
 #
-# TEST
-#################################################
-  - alias: Test energikalla
-    id: Test energikalla
-    trigger:
-      - platform: state
-        to: 'on'
-        entity_id:
-          - binary_sensor.power_from_grid
-        variables:
-          tariff: "grid"
-      - platform: state
-        to: 'off'
-        entity_id:
-          - binary_sensor.power_from_grid
-        variables:
-          tariff: "solar"
-    action:
-      - service: select.select_option
-        target:
-          entity_id: select.test_energy_grid
-        data:
-          option: "{{ tariff }}"
