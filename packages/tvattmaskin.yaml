@@ -27,18 +27,7 @@ utility_meter:
     unique_id: tvattmaskin_manad_kostnad
     source: sensor.tvattmaskin_timme_kostnad
     cycle: monthly
-#  tvattmaskin_ar_kostnad:
-#    source: sensor.tvattmaskin_timme_kostnad
-#    cycle: yearly
 #
-#sensor:
-#  - platform: template
-#    sensors:
-      ###
-#      tvattmaskin_timme_kostnad:
-#        friendly_name: "Kostnad"
-#        unit_of_measurement: "SEK"
-#        value_template: "{{ ( states('sensor.tvattmaskin_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
 #
 template:
   - sensor:
@@ -86,22 +75,3 @@ automation:
           message: "Tvättmaskin klar"
           title: "Tvätten är klar"
 #
-#  - service: persistent_notification.create
-#    data_template:
-#      message: "Tvättmaskin"
-#      title: "Tvätten är klar. Energiförbrukningen blev {{ states('variable.tvattmaskin_consumption') }} kWh och kostnaden {{ states('variable.tvattmaskin_cost') | round(2) }} kronor."
-#  - service: notify.mobile_app_sm_n975f
-#    data_template:
-#      message: "Tvättmaskin klar"
-#      title: "Tvätten är klar. Energiförbrukningen blev {{ states('variable.tvattmaskin_consumption') }} kWh och kostnaden {{ states('variable.tvattmaskin_cost') | round(2) }} kronor."
-      #  - service: notify.pushbullet_lina
-#    data_template:
-#      message: "Tvättmaskin"
-#      title: "Tvätten är klar. Energiförbrukningen blev {{ states('variable.tvattmaskin_consumption') }} kWh och kostnaden {{ states('variable.tvattmaskin_cost') | round(2) }} kronor."
-#  - delay:
-#      minutes: 30
-#  - condition: state
-#    entity_id: binary_sensor.tvattmaskin
-#    state: 'off'
-#  - service: homeassistant.turn_off
-#    entity_id: switch.tvattmaskin
