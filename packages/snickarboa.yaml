@@ -51,7 +51,7 @@ sensor:
     round: 2
     method: left
     #
-#
+  #
   - platform: history_stats
     unique_id: snickarboa_heater_today
     name: snickarboa_heater_today
@@ -60,7 +60,7 @@ sensor:
     type: time
     start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
     end: "{{ now().replace(microsecond=0) }}"
-#
+  #
   - platform: history_stats
     unique_id: snickarboa_frys_time_today
     name: snickarboa_frys_time_today
@@ -150,14 +150,13 @@ utility_meter:
     unique_id: snickarboa_heater_ar_kostnad
     source: sensor.snickarboa_heater_timme_kostnad
     cycle: yearly
-#
+  #
   #######################################
   ### Förbrukning från sol eller nät ####
   #######################################
   snickarboa_heater_timme_from:
     unique_id: snickarboa_heater_timme_from
     source: sensor.snickarboa_heater_dag
-    periodically_resetting: false
     cycle: hourly
     tariffs:
       - grid
@@ -165,7 +164,6 @@ utility_meter:
   snickarboa_heater_dag_from:
     unique_id: snickarboa_heater_dag_from
     source: sensor.snickarboa_heater_dag
-    periodically_resetting: false
     cycle: hourly
     tariffs:
       - grid
@@ -173,12 +171,11 @@ utility_meter:
   snickarboa_heater_manad_from:
     unique_id: snickarboa_heater_manad_from
     source: sensor.snickarboa_heater_dag
-    periodically_resetting: false
     cycle: monthly
     tariffs:
       - grid
       - solar
-#
+  #
   ########### Frys ########################################################
   #
   ###################
@@ -217,7 +214,7 @@ utility_meter:
     unique_id: snickarboa_frys_ar_kostnad
     source: sensor.snickarboa_frys_timme_kostnad
     cycle: yearly
-#
+  #
   ################
   ### Besparing ##
   ################
@@ -234,14 +231,13 @@ utility_meter:
     unique_id: snickarboa_frys_ar_from_solar_savings
     source: sensor.snickarboa_frys_timme_from_solar_savings
     cycle: yearly
-#
+  #
   #######################################
   ### Förbrukning från sol eller nät ####
   #######################################
   snickarboa_frys_timme_from:
     unique_id: snickarboa_frys_timme_from
     source: sensor.snickarboa_frys_dag
-    periodically_resetting: false
     cycle: hourly
     tariffs:
       - grid
@@ -249,7 +245,6 @@ utility_meter:
   snickarboa_frys_dag_from:
     unique_id: snickarboa_frys_dag_from
     source: sensor.snickarboa_frys_dag
-    periodically_resetting: false
     cycle: hourly
     tariffs:
       - grid
@@ -257,7 +252,6 @@ utility_meter:
   snickarboa_frys_manad_from:
     unique_id: snickarboa_frys_manad_from
     source: sensor.snickarboa_frys_dag
-    periodically_resetting: false
     cycle: monthly
     tariffs:
       - grid
@@ -289,17 +283,17 @@ input_number:
 #
 template:
   - binary_sensor:
-#      - name: "Avfuktare"
-#        unique_id: avfuktare
-#        state: >
-#          {{ is_state('input_boolean.avfuktare', 'on') }}
-#
-# FIXA med EMHASS
+      #      - name: "Avfuktare"
+      #        unique_id: avfuktare
+      #        state: >
+      #          {{ is_state('input_boolean.avfuktare', 'on') }}
+      #
+      # FIXA med EMHASS
       - name: snickarboa_heater
         unique_id: snickarboa_heater
         state: >
           {{ is_state('binary_sensor.electricity_price_sannesholma_2181_max_4', 'off') }}
-#
+      #
       ### Light level
       - name: snickarboa_lightlevel
         unique_id: snickarboa_lightlevel
@@ -345,18 +339,18 @@ template:
           minutes: 10
         state: >
           {{ states('sensor.snickarboa_frys_temperature') | float(0.0) > states('input_number.snickarboa_frys_temperature_low') | float(0.0) }}
-#
+  #
   - trigger:
       - platform: state
-        to: 'on'
-        from: 'off'
+        to: "on"
+        from: "off"
         entity_id: binary_sensor.snickarboa_dorrbrytare
     binary_sensor:
       - name: Snickarboa dörrtrigger
         unique_id: Snickarboa dörrtrigger
         auto_off: 30
         state: "true"
-#
+  #
   - sensor:
       #
       ### Förbrukning uppvärmning
@@ -437,47 +431,47 @@ automation:
         event: start
     action:
       - choose:
-        #
-        - conditions:
-            - condition: state
-              state: 'on'
-              entity_id: binary_sensor.snickarboa_heater
-          sequence:
-            - service: climate.set_hvac_mode
-              target:
-                entity_id: climate.snickarboa
-              data:
-                hvac_mode: 'heat'
-        #
-        - conditions:
-            - condition: state
-              state: 'off'
-              entity_id: binary_sensor.snickarboa_heater
-          sequence:
-            - service: climate.set_hvac_mode
-              target:
-                entity_id: climate.snickarboa
-              data:
-                hvac_mode: 'off'
-#
-    #
+          #
+          - conditions:
+              - condition: state
+                state: "on"
+                entity_id: binary_sensor.snickarboa_heater
+            sequence:
+              - service: climate.set_hvac_mode
+                target:
+                  entity_id: climate.snickarboa
+                data:
+                  hvac_mode: "heat"
+          #
+          - conditions:
+              - condition: state
+                state: "off"
+                entity_id: binary_sensor.snickarboa_heater
+            sequence:
+              - service: climate.set_hvac_mode
+                target:
+                  entity_id: climate.snickarboa
+                data:
+                  hvac_mode: "off"
+  #
+  #
   - alias: Snickarboa belysning
     id: Snickarboa belysning
     trigger:
-    - platform: state
-      entity_id: binary_sensor.snickarboa_presence_light_automation_control
-    - platform: homeassistant
-      event: start
+      - platform: state
+        entity_id: binary_sensor.snickarboa_presence_light_automation_control
+      - platform: homeassistant
+        event: start
     action:
-    - service: >
-        {% if is_state('binary_sensor.snickarboa_presence_light_automation_control', 'on') %}
-        light.turn_on
-        {% elif is_state('binary_sensor.snickarboa_presence_light_automation_control', 'off') %}
-        light.turn_off
-        {% endif %}
-      entity_id:
-      - light.snickarboa_arbetsbank
-#
+      - service: >
+          {% if is_state('binary_sensor.snickarboa_presence_light_automation_control', 'on') %}
+          light.turn_on
+          {% elif is_state('binary_sensor.snickarboa_presence_light_automation_control', 'off') %}
+          light.turn_off
+          {% endif %}
+        entity_id:
+          - light.snickarboa_arbetsbank
+  #
   - alias: Snickarboa frys energikalla
     id: Snickarboa frys energikalla
     trigger:
@@ -488,49 +482,32 @@ automation:
         event: start
     action:
       - choose:
-        #
-          - conditions:
-              - condition: state
-                state: 'on'
-                entity_id: binary_sensor.power_from_grid
-            sequence:
-              - service: select.select_option
-                target:
-                  entity_id: select.snickarboa_frys_timme_from
-                data:
-                  option: "grid"
-        #
-              - service: select.select_option
-                target:
-                  entity_id: select.snickarboa_frys_dag_from
-                data:
-                  option: "grid"
-        #
-              - service: select.select_option
-                target:
-                  entity_id: select.snickarboa_frys_manad_from
-                data:
-                  option: "grid"
           #
           - conditions:
               - condition: state
-                state: 'off'
+                state: "on"
                 entity_id: binary_sensor.power_from_grid
             sequence:
               - service: select.select_option
                 target:
-                  entity_id: select.snickarboa_frys_timme_from
+                  entity_id:
+                    - select.snickarboa_frys_timme_from
+                    - select.snickarboa_frys_dag_from
+                    - select.snickarboa_frys_manad_from
                 data:
-                  option: "solar"
-        #
+                  option: "grid"
+          #
+          #
+          - conditions:
+              - condition: state
+                state: "off"
+                entity_id: binary_sensor.power_from_grid
+            sequence:
               - service: select.select_option
                 target:
-                  entity_id: select.snickarboa_frys_dag_from
-                data:
-                  option: "solar"
-        #
-              - service: select.select_option
-                target:
-                  entity_id: select.snickarboa_frys_manad_from
+                  entity_id: 
+                    - select.snickarboa_frys_timme_from
+                    - select.snickarboa_frys_dag_from
+                    - select.snickarboa_frys_manad_from
                 data:
                   option: "solar"
