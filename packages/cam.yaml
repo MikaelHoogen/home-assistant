@@ -1,5 +1,14 @@
-
-
+template:
+  - binary_sensor:
+      #
+      ### Närvaro
+      - name: carport_presence
+        unique_id: carport_presence
+        device_class: motion
+        delay_off:
+          minutes: 5
+        state: >
+          {{ is_state('binary_sensor.carport_person', 'on') }}
 
 automation:
   - id: Carport rörelse
@@ -25,21 +34,22 @@ automation:
 #
   - id: Carport rörelse person notifiering
     alias: Carport rörelse person
-    mode: single
-    max_exceeded: silent
     trigger:
       - platform: state
-        entity_id: binary_sensor.carport_person
+        entity_id: binary_sensor.carport_presence
         to: 'on'
     action:
+      - service: camera.snapshot
+        target:
+          entity_id: camera.carport_main
+        data:
+          filename: /media/notify.jpg
       - service: notify.mobile_app_sm_n975f
         data:
           message: Någon rör sig
           title: Rörelse person
-#          data:
-#            image: /api/camera_proxy/camera.carport_main
-      - delay:
-          minutes: 5
+          data:
+            image: /media/local/notify.jpg
       #
       #
 #
@@ -52,12 +62,17 @@ automation:
         entity_id: binary_sensor.carport_vehicle
         to: 'on'
     action:
+      - service: camera.snapshot
+        target:
+          entity_id: camera.carport_main
+        data:
+          filename: /media/notify_car.jpg
       - service: notify.mobile_app_sm_n975f
         data:
           message: Bil uptäckt
           title: Rörelse bil
           data:
-            image: /api/camera_proxy/camera.carport_main
+            image: media/local/notify_car.jpg
       - delay:
           minutes: 5
       #
@@ -78,7 +93,7 @@ automation:
         target:
           entity_id: camera.carport_main
         data:
-          filename: '/media/disk_f/snapshots/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.jpg'
+          filename: '/media/disk_f/snapshots/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d") }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.jpg'
 #
   - mode: single
     max_exceeded: silent
@@ -101,4 +116,3 @@ automation:
         target:
           entity_id: camera.carport_main
       - delay: 180
-          #object_id
