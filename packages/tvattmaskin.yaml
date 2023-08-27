@@ -1,23 +1,55 @@
 utility_meter:
+  #
+  ###################
+  ### Förbrukning ###
+  ###################
   tvattmaskin_timme:
     unique_id: tvattmaskin_timme
     source: sensor.tvattmaskin_consumption
+    periodically_resetting: false
     cycle: hourly
   tvattmaskin_dag:
     unique_id: tvattmaskin_dag
     source: sensor.tvattmaskin_consumption
+    periodically_resetting: false
     cycle: daily
   tvattmaskin_vecka:
     unique_id: tvattmaskin_vecka
     source: sensor.tvattmaskin_consumption
+    periodically_resetting: false
     cycle: weekly
   tvattmaskin_manad:
     unique_id: vattmaskin_manad
     source: sensor.tvattmaskin_consumption
+    periodically_resetting: false
     cycle: monthly
 #  tvattmaskin_ar:
 #    source: sensor.tvattmaskin_consumption
 #    cycle: yearly
+  #
+  #######################################
+  ### Förbrukning från sol eller nät ####
+  #######################################
+  tvattmaskin_timme_from:
+    unique_id: tvattmaskin_timme_from
+    source: sensor.tvattmaskin_consumption
+    periodically_resetting: false
+    cycle: hourly
+    tariffs:
+      - grid
+      - solar
+  tvattmaskin_manad_from:
+    unique_id: tvattmaskin_manad_from
+    source: sensor.tvattmaskin_consumption
+    periodically_resetting: false
+    cycle: monthly
+    tariffs:
+      - grid
+      - solar
+  #
+  ################
+  ### Kostnad ####
+  ################
   #
   tvattmaskin_dag_kostnad:
     unique_id: tvattmaskin_dag_kostnad
@@ -28,17 +60,54 @@ utility_meter:
     source: sensor.tvattmaskin_timme_kostnad
     cycle: monthly
 #
+  ################
+  ### Besparing ##
+  ################
+  tvattmaskin_dag_from_solar_savings:
+    unique_id: tvattmaskin_dag_from_solar_savings
+    source: sensor.tvattmaskin_timme_from_solar_savings
+    cycle: daily
+  tvattmaskin_manad_from_solar_savings:
+    unique_id: tvattmaskin_manad_from_solar_savings
+    source: sensor.tvattmaskin_timme_from_solar_savings
+    cycle: monthly
+  tvattmaskin_ar_from_solar_savings:
+    unique_id: tvattmaskin_ar_from_solar_savings
+    source: sensor.tvattmaskin_timme_from_solar_savings
+    cycle: yearly
 #
 template:
   - sensor:
-        # Tvättmaskin
+      #######################################
+      #### Kostnad ##########################
+      #######################################
       - name: tvattmaskin_timme_kostnad
         unique_id: tvattmaskin_timme_kostnad
         unit_of_measurement: "SEK"
         device_class: monetary
-        availability: "{{ is_number(states('sensor.tvattmaskin_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-        state: "{{ ( states('sensor.tvattmaskin_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+        availability: "{{ is_number(states('sensor.tvattmaskin_timme_from_grid')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.tvattmaskin_timme_from_grid') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
       #
+      #######################################
+      #### Besparing ###########################
+      #######################################
+      - name: tvattmaskin_timme_from_solar_savings
+        unique_id: tvattmaskin_timme_from_solar_savings
+        unit_of_measurement: "SEK"
+        device_class: monetary
+        availability: "{{ is_number(states('sensor.tvattmaskin_timme_from_solar')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.tvattmaskin_timme_from_solar') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+      #######################################
+      #### Medelpris ########################
+      #######################################
+      - name: tvattmaskin_average_price
+        unique_id: tvattmaskin_average_price
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        availability: "{{ is_number(states('sensor.tvattmaskin_manad_kostnad')) and states('sensor.tvattmaskin_manad_from_grid') | float(0.0) > 0 }}"
+        state: "{{ ( states('sensor.tvattmaskin_manad_kostnad') | float(0.0) / states('sensor.tvattmaskin_manad_from_grid') | float(0.0) ) | round(2) }}"
+        #
+        #
   - binary_sensor:
       - name: tvattmaskin
         unique_id: tvattmaskin
@@ -75,3 +144,30 @@ automation:
           message: "Tvättmaskin klar"
           title: "Tvätten är klar"
 #
+  - alias: tvattmaskin_energikalla
+    id: tvattmaskin_energikalla
+    trigger:
+      - platform: state
+        to: 'on'
+        entity_id:
+          - binary_sensor.power_from_grid
+        variables:
+          tariff: "grid"
+      - platform: state
+        to: 'off'
+        entity_id:
+          - binary_sensor.power_from_grid
+        variables:
+          tariff: "solar"
+    action:
+      - service: select.select_option
+        target:
+          entity_id: select.tvattmaskin_timme_from
+        data:
+          option: "{{ tariff }}"
+#
+      - service: select.select_option
+        target:
+          entity_id: select.tvattmaskin_manad_from
+        data:
+          option: "{{ tariff }}"
