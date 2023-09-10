@@ -100,14 +100,14 @@ template:
         delay_off:
           minutes: 5
         state: >
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.allrum_fonster_light_level') | float }}
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0.0) < states('input_number.allrum_fonster_light_level') | float(0.0) }}
       # Huslampa
       - name: allrum_huslampa_lightlevel
         unique_id: allrum_huslampa_lightlevel
         delay_off:
           minutes: 5
         state: >
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.allrum_huslampa_light_level') | float }}
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0.0) < states('input_number.allrum_huslampa_light_level') | float(0.0) }}
       #
       # Belysning filament
       - name: allrum_belysning_filament_automation_control
@@ -139,8 +139,7 @@ template:
       - name: allrum_presence_light_automation_control
         unique_id: allrum_presence_light_automation_control
         state: >
-          {{ ( is_state('binary_sensor.allrum_presence', 'on')
-            or is_state('binary_sensor.allrum_presence_laslampa', 'on') )
+          {{ is_state('binary_sensor.allrum_presence', 'on')
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('binary_sensor.allrum_lightlevel', 'off') }}
       #
@@ -156,9 +155,10 @@ template:
       - name: allrum_belysning_laslampa_automation_control
         unique_id: allrum_belysning_laslampa_automation_control
         state: >
-          {{ ( is_state('binary_sensor.allrum_presence', 'on')
-            or is_state('binary_sensor.allrum_presence_laslampa', 'on') )
-            and is_state('input_boolean.film_spelar', 'off') }}
+          {{ is_state('binary_sensor.allrum_lashorna_presence_sensor_fp2', 'on') and is_state('input_boolean.film_spelar', 'off') }}
+#          {{ ( is_state('binary_sensor.allrum_presence', 'on')
+#            or is_state('binary_sensor.allrum_presence_laslampa', 'on') )
+#            and is_state('input_boolean.film_spelar', 'off') }}
       #
       #
       - name: allrum_presence_lang
@@ -173,10 +173,10 @@ template:
       - name: allrum_presence
         unique_id: allrum_presence
         state: >
-          {{ is_state('binary_sensor.allrum_presence_lang', 'on')
-          or is_state('media_player.allrum', 'playing')
-          or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
-          or is_state('binary_sensor.allrum_rorelsesensor', 'on') }}
+          {{ is_state('binary_sensor.allrum_presence_sensor_fp2', 'on') or is_state('binary_sensor.allrum_rorelsesensor', 'on') }}
+#          or is_state('media_player.allrum', 'playing')
+#          or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
+#          or is_state('binary_sensor.allrum_rorelsesensor', 'on') }}
       #
       #
       - name: allrum_presence_hall
