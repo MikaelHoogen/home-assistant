@@ -50,14 +50,14 @@ template:
         unique_id: power_sannesholma_2181_no_var_loads
         availability: >
           {{ is_number(states('sensor.power_usage'))
-          and is_number(states('sensor.heatpump_compressor_real_power'))
+          and is_number(states('sensor.heatpump_power'))
           and is_number(states('sensor.ehl75l9h_power'))
           }}
         unit_of_measurement: "W"
         state_class: measurement
         device_class: power
         state: >
-          {{ ( states('sensor.power_usage') | float('naan') - states('sensor.heatpump_compressor_real_power') | float('naan') - states('sensor.ehl75l9h_power_watt') | float('naan') ) | round(0) }}
+          {{ ( states('sensor.power_usage') | float('naan') - states('sensor.heatpump_power') | float('naan') - states('sensor.ehl75l9h_power_watt') | float('naan') ) | round(0) }}
 #
 #
       - name: elpris_sb
