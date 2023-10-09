@@ -308,10 +308,9 @@ template:
       - name: heatpump_block
         unique_id: heatpump_block
         state: >
-          {{ is_state('binary_sensor.electricity_price_sannesholma_2181_max', 'on')
-            or is_state('binary_sensor.heatpump_run_time', 'off')
-            or ( is_state('binary_sensor.electricity_price_sannesholma_2181_above_avg_price', 'on') 
-            and is_state('binary_sensor.electricity_price_sannesholma_2181_input_low', 'on') ) }}
+          {{ is_state('binary_sensor.tvattmaskin_load', 'on')
+              or is_state('binary_sensor.diskmaskin_load', 'on')
+              or is_state('binary_sensor.heatpump_emhass', 'off') }}
 #
 #
       - name: varmegolv_block
@@ -414,6 +413,14 @@ template:
           0.0
           {% endif %}
 #
+      # 
+      - name: heatpump_power
+        unique_id: heatpump_power
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {{ states('sensor.heatpump_coldcircuitpump_real_power') | float(0) + states('sensor.heatpump_compressor_real_power') | float(0) }}
 #
 #
       ### Förbrukning
@@ -517,15 +524,15 @@ template:
         unique_id: heatpump_heat_average_price
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
-        availability: "{{ is_number(states('sensor.heatpump_heat_manad_kostnad')) and states('sensor.heatpump_heat_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.heatpump_heat_manad_kostnad') | float(0.0) / states('sensor.heatpump_heat_manad') | float(0.0) ) | round(2) }}"
+        availability: "{{ is_number(states('sensor.heatpump_heat_manad_kostnad')) and states('sensor.heatpump_heat_manad_from_grid') | float(0.0) > 0 }}"
+        state: "{{ ( states('sensor.heatpump_heat_manad_kostnad') | float(0.0) / states('sensor.heatpump_heat_manad_from_grid') | float(0.0) ) | round(2) }}"
         #
       - name: heatpump_hotwater_average_price
         unique_id: heatpump_hotwater_average_price
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
-        availability: "{{ is_number(states('sensor.heatpump_hotwater_manad_kostnad')) and states('sensor.heatpump_hotwater_manad') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.heatpump_hotwater_manad_kostnad') | float(0.0) / states('sensor.heatpump_hotwater_manad') | float(0.0) ) | round(2) }}"
+        availability: "{{ is_number(states('sensor.heatpump_hotwater_manad_kostnad')) and states('sensor.heatpump_hotwater_manad_from_grid') | float(0.0) > 0 }}"
+        state: "{{ ( states('sensor.heatpump_hotwater_manad_kostnad') | float(0.0) / states('sensor.heatpump_hotwater_manad_from_grid') | float(0.0) ) | round(2) }}"
         #
         #########################################################################################################################################################
 #       Returledning
@@ -609,14 +616,14 @@ automation:
     id: Heatpump blockera
     trigger:
       - platform: state
-        entity_id: binary_sensor.heatpump_emhass
+        entity_id: binary_sensor.heatpump_block
 #      - platform: homeassistant
 #        event: start
     action:
       - service: >
-          {% if is_state('binary_sensor.heatpump_emhass', 'off') %}
+          {% if is_state('binary_sensor.heatpump_block', 'on') %}
           switch.turn_on
-          {% elif is_state('binary_sensor.heatpump_emhass', 'on') %}
+          {% elif is_state('binary_sensor.heatpump_block', 'off') %}
           switch.turn_off
           {% endif %}
         entity_id:
