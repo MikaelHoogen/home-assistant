@@ -68,8 +68,8 @@ template:
           sälj: >
             {% set ns = namespace(x=[]) %}
             {% for i in ((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24] %}
-              {% set ns.x = ns.x + [(i + 0.6) | round(3)] %}
-              {% set ns.x = ns.x + [(i + 0.6) | round(3)] %}
+              {% set ns.x = ns.x + [(i + 0.6 + states('sensor.elpris_natnytta') | float(0)) | round(3)] %}
+              {% set ns.x = ns.x + [(i + 0.6 + states('sensor.elpris_natnytta') | float(0)) | round(3)] %}
             {% endfor %}
             {{ ns.x }}
           #
