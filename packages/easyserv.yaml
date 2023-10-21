@@ -80,54 +80,78 @@ sensor:
     duration: 24:00:00
     #end: "{{ now().replace(microsecond=0) }}"
 #
+  - platform: integration
+    source: sensor.heatpump_power
+    name: heatpump_consumption
+    unique_id: heatpump_consumption
+    unit_prefix: k
+    round: 3
+    method: left
+#
+  - platform: integration
+    source: sensor.heatpump_heat_power
+    name: heatpump_heat_consumption
+    unique_id: heatpump_heat_consumption
+    unit_prefix: k
+    round: 3
+    method: left
+#
+  - platform: integration
+    source: sensor.heatpump_hotwater_power
+    name: heatpump_hotwater_consumption
+    unique_id: heatpump_hotwater_consumption
+    unit_prefix: k
+    round: 3
+    method: left
+#
 ###############################################################################
 utility_meter:
   # Förbrukning
   heatpump_timme:
     unique_id: heatpump_timme
-    source: sensor.heatpump_consumption_today
+    source: sensor.heatpump_consumption
     cycle: hourly
   heatpump_dag:
     unique_id: heatpump_dag
-    source: sensor.heatpump_consumption_today
+    source: sensor.heatpump_consumption
     cycle: daily
   heatpump_vecka:
     unique_id: heatpump_vecka
-    source: sensor.heatpump_consumption_today
+    source: sensor.heatpump_consumption
     cycle: weekly
   heatpump_manad:
     unique_id: heatpump_manad
-    source: sensor.heatpump_consumption_today
+    source: sensor.heatpump_consumption
     cycle: monthly
   heatpump_ar:
     unique_id: heatpump_ar
-    source: sensor.heatpump_consumption_today
+    source: sensor.heatpump_consumption
     cycle: yearly
 # Förbrukning från sol eller nät
   heatpump_timme_from:
     unique_id: heatpump_timme_from
-    source: sensor.heatpump_consumption_today
+    source: sensor.heatpump_consumption
     cycle: hourly
     tariffs:
       - grid
       - solar
   heatpump_dag_from:
     unique_id: heatpump_dag_from
-    source: sensor.heatpump_consumption_today
+    source: sensor.heatpump_consumption
     cycle: daily
     tariffs:
       - grid
       - solar
   heatpump_manad_from:
     unique_id: heatpump_manad_from
-    source: sensor.heatpump_consumption_today
+    source: sensor.heatpump_consumption
     cycle: monthly
     tariffs:
       - grid
       - solar
   heatpump_ar_from:
     unique_id: heatpump_ar_from
-    source: sensor.heatpump_consumption_today
+    source: sensor.heatpump_consumption
     cycle: yearly
     tariffs:
       - grid
@@ -159,49 +183,49 @@ utility_meter:
 # Varmvatten förbrukning
   heatpump_hotwater_timme:
     unique_id: heatpump_hotwater_timme
-    source: sensor.heatpump_hotwater_consumption_today
+    source: sensor.heatpump_hotwater_consumption
     cycle: hourly
   heatpump_hotwater_dag:
     unique_id: heatpump_hotwater_dag
-    source: sensor.heatpump_hotwater_consumption_today
+    source: sensor.heatpump_hotwater_consumption
     cycle: daily
   heatpump_hotwater_vecka:
     unique_id: heatpump_hotwater_vecka
-    source: sensor.heatpump_hotwater_consumption_today
+    source: sensor.heatpump_hotwater_consumption
     cycle: weekly
   heatpump_hotwater_manad:
     unique_id: heatpump_hotwater_manad
-    source: sensor.heatpump_hotwater_consumption_today
+    source: sensor.heatpump_hotwater_consumption
     cycle: monthly
   heatpump_hotwater_ar:
     unique_id: heatpump_hotwater_ar
-    source: sensor.heatpump_hotwater_consumption_today
+    source: sensor.heatpump_hotwater_consumption
     cycle: yearly
 # Varmvatten förbrukning från sol eller nät
   heatpump_hotwater_timme_from:
     unique_id: heatpump_hotwater_timme_from
-    source: sensor.heatpump_hotwater_consumption_today
+    source: sensor.heatpump_hotwater_consumption
     cycle: hourly
     tariffs:
       - grid
       - solar
   heatpump_hotwater_dag_from:
     unique_id: heatpump_hotwater_dag_from
-    source: sensor.heatpump_hotwater_consumption_today
+    source: sensor.heatpump_hotwater_consumption
     cycle: daily
     tariffs:
       - grid
       - solar
   heatpump_hotwater_manad_from:
     unique_id: heatpump_hotwater_manad_from
-    source: sensor.heatpump_hotwater_consumption_today
+    source: sensor.heatpump_hotwater_consumption
     cycle: monthly
     tariffs:
       - grid
       - solar
   heatpump_hotwater_ar_from:
     unique_id: heatpump_hotwater_ar_from
-    source: sensor.heatpump_hotwater_consumption_today
+    source: sensor.heatpump_hotwater_consumption
     cycle: yearly
     tariffs:
       - grid
@@ -232,50 +256,50 @@ utility_meter:
 # Värme förbrukning
   heatpump_heat_timme:
     unique_id: heatpump_heat_timme
-    source: sensor.heatpump_heat_consumption_today
+    source: sensor.heatpump_heat_consumption
     cycle: hourly
   heatpump_heat_dag:
     unique_id: heatpump_heat_dag
-    source: sensor.heatpump_heat_consumption_today
+    source: sensor.heatpump_heat_consumption
     cycle: daily
   heatpump_heat_vecka:
     unique_id: heatpump_heat_vecka
-    source: sensor.heatpump_heat_consumption_today
+    source: sensor.heatpump_heat_consumption
     cycle: weekly
   heatpump_heat_manad:
     unique_id: heatpump_heat_manad
-    source: sensor.heatpump_heat_consumption_today
+    source: sensor.heatpump_heat_consumption
     cycle: monthly
   heatpump_heat_ar:
     unique_id: heatpump_heat_ar
-    source: sensor.heatpump_heat_consumption_today
+    source: sensor.heatpump_heat_consumption
     cycle: yearly
 #
 # Förbrukning från sol eller nät
   heatpump_heat_timme_from:
     unique_id: heatpump_heat_timme_from
-    source: sensor.heatpump_heat_consumption_today
+    source: sensor.heatpump_heat_consumption
     cycle: hourly
     tariffs:
       - grid
       - solar
   heatpump_heat_dag_from:
     unique_id: heatpump_heat_dag_from
-    source: sensor.heatpump_heat_consumption_today
+    source: sensor.heatpump_heat_consumption
     cycle: daily
     tariffs:
       - grid
       - solar
   heatpump_heat_manad_from:
     unique_id: heatpump_heat_manad_from
-    source: sensor.heatpump_heat_consumption_today
+    source: sensor.heatpump_heat_consumption
     cycle: monthly
     tariffs:
       - grid
       - solar
   heatpump_heat_ar_from:
     unique_id: heatpump_heat_ar_from
-    source: sensor.heatpump_heat_consumption_today
+    source: sensor.heatpump_heat_consumption
     cycle: yearly
     tariffs:
       - grid
@@ -316,12 +340,9 @@ template:
       - name: varmegolv_block
         unique_id: varmegolv_block
         delay_off:
-          minutes: 10
+          minutes: 15
         state: >
-          {{ is_state('binary_sensor.electricity_price_sannesholma_2181_max', 'on')
-            or is_state('binary_sensor.heatpump_run_time', 'off')
-            or ( is_state('binary_sensor.electricity_price_sannesholma_2181_above_avg_price', 'on') 
-            and is_state('binary_sensor.electricity_price_sannesholma_2181_input_low', 'on') ) }}
+          {{ is_state('binary_sensor.heatpump_emhass', 'off') }}
 #
       ########################################################################
       # Värme
@@ -395,12 +416,15 @@ template:
         device_class: power
         state: >
           {% if is_state('binary_sensor.heatpump_compressor_state', 'on') %}
-          {{ 400.0 * 5.5 }}
+          {{  ((( states('sensor.voltage_phase1_sannesholma_2181') | float(230)
+                + states('sensor.voltage_phase2_sannesholma_2181') | float(230)
+                + states('sensor.voltage_phase3_sannesholma_2181') | float(230) )
+                / sqrt(3) ) * 5.5 ) | round (1) }}
           {% elif is_state('binary_sensor.heatpump_compressor_state', 'off') %}
           0.0
           {% endif %}
       #
-      #
+      #{{ ( 400.0 * 5.5 * ( states('sensor.power_factor_sannesholma_2181') | float (100) / 100 )) | round(0) }}
       # Köldbärarpump aktiv effekt P
       - unique_id: heatpump_coldcircuitpump_real_power
         unit_of_measurement: "W"
@@ -408,7 +432,7 @@ template:
         device_class: power
         state: >
           {% if is_state('binary_sensor.heatpump_coldcircuitpump_state', 'on') %}
-          {{ 400.0 * 1.5 }}
+          {{ 230 * 1.5 }}
           {% elif is_state('binary_sensor.heatpump_coldcircuitpump_state', 'off') %}
           0.0
           {% endif %}
@@ -422,6 +446,16 @@ template:
         state: >
           {{ states('sensor.heatpump_coldcircuitpump_real_power') | float(0) + states('sensor.heatpump_compressor_real_power') | float(0) }}
 #
+      - unique_id: heatpump_addheat2_power
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {% if is_state('binary_sensor.heatpump_addheat2state', 'on') %}
+          {{ 6000 }}
+          {% elif is_state('binary_sensor.heatpump_addheat2state', 'off') %}
+          0.0
+          {% endif %}
 #
       ### Förbrukning
       - name: heatpump_consumption_today
@@ -453,7 +487,7 @@ template:
         device_class: energy
         availability: "{{ is_number(states('sensor.heatpump_hotwater_today')) }}"
         state: >
-          {{ 400.0 * 7.0 * states('sensor.heatpump_hotwater_today') | float('nan') / 1000.0  | round(3) }}
+          {{ 400.0 * 7.0 * states('sensor.heatpump_hotwater_today') | float('nan') / 1000.0 | round(3) }}
       #
       # Värme
       - name: heatpump_heat_power
