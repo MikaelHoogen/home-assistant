@@ -24,7 +24,7 @@ automation:
         data:
           filename: '/media/disk_f/snapshots/Carport_rörelse_{{ now().strftime("%Y-%m-%d_%H:%M") }}.jpg'
       #
-      - service: notify.mobile_app_sm_n975f
+      - service: notify.mobile_app_mikael_iphone
         data:
           message: Något rör sig
           title: Rörelse
@@ -44,7 +44,7 @@ automation:
           entity_id: camera.carport_main
         data:
           filename: /media/notify.jpg
-      - service: notify.mobile_app_sm_n975f
+      - service: notify.mobile_app_mikael_iphone
         data:
           message: Någon rör sig
           title: Rörelse person
@@ -73,7 +73,7 @@ automation:
           entity_id: camera.carport_main
         data:
           filename: /media/notify_car.jpg
-      - service: notify.mobile_app_sm_n975f
+      - service: notify.mobile_app_mikael_iphone
         data:
           message: Bil uptäckt
           title: Rörelse bil
@@ -123,7 +123,7 @@ automation:
     action:
       - service: camera.record
         data:
-          filename: '/media/disk_f/recordings/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.mp4'
+          filename: '/media/disk_f/recordings/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d") }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.mp4'
           duration: 180
         target:
           entity_id: camera.carport_main
