@@ -142,6 +142,7 @@ template:
       #
       ### Entré
       - name: entre_presence_automation_control
+        unique_id: entre_presence_automation_control
         state: >
           {{ is_state('binary_sensor.utomhusbelysning_light_level', 'on')
             and is_state('binary_sensor.entre_presence', 'on') }}
@@ -172,6 +173,7 @@ template:
 automation:
   ################ Tänd lampor ute när det är mörkt ############################
   - alias: Utomhusbelysning
+    id: Utomhusbelysning
     trigger:
       - platform: state
         entity_id: binary_sensor.utomhusbelysning_automation_control
@@ -192,6 +194,7 @@ automation:
     #
     # Entré
   - alias: Entré belysning
+    id: Entré belysning
     trigger:
       - platform: state
         entity_id: binary_sensor.utomhusbelysning_automation_control
@@ -208,6 +211,7 @@ automation:
           - light.entre_dorr
 #
   - alias: Entré närvarobelysning
+    id: Entré närvarobelysning
     trigger:
       - platform: state
         entity_id: binary_sensor.entre_presence_automation_control
@@ -242,6 +246,7 @@ automation:
 #
 #
   - alias: Utomhusbelysning film
+    id: Utomhusbelysning film
     trigger:
       - platform: state
         entity_id: binary_sensor.utomhusbelysning_film_automation_control
@@ -262,6 +267,7 @@ automation:
   #
   ### Ljusslingor
   - alias: Ljusslingor
+    id: Ljusslingor
     trigger:
       - platform: state
         entity_id: binary_sensor.utomhusbelysning_ljusslingor_automation_control
