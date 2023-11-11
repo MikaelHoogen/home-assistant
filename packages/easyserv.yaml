@@ -340,7 +340,7 @@ template:
       - name: varmegolv_block
         unique_id: varmegolv_block
         delay_off:
-          minutes: 15
+          minutes: 20
         state: >
           {{ is_state('binary_sensor.heatpump_emhass', 'off') }}
 #
@@ -409,30 +409,36 @@ template:
   #
   - sensor:
       # Kompressor
-      - name: "Kompressor aktiv effekt P"
+      - name: heatpump_compressor_real_power
         unique_id: heatpump_compressor_real_power
         unit_of_measurement: "W"
         state_class: measurement
         device_class: power
         state: >
-          {% if is_state('binary_sensor.heatpump_compressor_state', 'on') %}
-          {{  ((( states('sensor.voltage_phase1_sannesholma_2181') | float(230)
+          {% if is_state('binary_sensor.heatpump_switchvalve_state', 'off') and is_state('binary_sensor.heatpump_compressor_state', 'on') %}
+          {{((( states('sensor.voltage_phase1_sannesholma_2181') | float(230)
                 + states('sensor.voltage_phase2_sannesholma_2181') | float(230)
                 + states('sensor.voltage_phase3_sannesholma_2181') | float(230) )
-                / sqrt(3) ) * 5.5 ) | round (1) }}
-          {% elif is_state('binary_sensor.heatpump_compressor_state', 'off') %}
+                / sqrt(3) ) * 5.0 ) | round (1) }}
+          {% elif is_state('binary_sensor.heatpump_switchvalve_state', 'on') %}
+          {{
+            ((( states('sensor.voltage_phase1_sannesholma_2181') | float(230)
+                + states('sensor.voltage_phase2_sannesholma_2181') | float(230)
+                + states('sensor.voltage_phase3_sannesholma_2181') | float(230) )
+                / sqrt(3) ) * 6 ) | round (1) }}
+          {% else %}
           0.0
           {% endif %}
+          
       #
-      #{{ ( 400.0 * 5.5 * ( states('sensor.power_factor_sannesholma_2181') | float (100) / 100 )) | round(0) }}
-      # Köldbärarpump aktiv effekt P
+      # Köldbärarpump effekt
       - unique_id: heatpump_coldcircuitpump_real_power
         unit_of_measurement: "W"
         state_class: measurement
         device_class: power
         state: >
           {% if is_state('binary_sensor.heatpump_coldcircuitpump_state', 'on') %}
-          {{ 230 * 1.5 }}
+          {{ 170 }}
           {% elif is_state('binary_sensor.heatpump_coldcircuitpump_state', 'off') %}
           0.0
           {% endif %}
