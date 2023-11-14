@@ -161,17 +161,10 @@ template:
 #            and is_state('input_boolean.film_spelar', 'off') }}
       #
       #
-      - name: allrum_presence_lang
-        unique_id: allrum_presence_lang
-        delay_on:
-          seconds: 180
-        delay_off:
-          minutes: 10
-        state: >
-          {{ is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on') }}
-      #
       - name: allrum_presence
         unique_id: allrum_presence
+        delay_off:
+          seconds: 30
         state: >
           {{ is_state('binary_sensor.allrum_presence_sensor_fp2', 'on') or is_state('binary_sensor.allrum_rorelsesensor', 'on') }}
 #          or is_state('media_player.allrum', 'playing')
@@ -186,12 +179,6 @@ template:
         state: >
           {{ is_state('binary_sensor.allrum_rorelsesensor', 'on') }}
       #
-      - name: allrum_presence_läslampa
-        unique_id: allrum_presence_läslampa
-        delay_off:
-          minutes: 60
-        state: >
-          {{ is_state('binary_sensor.allrum_lasning', 'on') }}
 #
 #
 automation:
