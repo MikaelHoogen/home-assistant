@@ -4,13 +4,17 @@ adaptive_lighting:
   - name: Snickarboa
     lights:
       - light.snickarboa_arbetsbank
+      - light.snickarboa_spotlights
     transition: 45
     initial_transition: 5
     interval: 90
     min_brightness: 1
     max_brightness: 100
+    min_color_temp: 2200
+    max_color_temp: 4000
     sleep_brightness: 1
     take_over_control: true
+    separate_turn_on_commands: true
 #
 #
 #generic_hygrostat:
@@ -27,7 +31,7 @@ climate:
     cold_tolerance: 0.5
     hot_tolerance: 1
     precision: 0.1
-    heater: switch.motorvarmare
+    heater: switch.snickarboa_heater
     target_sensor: sensor.snickarboa_temperature
     min_temp: 0
     activity_temp: 7
@@ -55,7 +59,7 @@ sensor:
   - platform: history_stats
     unique_id: snickarboa_heater_today
     name: snickarboa_heater_today
-    entity_id: switch.motorvarmare
+    entity_id: switch.snickarboa_heater
     state: "on"
     type: time
     start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
@@ -283,16 +287,12 @@ input_number:
 #
 template:
   - binary_sensor:
-      #      - name: "Avfuktare"
-      #        unique_id: avfuktare
-      #        state: >
-      #          {{ is_state('input_boolean.avfuktare', 'on') }}
       #
-      # FIXA med EMHASS
+      #
       - name: snickarboa_heater
         unique_id: snickarboa_heater
         state: >
-          {{ is_state('binary_sensor.electricity_price_sannesholma_2181_max_4', 'off') }}
+          {{ is_state('binary_sensor.heatpump_emhass', 'on') }}
       #
       ### Light level
       - name: snickarboa_lightlevel
@@ -471,6 +471,7 @@ automation:
           {% endif %}
         entity_id:
           - light.snickarboa_arbetsbank
+          - light.snickarboa_spotlights
   #
   - alias: Snickarboa frys energikalla
     id: Snickarboa frys energikalla
