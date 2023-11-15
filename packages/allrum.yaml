@@ -18,10 +18,9 @@ adaptive_lighting:
     sleep_brightness: 1
     sleep_rgb_or_color_temp: rgb_color
     sleep_rgb_color: [255, 161, 40]
-#    max_sunrise_time: 07:00:00
-    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
     take_over_control: true
     detect_non_ha_changes: true
+    adapt_only_on_bare_turn_on: true
   #
   - name: Allrum belysning filament
     lights:
@@ -78,7 +77,30 @@ input_number:
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
 #
+#
 template:
+#
+  - sensor:
+      #
+      ###
+      - name: netatmo_allrum_tempdiff
+        unique_id: netatmo_allrum_tempdiff
+        unit_of_measurement: "°C"
+        state_class: measurement
+        device_class: temperature
+        availability: "{{ is_number(state_attr('climate.netatmo_allrum', 'current_temperature')) and is_number(states('sensor.allrum_temperature')) }}"
+        state: >
+          {{ ( state_attr('climate.netatmo_allrum', 'current_temperature') | float('nan') - states('sensor.allrum_temperature') | float('nan')) | round(1) }}
+#
+      - name: netatmo_allrum_target
+        unique_id: netatmo_allrum_target
+        unit_of_measurement: "°C"
+        state_class: measurement
+        device_class: temperature
+        availability: "{{ is_number(states('input_number.allrum_termostat_maltemperatur')) and is_number(states('sensor.netatmo_allrum_tempdiff')) }}"
+        state: >
+          {{ states('input_number.allrum_termostat_maltemperatur') | float('nan') + states('sensor.netatmo_allrum_tempdiff') | float('nan') }}
+#
 #
   - trigger:
       - platform: event
@@ -156,9 +178,6 @@ template:
         unique_id: allrum_belysning_laslampa_automation_control
         state: >
           {{ is_state('binary_sensor.allrum_lashorna_presence_sensor_fp2', 'on') and is_state('input_boolean.film_spelar', 'off') }}
-#          {{ ( is_state('binary_sensor.allrum_presence', 'on')
-#            or is_state('binary_sensor.allrum_presence_laslampa', 'on') )
-#            and is_state('input_boolean.film_spelar', 'off') }}
       #
       #
       - name: allrum_presence
@@ -167,15 +186,10 @@ template:
           seconds: 30
         state: >
           {{ is_state('binary_sensor.allrum_presence_sensor_fp2', 'on') or is_state('binary_sensor.allrum_rorelsesensor', 'on') }}
-#          or is_state('media_player.allrum', 'playing')
-#          or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
-#          or is_state('binary_sensor.allrum_rorelsesensor', 'on') }}
       #
       #
       - name: allrum_presence_hall
         unique_id: allrum_presence_hall
-        delay_off:
-          minutes: 1
         state: >
           {{ is_state('binary_sensor.allrum_rorelsesensor', 'on') }}
       #
@@ -328,3 +342,17 @@ automation:
           sequence:
             - service: input_boolean.toggle
               entity_id: input_boolean.film_spelar
+#
+  - alias: allrum_termostat_targetdiff
+    id: allrum_termostat_targetdiff
+    trigger:
+      - platform: state
+        entity_id: sensor.netatmo_allrum_target
+      - platform: state
+        entity_id: input_number.allrum_termostat_maltemperatur
+    action:
+      - service: climate.set_temperature
+        data:
+          temperature: "{{ states('sensor.netatmo_allrum_target') }}"
+        target:
+          device_id: c48ea5795d9d76a3397fce2bf090285b
