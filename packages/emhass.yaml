@@ -21,34 +21,34 @@ shell_command:
 
   emhass_machine_learn_predict: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\", \"days_to_retrieve\": 15, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\", \"model_predict_publish\": \"True\"}' http://localhost:5000/action/forecast-model-predict"
 sensor:
-  - platform: filter
-    name: power_sannesholma_2181_no_var_loads_filtered
-    unique_id: power_sannesholma_2181_no_var_loads_filtered
-    entity_id: sensor.power_sannesholma_2181_no_var_loads
-    filters:
-      - filter: outlier
-        window_size: 4
-        radius: 2.0
-      - filter: lowpass
-        time_constant: 10
-        precision: 2
+#  - platform: filter
+#    name: power_sannesholma_2181_no_var_loads_filtered
+#    unique_id: power_sannesholma_2181_no_var_loads_filtered
+#    entity_id: sensor.power_sannesholma_2181_no_var_loads
+#    filters:
+#      - filter: outlier
+#        window_size: 4
+#        radius: 2.0
+#      - filter: lowpass
+#        time_constant: 10
+#        precision: 2
 #
   - platform: filter
-    name: sensor.solar_power_photovoltaics_filtered
+    name: solar_power_photovoltaics_filtered
     unique_id: sensor.solar_power_photovoltaics_filtered
     entity_id: sensor.solar_power_photovoltaics
     filters:
       - filter: lowpass
-        time_constant: 10
+        time_constant: 5
         precision: 0
 #
   - platform: filter
-    name: sensor.power_production_sannesholma_2181_filtered
+    name: power_production_sannesholma_2181_filtered
     unique_id: sensor.power_production_sannesholma_2181_filtered
     entity_id: sensor.power_production_sannesholma_2181
     filters:
       - filter: lowpass
-        time_constant: 10
+        time_constant: 5
         precision: 0
 #
 template:
@@ -80,6 +80,20 @@ template:
         device_class: power
         state: >
           {{ ( states('sensor.power_usage') | float('naan') - states('sensor.heatpump_power') | float('naan') - states('sensor.ehl75l9h_power_watt') | float('naan') ) | round(0) }}
+#
+#
+      - name: power_sannesholma_2181_no_var_loads_filtered
+        unique_id: power_sannesholma_2181_no_var_loads_filtered
+        availability: >
+          {{ is_number(states('sensor.power_usage_filtered'))
+          and is_number(states('sensor.heatpump_power'))
+          and is_number(states('sensor.ehl75l9h_power'))
+          }}
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {{ ( states('sensor.power_usage_filtered') | float('naan') - states('sensor.heatpump_power') | float('naan') - states('sensor.ehl75l9h_power_watt') | float('naan') ) | round(0) }}
 #
 #
       - name: elpris_sb
