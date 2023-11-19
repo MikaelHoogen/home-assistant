@@ -83,6 +83,7 @@ light:
       - light.koksentre_dorr
       - light.entre_ljusslinga
       - light.koksentre_ljusslinga
+      - light.vaxthus_ljusslinga
       - light.snickarboa_entre
       - light.stall_entre
       - light.carport_entre
@@ -283,3 +284,4 @@ automation:
         entity_id:
           - light.entre_ljusslinga
           - light.koksentre_ljusslinga
+          - light.vaxthus_ljusslinga
