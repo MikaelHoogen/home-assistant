@@ -339,10 +339,9 @@ template:
 #
       - name: varmegolv_block
         unique_id: varmegolv_block
-        delay_off:
-          minutes: 20
         state: >
-          {{ is_state('binary_sensor.heatpump_emhass', 'off') }}
+          {{ is_state('binary_sensor.heatpump_emhass', 'off')
+          or ( states('sensor.heatpump_integral') | float(0) < -150.0 ) }}
 #
       ########################################################################
       # Värme
@@ -644,12 +643,7 @@ template:
         state_class: measurement
         state: "{{ state_attr('sensor.heatpump', 'Integral') }}"
 #
-homeassistant:
-  customize:
-    sensor.heatpump_timme:
-      friendly_name: Värmepump timme
-      device_class: energy
-    #
+#
 #
 automation:
   - alias: Heatpump blockera
