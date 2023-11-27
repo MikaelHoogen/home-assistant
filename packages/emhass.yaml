@@ -21,35 +21,22 @@ shell_command:
 
   emhass_machine_learn_predict: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\", \"days_to_retrieve\": 15, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\", \"model_predict_publish\": \"True\"}' http://localhost:5000/action/forecast-model-predict"
 sensor:
-#  - platform: filter
-#    name: power_sannesholma_2181_no_var_loads_filtered
-#    unique_id: power_sannesholma_2181_no_var_loads_filtered
-#    entity_id: sensor.power_sannesholma_2181_no_var_loads
-#    filters:
-#      - filter: outlier
-#        window_size: 4
-#        radius: 2.0
-#      - filter: lowpass
-#        time_constant: 10
-#        precision: 2
 #
-  - platform: filter
+  - platform: statistics
     name: solar_power_photovoltaics_filtered
-    unique_id: sensor.solar_power_photovoltaics_filtered
+    unique_id: solar_power_photovoltaics_filtered
     entity_id: sensor.solar_power_photovoltaics
-    filters:
-      - filter: lowpass
-        time_constant: 5
-        precision: 0
+    state_characteristic: average_linear
+    max_age:
+      minutes: 5
 #
-  - platform: filter
+  - platform: statistics
     name: power_production_sannesholma_2181_filtered
-    unique_id: sensor.power_production_sannesholma_2181_filtered
+    unique_id: power_production_sannesholma_2181_filtered
     entity_id: sensor.power_production_sannesholma_2181
-    filters:
-      - filter: lowpass
-        time_constant: 5
-        precision: 0
+    state_characteristic: average_linear
+    max_age:
+      minutes: 5
 #
 template:
   - sensor:
@@ -191,7 +178,8 @@ automation:
     id: EMHASS forecast
     trigger:
       - platform: time
-        at: "23:01"
+        at: "21:01"
+        #at: "23:01"
     action:
       - service: shell_command.trigger_nordpool_solcast_2_forecast
 #        data:
@@ -202,7 +190,8 @@ automation:
     id: solcast_update
     trigger:
       - platform: time
-        at: "22:30"
+        at: "20:30"
+        #at: "22:30"
     action:
       - service: solcast_solar.update_forecasts
 #
