@@ -32,9 +32,9 @@ alert:
     can_acknowledge: true
     skip_first: false
     notifiers:
-      - pushbullet
       - mobile_app_sm_n975f
-      - mobile_app_sm_g998b
+      - persistent_notification
+#      - mobile_app_sm_g998b
 #
 #
 automation:
