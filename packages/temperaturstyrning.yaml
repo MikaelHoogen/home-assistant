@@ -1,78 +1,49 @@
-binary_sensor:
-#########################################################################
-############## Närvaro ##################################################
-  - platform: template
-    sensors:
-      climate_home:
-        device_class: presence
-        friendly_name: Närvaro
-        delay_off:
-          minutes: 30
-        value_template: >
-          {{ is_state('device_tracker.linas_s21_ultra', 'home')
-            or is_state('device_tracker.galaxy_note10', 'home') }}
-###
-      climate_schedule:
-        value_template: >
-          {{ is_state('binary_sensor.climate_home', 'on')
-            and is_state('binary_sensor.climate_heat', 'off') }}
-#          {{ is_state('binary_sensor.climate_heat', 'off') }}
-###
-      climate_away:
-        value_template: >
-          {{ is_state('binary_sensor.climate_home', 'off')
-            and is_state('binary_sensor.climate_heat', 'off') }}
-### Frost Guard
-      climate_frost:
-        value_template: >
-          {{ is_state('binary_sensor.climate_heat', 'on') }}
 #
 automation:
 ##############  ############################################################################################################
 ##############  ###################################################
-  - alias: Climate schedule
-    trigger:
-      platform: state
-      entity_id: binary_sensor.varmegolv_block
-      to: 'off'
-    action:
-    - service: climate.set_preset_mode
-      data:
-        entity_id:
-        - climate.netatmo_allrum
-        preset_mode: 'Schedule'
   ##############  ####################################################
-  - alias: Climate away
-    trigger:
-      platform: state
-      entity_id: binary_sensor.climate_away
-      to: 'on'
-    action:
-    - service: climate.set_preset_mode
-      data:
-        entity_id:
-        - climate.netatmo_allrum
-        preset_mode: 'away'
-  ##############  ####################################################
-  - alias: Climate frost
-    trigger:
-      platform: state
-      entity_id: binary_sensor.varmegolv_block
-      to: 'on'
-    action:
-    - service: climate.set_preset_mode
-      data:
-        entity_id:
-        - climate.netatmo_allrum
-        preset_mode: 'Frost Guard'
-  #
-#  - alias: Climate notify hot
+#  - alias: Climate away
 #    trigger:
-#    - platform: state
-#      entity_id: binary_sensor.hot_outside
+#      platform: state
+#      entity_id: binary_sensor.climate_away
 #      to: 'on'
 #    action:
-#      service: notify.mobile_app_mikael_iphone
-#      data_template:
-#        message: "Det är varmare utomhus än på éntreplanet"
-#        title: "Varmt ute"
+#    - service: climate.set_preset_mode
+#      data:
+#        entity_id:
+#        - climate.netatmo_allrum
+#        preset_mode: 'away'
+  ##############  ####################################################
+  - alias: radiatorer
+    id: radiatorer
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.varmegolv_block
+      - platform: homeassistant
+        event: start
+#
+    action:
+      - choose:
+          #
+          - conditions:
+              - condition: state
+                state: 'off'
+                entity_id: binary_sensor.varmegolv_block
+            sequence:
+              - service: climate.set_preset_mode
+                data:
+                  entity_id:
+                  - climate.netatmo_allrum
+                  preset_mode: 'Schedule'
+          #
+          - conditions:
+              - condition: state
+                state: 'on'
+                entity_id: binary_sensor.varmegolv_block
+            sequence:
+              - service: climate.set_preset_mode
+                data:
+                  entity_id:
+                  - climate.netatmo_allrum
+                  preset_mode: 'Frost Guard'
