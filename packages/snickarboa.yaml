@@ -17,12 +17,12 @@ adaptive_lighting:
     separate_turn_on_commands: true
 #
 #
-#generic_hygrostat:
-#  - name: Snickarboa
-#    humidifier: input_boolean.avfuktare
-#    target_sensor: sensor.snickarboa_humidity
-#    device_class: "dehumidifier"
-#    max_humidity: 75
+generic_hygrostat:
+  - name: snickarboa_avfuktare
+    humidifier: switch.snickarboa_avfuktare
+    target_sensor: sensor.snickarboa_humidity
+    device_class: dehumidifier
+    max_humidity: 85
 #
 climate:
   - platform: generic_thermostat
@@ -354,6 +354,19 @@ template:
   - sensor:
       #
       ### Förbrukning uppvärmning
+      - name: snickarboa_heater_power
+        unique_id: snickarboa_heater_power
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {% if is_state('switch.snickarboa_heater', 'on') %}
+          {{ 600 }}
+          {% elif is_state('switch.snickarboa_heater', 'off') %}
+          0.0
+          {% endif %}
+#
+      ### Förbrukning uppvärmning
       - name: snickarboa_heater_dag
         unique_id: snickarboa_heater_dag
         unit_of_measurement: "kWh"
@@ -405,22 +418,33 @@ template:
 #
 automation:
   #
-  - alias: Avfuktare
+  - alias: snickarboa_avfuktare
     id: Avfuktare
     trigger:
       - platform: state
-        entity_id: binary_sensor.avfuktare
+        entity_id: binary_sensor.heatpump_emhass
       - platform: homeassistant
         event: start
     action:
-      - service: >
-          {% if is_state('binary_sensor.avfuktare', 'on') %}
-          switch.turn_on
-          {% elif is_state('binary_sensor.avfuktare', 'off') %}
-          switch.turn_off
-          {% endif %}
-        entity_id:
-          - switch.avfuktare
+      - choose:
+          #
+          - conditions:
+              - condition: state
+                state: "on"
+                entity_id: binary_sensor.heatpump_emhass
+            sequence:
+              - service: humidifier.turn_on
+                target:
+                  entity_id: humidifier.snickarboa_avfuktare
+          #
+          - conditions:
+              - condition: state
+                state: "off"
+                entity_id: binary_sensor.heatpump_emhass
+            sequence:
+              - service: humidifier.turn_off
+                target:
+                  entity_id: humidifier.snickarboa_avfuktare
   #
   - alias: Snickarboa värmare
     id: Snickarboa värmare
