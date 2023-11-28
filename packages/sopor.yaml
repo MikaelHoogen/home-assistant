@@ -1,3 +1,10 @@
+waste_collection_schedule:
+  sources:
+    - name: ssam_se
+      args:
+        street_address: Sännesholma 2181, Hallaryd
+
+
 automation:
 ############## Tvättmaskin ######################################################
   #
@@ -13,7 +20,7 @@ automation:
         data_template:
           message: "Sophämtning"
           title: "Imorgon tömts kärl 1"
-      - service: notify.mobile_app_sm_n975f
+      - service: notify.mobile_app_mikael_iphone
         data_template:
           message: "Sophämtning"
           title: "Imorgon tömts kärl 1"
@@ -33,7 +40,7 @@ automation:
         data_template:
           message: "Sophämtning"
           title: "Imorgon tömts kärl 2"
-      - service: notify.mobile_app_sm_n975f
+      - service: notify.mobile_app_mikael_iphone
         data_template:
           message: "Sophämtning"
           title: "Imorgon tömts kärl 2"
