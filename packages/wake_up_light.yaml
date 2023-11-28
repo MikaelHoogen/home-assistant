@@ -50,6 +50,7 @@ template:
 automation:
 ############# Automation #######################################
 - alias: "Wake up light"
+  id: "Wake up light"
   trigger:
   - platform: state
     to: 'on'
