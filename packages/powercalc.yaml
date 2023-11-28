@@ -4,8 +4,8 @@ powercalc:
   create_domain_groups:
     - light
 
-sensor:
-  - platform: powercalc
-    create_group: Allrum
-    include:
-      area: Allrum
+#sensor:
+#  - platform: powercalc
+#    create_group: Allrum
+#    include:
+#      area: Allrum
