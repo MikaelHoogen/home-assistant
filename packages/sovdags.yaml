@@ -15,7 +15,6 @@ automation:
     trigger:
       platform: state
       entity_id: input_boolean.sovdags
-#      to: "on"
     action:
       - choose:
       #
@@ -30,7 +29,7 @@ automation:
               data:
                 entity_id:
                   # Sovrum
-                  - light.sovrum
+                  #- light.sovrum
                   # Mikaels rum
                   - light.mikaels_rum_tak
                   - light.mikaels_rum_hue_play
@@ -95,49 +94,3 @@ automation:
                 entity_id:
                   - switch.adaptive_lighting_sovrum
       #
-#      - service: select.select_option
-#        target:
-#          entity_id: select.netatmo_sannesholma
-#        data:
-#          option: "Vinter natt"
-#
-#  - alias: Sovdags off
-#    trigger:
-#      platform: state
-#      entity_id: input_boolean.sovdags
-#      to: "off"
-#    action:
-#      #
-#      - service: switch.turn_off
-#        data:
-#          entity_id:
-#            - switch.adaptive_lighting_sleep_mode_allrum
-#            - switch.adaptive_lighting_sleep_mode_allrum_belysning_filament
-#            #
-#            - switch.adaptive_lighting_sleep_mode_badrum
-#            #
-#            - switch.adaptive_lighting_sleep_mode_barnrum
-#            #
-#            - switch.adaptive_lighting_sleep_mode_kok
-#            - switch.adaptive_lighting_sleep_mode_kok_fonster
-#            #
-#            - switch.adaptive_lighting_sleep_mode_sovrum
-#            #
-#            - switch.adaptive_lighting_sleep_mode_tvattstuga
-#            #
-#            - switch.adaptive_lighting_sleep_mode_vardagsrum_belysning_filament
-#            #
-#            - switch.adaptive_lighting_sleep_mode_hall
-#            #
-#            - switch.adaptive_lighting_sleep_mode_gastrum
-#      #
-#      - service: switch.turn_on
-#        data:
-#          entity_id:
-#            - switch.adaptive_lighting_sovrum
-#      #
-#      - service: select.select_option
-#        target:
-#          entity_id: select.netatmo_sannesholma
-#        data:
-#          option: "Vinter"
