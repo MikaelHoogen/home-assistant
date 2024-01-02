@@ -350,6 +350,12 @@ automation:
         entity_id: sensor.netatmo_allrum_target
       - platform: state
         entity_id: input_number.allrum_termostat_maltemperatur
+      - platform: state
+        entity_id: binary_sensor.varmegolv_block
+    condition:
+      - condition: state
+        entity_id: binary_sensor.varmegolv_block
+        state: 'off'
     action:
       - service: climate.set_temperature
         data:
