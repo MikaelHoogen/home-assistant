@@ -15,11 +15,11 @@ shell_command:
     \"custom_unit_load_cost_id\": {\"entity_id\": \"sensor.unit_load_cost\",\"unit_of_measurement\": \"SEK/kWh\", \"friendly_name\": \"Unit load cost\"},
     \"custom_unit_prod_price_id\": {\"entity_id\": \"sensor.unit_prod_price\",\"unit_of_measurement\": \"SEK/kWh\", \"friendly_name\": \"Unit prod price\"}}' http://localhost:5000/action/publish-data"
 #
-  emhass_machine_learn: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\",\"days_to_retrieve\": 15, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\"}' http://localhost:5000/action/forecast-model-fit"
+  emhass_machine_learn: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\",\"days_to_retrieve\": 13, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\"}' http://localhost:5000/action/forecast-model-fit"
 #
   emhass_machine_learn_test: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\", \"days_to_retrieve\": 15, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\", \"model_predict_publish\": \"True\"}' http://localhost:5000/action/forecast-model-predict"
 
-  emhass_machine_learn_predict: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\", \"days_to_retrieve\": 15, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\", \"model_predict_publish\": \"True\"}' http://localhost:5000/action/forecast-model-predict"
+  emhass_machine_learn_predict: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\", \"days_to_retrieve\": 13, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\", \"model_predict_publish\": \"True\"}' http://localhost:5000/action/forecast-model-predict"
 sensor:
 #
   - platform: statistics
@@ -66,7 +66,12 @@ template:
         state_class: measurement
         device_class: power
         state: >
-          {{ ( states('sensor.power_usage') | float('naan') - states('sensor.heatpump_power') | float('naan') - states('sensor.ehl75l9h_power_watt') | float('naan') ) | round(0) }}
+          {{ ( states('sensor.power_usage') | float('naan')
+            - states('sensor.heatpump_power') | float('naan') 
+            - states('sensor.ehl75l9h_power_watt') | float('naan')
+            - states('sensor.snickarboa_heater_power') | float(0)
+            - states('sensor.heatpump_addheat1_power') | float(0)
+            ) | round(0) }}
 #
 #
       - name: power_sannesholma_2181_no_var_loads_filtered
@@ -80,7 +85,12 @@ template:
         state_class: measurement
         device_class: power
         state: >
-          {{ ( states('sensor.power_usage_filtered') | float('naan') - states('sensor.heatpump_power') | float('naan') - states('sensor.ehl75l9h_power_watt') | float('naan') ) | round(0) }}
+          {{ ( states('sensor.power_usage_filtered') | float('naan')
+            - states('sensor.heatpump_power') | float('naan')
+            - states('sensor.ehl75l9h_power_watt') | float('naan')
+            - states('sensor.snickarboa_heater_power') | float(0)
+            - states('sensor.heatpump_addheat1_power') | float(0)
+            ) | round(0) }}
 #
 #
       - name: elpris_sb
