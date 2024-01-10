@@ -69,6 +69,12 @@ template:
       availability: "{{ is_number(states('sensor.elpris')) }}"
       state: "{{ ( states('sensor.elpris') | float + 0.6 ) | round(3) }}"
       #
+    - name: elpris_natnytta
+      unique_id: elpris_natnytta
+      unit_of_measurement: "SEK/kWh"
+      state_class: measurement
+      state: "{{ 0.047 }}"
+      #
       # Prisnivå
     - name: elpris_price_level
       unique_id: elpris_price_level
