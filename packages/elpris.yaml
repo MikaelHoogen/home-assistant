@@ -16,14 +16,14 @@ template:
       unique_id: avgift_elnat
       unit_of_measurement: "Öre/kWh"
       state_class: measurement
-      state: "{{ 13.8 }}"
+      state: "{{ 28.9 }}"
       #
       # Avgift energiskatt
     - name: avgift_energiskatt
       unique_id: avgift_energiskatt
       unit_of_measurement: "Öre/kWh"
       state_class: measurement
-      state: "{{ 49.0 }}"
+      state: "{{ 53.5 }}"
       #
       # Elnätsabonnemang
     - name: elpris_abonnemang
