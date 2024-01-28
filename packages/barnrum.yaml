@@ -1,26 +1,26 @@
 ################# Circadian ##############################################
 adaptive_lighting:
-- name: Barnrum
-  lights:
-  - light.barnrum_skank
-  - light.barnrum_fonster_1
-  - light.barnrum_fonster_2
-  - light.barnrum_tak_1
-  # Julstjärna
-  - light.barnrum_fonster
-  prefer_rgb_color: false
-  transition: 30
-  initial_transition: 5
-  interval: 90
-  min_brightness: 10
-  max_brightness: 100
-  min_color_temp: 2000
-  max_color_temp: 4000
-  sleep_brightness: 1
-  sleep_rgb_or_color_temp: rgb_color
-  sleep_rgb_color: [255, 161, 40]
-  take_over_control: true
-  detect_non_ha_changes: true
+  - name: Barnrum
+    lights:
+    - light.barnrum_skank
+    - light.barnrum_fonster_1
+    - light.barnrum_fonster_2
+    - light.barnrum_tak_1
+    # Julstjärna
+    - light.barnrum_fonster
+    prefer_rgb_color: false
+    transition: 30
+    initial_transition: 5
+    interval: 90
+    min_brightness: 10
+    max_brightness: 100
+    min_color_temp: 2000
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_rgb_color: [255, 161, 40]
+    take_over_control: true
+    detect_non_ha_changes: true
 #
 input_boolean:
   barnrum_gaster:
@@ -72,16 +72,16 @@ template:
         state: >
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.barnrum_fonster_light_level') | float }}
       # 
-      - name:  barnrum_belysning_automation_control
-        unique_id:  barnrum_belysning_automation_control
+      - name: barnrum_belysning_automation_control
+        unique_id: barnrum_belysning_automation_control
         state: >
           {{ ( is_state('binary_sensor.barnrum_belysning_lightlevel', 'on')
           and is_state('input_boolean.sovdags', 'off') )
           or ( is_state('binary_sensor.barnrum_belysning_lightlevel', 'on')
           and is_state('input_boolean.barnrum_gaster', 'on') ) }}
       #
-      - name:  barnrum_belysning_fonster_automation_control
-        unique_id:  barnrum_belysning_fonster_automation_control
+      - name: barnrum_belysning_fonster_automation_control
+        unique_id: barnrum_belysning_fonster_automation_control
         state: >
           {{ ( is_state('binary_sensor.barnrum_belysning_fonster_lightlevel', 'on')
           and is_state('input_boolean.sovdags', 'off') )
