@@ -51,6 +51,7 @@ template:
       #
       # Ljusstyrka
       - name: gastrum_belysning_lightlevel
+        unique_id: gastrum_belysning_lightlevel
         delay_off:
           minutes: 5
         state: >
@@ -58,6 +59,7 @@ template:
       #
       # Belysning styrning
       - name: gastrum_belysning_automation_control
+        unique_id: gastrum_belysning_automation_control
         state: >
           {{ ( is_state('binary_sensor.gastrum_belysning_lightlevel', 'on')
             and is_state('input_boolean.sovdags_gastrum', 'off')
