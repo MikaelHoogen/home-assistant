@@ -14,3 +14,34 @@ sensor:
       Authorization: !secret tibber_token
       Content-Type: application/json
       User-Agent: REST
+
+rest:
+  - resource: https://app.tibber.com/login.credentials
+    scan_interval: 21600 #6h
+    timeout: 60
+    method: POST
+    payload: !secret tibber
+    headers:
+      Content-Type: "application/json"
+    sensor:
+      - name: "Tibber API Access Token"
+        value_template: "Bearer {{ value_json.token }}"
+
+  - resource: https://app.tibber.com/v4/gql
+    method: POST
+    payload: '{ "query": "{ me { homes { electricVehicles { lastSeen battery { percent }}}}}"}'
+    headers:
+      Authorization: "{{ states('sensor.tibber_api_access_token') }}"
+      Content-Type: "application/json"
+    scan_interval: 600 #10m
+    sensor:
+      - name: bel_soc
+        unique_id: bel_soc
+        value_template: "{{ value_json.data.me.homes[0].electricVehicles[0].battery.percent | int }}"
+        unit_of_measurement: "%"
+        icon: mdi:car-electric
+        device_class: battery
+      - name: bel_soc_lastupdate
+        unique_id: bel_soc_lastupdate
+        device_class: timestamp
+        value_template: "{{ value_json.data.me.homes[0].electricVehicles[0].lastSeen | as_datetime | as_local }}"
