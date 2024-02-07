@@ -291,8 +291,12 @@ template:
       #
       - name: snickarboa_heater
         unique_id: snickarboa_heater
+        availability: >
+          {{ is_number(states('sensor.p_deferrable1')) }}
         state: >
-          {{ is_state('binary_sensor.heatpump_emhass', 'on') }}
+          {{ states('sensor.p_deferrable1') | float('not_a_number') > 0}}
+      #    {{ is_state('binary_sensor.heatpump_emhass', 'on') }}
+      
       #
       ### Light level
       - name: snickarboa_lightlevel
@@ -361,7 +365,7 @@ template:
         device_class: power
         state: >
           {% if is_state('switch.snickarboa_heater', 'on') %}
-          {{ 600 }}
+          {{ 1200 }}
           {% elif is_state('switch.snickarboa_heater', 'off') %}
           0.0
           {% endif %}
@@ -374,7 +378,7 @@ template:
         device_class: energy
         availability: "{{ is_number(states('sensor.snickarboa_heater_today')) }}"
         state: >
-          {{ ( 600.0 * states('sensor.snickarboa_heater_today') | float('nan') / 1000.0 ) | round(3) }}
+          {{ ( 1200.0 * states('sensor.snickarboa_heater_today') | float('nan') / 1000.0 ) | round(3) }}
       #
       #### Förbrukning frys
       - name: snickarboa_frys_dag
