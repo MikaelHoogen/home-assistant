@@ -1,0 +1,150 @@
+#
+template:
+  - sensor:
+      - name: solar_battery_charging
+        unique_id: solar_battery_charging
+        unit_of_measurement: W
+        device_class: power
+        state: >
+          {{ max(0, 0 - states('sensor.solar_effekt_batteri') | float(0)) }}
+      #
+      - name: solar_battery_discharging
+        unique_id: solar_battery_discharging
+        unit_of_measurement: W
+        device_class: power
+        state: >
+          {{ max(0, states('sensor.solar_effekt_batteri') | float(0)) }}
+#
+      - name: solar_battery_charging_from_solar
+        unique_id: solar_battery_charging_from_solar
+        unit_of_measurement: W
+        device_class: power
+        availability: >
+          {{ is_number(states('sensor.solar_power_photovoltaics')) }}
+        state: >
+          {% if states('sensor.solar_power_photovoltaics') | float(0) >= states('sensor.solar_battery_charging') | float(0) %}
+          {{ states('sensor.solar_battery_charging') | float(0) }}
+          {% else %}
+          {{ states('sensor.solar_power_photovoltaics') | float(0) }}
+          {% endif %}
+#
+      - name: solar_battery_charging_from_grid
+        unique_id: solar_battery_charging_from_grid
+        unit_of_measurement: W
+        device_class: power
+        availability: >
+          {{ is_number(states('sensor.solar_power_photovoltaics')) }}
+        state: >
+          {{ max(0, states('sensor.solar_battery_charging') | float(0) - states('sensor.solar_power_photovoltaics') | float(0) ) }}
+#
+sensor:
+    - platform: integration
+      source: sensor.solar_battery_charging
+      name: solar_battery_total_charged
+      unique_id: solar_battery_total_charged
+      unit_prefix: k
+      method: left
+    #
+    - platform: integration
+      source: sensor.solar_battery_charging_from_solar
+      name: solar_battery_total_charged_from_solar
+      unique_id: solar_battery_total_charged_from_solar
+      unit_prefix: k
+      method: left
+    #
+    #
+    - platform: integration
+      source: sensor.solar_battery_charging_from_grid
+      name: solar_battery_total_charged_from_grid
+      unique_id: solar_battery_total_charged_from_grid
+      unit_prefix: k
+      method: left
+    #
+    - platform: integration
+      source: sensor.solar_battery_discharging
+      name: solar_battery_total_discharged
+      unique_id: solar_battery_total_discharged
+      unit_prefix: k
+      method: left
+    #
+    - platform: integration
+      source: sensor.power_photovoltaics
+      name: solar_photovoltaics_total_energy
+      unique_id: solar_photovoltaics_total_energy
+      unit_prefix: k
+      method: left
+    #
+    ### Självförbrukad energi från solceller
+    - platform: integration
+      source: sensor.solar_power_self_usage
+      name: solar_energy_self_usage
+      unique_id: solar_energy_self_usage
+      unit_prefix: k
+      method: left
+#
+#
+automation:
+#
+#
+  - alias: solar_battery_disabled
+    id: solar_battery_disabled
+    trigger:
+      - platform: state
+        entity_id: sensor.ehl75l9h_status
+      - platform: homeassistant
+        event: start
+    action:
+      - choose:
+          #
+          - conditions:
+              - condition: state
+                entity_id: sensor.ehl75l9h_status
+                state: "charging"
+            sequence:
+              - service: modbus.write_register
+                data:
+                  slave: 1
+                  # StorCTLMod
+                  address: 40348
+                  value: 3
+                  hub: gen24
+              - service: modbus.write_register
+                data:
+                  slave: 1
+                  # OutWRte
+                  address: 40355
+                  value: 0
+                  hub: gen24
+              - service: modbus.write_register
+                data:
+                  slave: 1
+                  # InWRte
+                  address: 40356
+                  value: 0
+                  hub: gen24
+  #
+          - conditions:
+              - condition: template
+                value_template: "{{ not is_state('sensor.ehl75l9h_status', 'charging') }}"
+            sequence:
+              - service: modbus.write_register
+                data:
+                  slave: 1
+                  # StorCTLMod
+                  address: 40348
+                  value: 0
+                  hub: gen24
+              - service: modbus.write_register
+                data:
+                  slave: 1
+                  # OutWRte
+                  address: 40355
+                  value: 100
+                  hub: gen24
+              - service: modbus.write_register
+                data:
+                  slave: 1
+                  # InWRte
+                  address: 40356
+                  value: 100
+                  hub: gen24
