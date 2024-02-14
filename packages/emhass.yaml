@@ -11,10 +11,19 @@ shell_command:
     \"prod_price_forecast\":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},
     \"pv_power_forecast\":{{ state_attr('sensor.solcast_pv_forecast', 'pv_estimate') | list }}}' http://localhost:5000/action/dayahead-optim"
   #
+  # Day ahead
   trigger_nordpool_solcast_forecast: "curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{ state_attr('sensor.elpris_sb', 'köp') | list }},
     \"prod_price_forecast\":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},
     \"pv_power_forecast\":{{ state_attr('sensor.solcast_pv_forecast', 'pv_estimate') | list }},
     \"def_total_hours\":{{ states('sensor.emhass_operating_hours') }}}' http://localhost:5000/action/dayahead-optim"
+  #
+  #MPC
+  trigger_nordpool_solcast_mpc: >
+    curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp') | list }},
+    "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},
+    "pv_power_forecast":{{ state_attr('sensor.solcast_pv_forecast', 'pv_estimate') | list }},
+    "prediction_horizon":{{ state_attr('sensor.p_deferrable0', 'deferrables_schedule') | map(attribute='p_deferrable0') | list | length }},
+    "def_total_hours":[{{ state_attr('sensor.p_deferrable0','deferrables_schedule') | map(attribute='p_deferrable0') | select('search', '[1-9]') | list | count / 2}}, 1]}' http://localhost:5000/action/naive-mpc-optim
   #
   publish_data: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"custom_deferrable_forecast_id\": [{\"entity_id\": \"sensor.p_deferrable0\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Värmepump\"},{\"entity_id\": \"sensor.p_deferrable1\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Deferrable Load 1\"}],
     \"custom_unit_load_cost_id\": {\"entity_id\": \"sensor.unit_load_cost\",\"unit_of_measurement\": \"SEK/kWh\", \"friendly_name\": \"Unit load cost\"},
@@ -60,15 +69,40 @@ template:
           {% elif -15 <= temp < -10 %}
             {{ [13, 18] | list }}
           {% elif -10 <= temp < -5 %}
-            {{ [10, 16] | list }}
+            {{ [12, 16] | list }}
           {% elif -5 <= temp < 0 %}
-            {{ [9, 14] | list }}
+            {{ [10, 14] | list }}
           {% elif 0 <= temp < 5 %}
-            {{ [8, 6] | list }}
+            {{ [9, 10] | list }}
           {% elif 5 <= temp < 10 %}
             {{ [8, 1] | list }}
+          {% elif 10 <= temp %}
+            {{ [7, 1] | list }}
           {% else %}
             {{ [8, 8] | list }}
+          {% endif %}
+      #
+
+      - name: emhass_nominal_power
+        unique_id: emhass_nominal_power
+        state: >
+          {% set temp = states('sensor.smhi_sannesholma_forecast_tomorrow_templow') | float(0) %}
+          {% if temp < -20 %}
+            {{ [2000, 1200] | list }}
+          {% elif -20 <= temp < -15 %}
+            {{ [2000, 1200] | list }}
+          {% elif -15 <= temp < -10 %}
+            {{ [2000, 1200] | list }}
+          {% elif -10 <= temp < -5 %}
+            {{ [2000, 1200] | list }}
+          {% elif -5 <= temp < 0 %}
+            {{ [2000, 800] | list }}
+          {% elif 0 <= temp < 5 %}
+            {{ [1600, 1] | list }}
+          {% elif 5 <= temp < 10 %}
+            {{ [1500, 1] | list }}
+          {% else %}
+            {{ [1000, 1] | list }}
           {% endif %}
       #
       - name: smhi_sannesholma_forecast_tomorrow_templow
@@ -105,12 +139,12 @@ template:
         state_class: measurement
         device_class: power
         state: >
-          {{ ( states('sensor.power_usage') | float('naan')
+          {{ max(0,( states('sensor.power_usage') | float('naan')
             - states('sensor.heatpump_power') | float('naan') 
             - states('sensor.ehl75l9h_power_watt') | float('naan')
             - states('sensor.snickarboa_heater_power') | float(0)
             - states('sensor.heatpump_addheat1_power') | float(0)
-            ) | round(0) }}
+            ) | round(0) ) }}
 #
 #
       - name: power_sannesholma_2181_no_var_loads_filtered
@@ -124,12 +158,12 @@ template:
         state_class: measurement
         device_class: power
         state: >
-          {{ ( states('sensor.power_usage_filtered') | float('naan')
+          {{ max(0,( states('sensor.power_usage_filtered') | float('naan')
             - states('sensor.heatpump_power') | float('naan')
             - states('sensor.ehl75l9h_power_watt') | float('naan')
             - states('sensor.snickarboa_heater_power') | float(0)
             - states('sensor.heatpump_addheat1_power') | float(0)
-            ) | round(0) }}
+            ) | round(0) ) }}
 #
 #
       - name: elpris_sb
@@ -200,6 +234,13 @@ template:
             {{ state_attr('sensor.unit_prod_price', 'unit_prod_price_forecasts') | map(attribute='unit_prod_price') | list }}
           unit_load_cost: >
             {{ state_attr('sensor.unit_load_cost', 'unit_load_cost_forecasts') | map(attribute='unit_load_cost') | list }}
+          p_batt_forecast: >
+            {{ state_attr('sensor.p_batt_forecast', 'battery_scheduled_power') | map(attribute='p_batt_forecast') | list }}
+          soc_batt_forecast: >
+            {{ state_attr('sensor.soc_batt_forecast', 'battery_scheduled_soc') | map(attribute='soc_batt_forecast') | list }}
+          solcast_pv_forecast_forecast_today: >
+            {% set length = state_attr('sensor.p_deferrable0', 'deferrables_schedule') | map(attribute='date') | list | length %}
+            {{ (state_attr('sensor.solcast_pv_forecast_forecast_today', 'detailedForecast') | map(attribute='pv_estimate') | list)[now().hour:][:length]}}
 #
   - binary_sensor:
       ### Kör kompressor
@@ -229,7 +270,7 @@ automation:
     id: EMHASS forecast
     trigger:
       - platform: time
-        at: "21:01"
+        at: "15:01"
         #at: "23:01"
     action:
       - service: shell_command.trigger_nordpool_solcast_forecast
@@ -240,9 +281,9 @@ automation:
   - alias: solcast_update
     id: solcast_update
     trigger:
-      - platform: time
-        at: "20:30"
-        #at: "22:30"
+      - platform: time_pattern
+        hours: "/3"
     action:
       - service: solcast_solar.update_forecasts
 #
+#{{ state_attr('sensor.p_deferrable0','deferrables_schedule') | map(attribute='p_deferrable0') | select('search', '2500.0') | list | count }}
