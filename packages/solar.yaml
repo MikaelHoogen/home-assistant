@@ -37,6 +37,28 @@ template:
         state: >
           {{ max(0, states('sensor.solar_battery_charging') | float(0) - states('sensor.solar_power_photovoltaics') | float(0) ) }}
 #
+      - name: solar_battery_mode
+        unique_id: solar_battery_mode
+        state: >
+          {% if ( states('sensor.p_batt_forecast') | float(0) ) < 0
+            and states('sensor.p_pv_forecast') | float(0) < 0
+            and states('sensor.soc_batt_forecast') | int(0) > states('sensor.solar_battery_soc') | int(0) %}
+          charge_from_grid
+          {% elif states('sensor.p_batt_forecast') | float(0) < 0
+            and states('sensor.p_pv_forecast') | float(0) > 0
+            and states('sensor.soc_batt_forecast') | int(0) > states('sensor.solar_battery_soc') | int(0) %}
+          charge_from_solar
+          {% elif states('sensor.p_batt_forecast') | float(0) > 0
+            and not is_state('sensor.ehl75l9h_status', 'charging') %}
+          discharge
+          {% elif is_state('sensor.ehl75l9h_status', 'charging') %}
+          blocked
+          {% elif states('sensor.p_batt_forecast') | float(0) == 0 %}
+          idle
+          {% endif %}
+# Lägg till Manual discharge
+# Lägg till att charge from grid ska sluta vid målsoc
+#
 sensor:
     - platform: integration
       source: sensor.solar_battery_charging
@@ -68,7 +90,7 @@ sensor:
       method: left
     #
     - platform: integration
-      source: sensor.power_photovoltaics
+      source: sensor.solar_power_photovoltaics
       name: solar_photovoltaics_total_energy
       unique_id: solar_photovoltaics_total_energy
       unit_prefix: k
@@ -82,9 +104,132 @@ sensor:
       unit_prefix: k
       method: left
 #
+script:
+  solar_battery_mode:
+    #
+    sequence:
+      - service: modbus.write_register
+        data:
+          slave: 1
+          # MinRsvPct
+          address: 40350
+          value: "{{ MinRsvPct }}"
+          hub: gen24
+      - service: modbus.write_register
+        data:
+          slave: 1
+          # InWRte
+          address: 40356
+          value: "{{ InWRte }}"
+          hub: gen24
+      - service: modbus.write_register
+        data:
+          slave: 1
+          # OutWRte
+          address: 40355
+          value: "{{ OutWRte }}"
+          hub: gen24
+      - service: modbus.write_register
+        data:
+          slave: 1
+          # StorCTLMod
+          address: 40348
+          value: "{{ StorCTLMod }}"
+          hub: gen24
 #
 automation:
 #
+  - alias: solar_battery_mode
+    id: solar_battery_mode
+    trigger:
+      - platform: state
+        entity_id: sensor.solar_battery_mode
+      - platform: state
+        entity_id: sensor.p_batt_forecast
+#      - platform: homeassistant
+#        event: start
+    action:
+      - choose:
+          #
+          ### Charge from grid ##
+          - conditions:
+              - condition: state
+                entity_id: sensor.solar_battery_mode
+                state: "charge_from_grid"
+            sequence:
+              - service: script.solar_battery_mode
+                # Charge from grid, InWRte positiv
+                data:
+                  StorCTLMod: 3
+                  MinRsvPct: "{{ states('sensor.soc_batt_forecast') | int(0) * 100 }}"
+                  OutWRte: "{{ 65536 - (0 - states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
+                  InWRte: "{{ (0 - states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
+          #
+          ### Charge from solar ##
+          - conditions:
+              - condition: state
+                entity_id: sensor.solar_battery_mode
+                state: "charge_from_solar"
+            sequence:
+              - service: script.solar_battery_mode
+                # Charge from solar
+                data:
+                  # Only permit energy storage charging
+                  StorCTLMod: 2
+                  MinRsvPct: >
+                    {{ states('sensor.soc_batt_forecast') | int(0) * 100 }}
+                  # Set discharge limit of WchaMax to 0%
+                  OutWRte: 0
+                  #
+                  InWRte: 10000
+          #
+          ### Discharge ###
+          - conditions:
+              - condition: state
+                entity_id: sensor.solar_battery_mode
+                state: "discharge"
+            sequence:
+              - service: script.solar_battery_mode
+                # Discharge
+                data:
+                  # Only permit energy storage discharging
+                  StorCTLMod: 1
+                  #MinRsvPct: "{{ states('sensor.soc_batt_forecast') | int(0) * 100 }}"
+                  MinRsvPct: 1000
+                  #
+                  OutWRte: 10000
+                  # Set charge limit of WchaMax to 0%
+                  InWRte: 0
+          #
+          ### Block ###
+          - conditions:
+              - condition: state
+                entity_id: sensor.solar_battery_mode
+                state: "blocked"
+            sequence:
+              - service: script.solar_battery_mode
+                # Do not permit charging or discharging
+                data:
+                  # Activate both limit values
+                  StorCTLMod: 3
+                  MinRsvPct: 1000
+                  OutWRte: 0
+                  InWRte: 0
+#
+          ### Idle ###
+          - conditions:
+              - condition: state
+                entity_id: sensor.solar_battery_mode
+                state: "idle"
+            sequence:
+              - service: script.solar_battery_mode
+                # Do not permit charging or discharging
+                data:
+                  # Activate both limit values
+                  StorCTLMod: 3
+                  MinRsvPct: 1000
+                  OutWRte: 0
+                  InWRte: 0
 #
   - alias: solar_battery_disabled
     id: solar_battery_disabled
@@ -139,12 +284,12 @@ automation:
                   slave: 1
                   # OutWRte
                   address: 40355
-                  value: 100
+                  value: 10000
                   hub: gen24
               - service: modbus.write_register
                 data:
                   slave: 1
                   # InWRte
                   address: 40356
-                  value: 100
+                  value: 10000
                   hub: gen24
