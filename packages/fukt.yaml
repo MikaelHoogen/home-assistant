@@ -117,35 +117,35 @@ template:
       - name: sovrum_ps
         unique_id: sovrum_ps
         #friendly_name: "Ånghalt sovrum ps"
-        state: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_rosa_van_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+        state: "{{ 288.68 * ( 1.098 + states('sensor.sovrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
       #
       - name: sovrum_vs
         unique_id: sovrum_vs
         #friendly_name: "Ånghalt sovrum vs"
-        state: "{{ states('sensor.sovrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.netatmo_rosa_van_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+        state: "{{ states('sensor.sovrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.sovrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
       - name: sovrum_v
         unique_id: sovrum_v
         ##friendly_name: "Ånghalt sovrum v"
         unit_of_measurement: "g/m3"
-        state: "{{ ( states('sensor.sovrum_vs') | float(0.0) * ( states('sensor.netatmo_rosa_van_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+        state: "{{ ( states('sensor.sovrum_vs') | float(0.0) * ( states('sensor.sovrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
       #
       ### Allrum
       - name: allrum_ps
         unique_id: allrum_ps
         #friendly_name: "Ånghalt allrum ps"
-        state: "{{ 288.68 * ( 1.098 + states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+        state: "{{ 288.68 * ( 1.098 + states('sensor.allrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
       #
       - name: allrum_vs
         unique_id: allrum_vs
         #friendly_name: "Ånghalt allrum vs"
-        state: "{{ states('sensor.allrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+        state: "{{ states('sensor.allrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.allrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
       #
       - name: allrum_v
         unique_id: allrum_v
         #friendly_name: "Ånghalt allrum v"
         unit_of_measurement: "g/m3"
-        state: "{{ ( states('sensor.allrum_vs') | float(0.0) * ( states('sensor.netatmo_sannesholma_weather_station_allrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+        state: "{{ ( states('sensor.allrum_vs') | float(0.0) * ( states('sensor.allrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
       ### Badrum
       - name: badrum_ps
         unique_id: badrum_ps
