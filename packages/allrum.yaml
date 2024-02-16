@@ -144,7 +144,8 @@ template:
         unique_id: allrum_huslampa_automation_control
         state: >
           {{ is_state('binary_sensor.allrum_huslampa_lightlevel', 'on')
-            and is_state('input_boolean.film_spelar', 'off') }}
+            and is_state('input_boolean.film_spelar', 'off')
+            and is_state('input_boolean.sovdags', 'off') }}
       #
       #### Tak #########################################
       #
