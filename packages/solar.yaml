@@ -37,27 +37,22 @@ template:
         state: >
           {{ max(0, states('sensor.solar_battery_charging') | float(0) - states('sensor.solar_power_photovoltaics') | float(0) ) }}
 #
+### Battery mode ###
       - name: solar_battery_mode
         unique_id: solar_battery_mode
         state: >
-          {% if ( states('sensor.p_batt_forecast') | float(0) ) < 0
-            and states('sensor.p_pv_forecast') | float(0) < 0
+          {% if states('sensor.p_batt_forecast') | float(0) < 0
             and states('sensor.soc_batt_forecast') | int(0) > states('sensor.solar_battery_soc') | int(0) %}
-          charge_from_grid
-          {% elif states('sensor.p_batt_forecast') | float(0) < 0
-            and states('sensor.p_pv_forecast') | float(0) > 0
-            and states('sensor.soc_batt_forecast') | int(0) > states('sensor.solar_battery_soc') | int(0) %}
-          charge_from_solar
+          charge
           {% elif states('sensor.p_batt_forecast') | float(0) > 0
             and not is_state('sensor.ehl75l9h_status', 'charging') %}
           discharge
-          {% elif is_state('sensor.ehl75l9h_status', 'charging') %}
-          blocked
-          {% elif states('sensor.p_batt_forecast') | float(0) == 0 %}
+          {% else %}
           idle
           {% endif %}
-# Lägg till Manual discharge
-# Lägg till att charge from grid ska sluta vid målsoc
+#
+          # Lägg till Manual discharge
+#
 #
 sensor:
     - platform: integration
@@ -146,19 +141,17 @@ automation:
         entity_id: sensor.solar_battery_mode
       - platform: state
         entity_id: sensor.p_batt_forecast
-#      - platform: homeassistant
-#        event: start
     action:
       - choose:
           #
-          ### Charge from grid ##
+          ### Charge##
           - conditions:
               - condition: state
                 entity_id: sensor.solar_battery_mode
-                state: "charge_from_grid"
+                state: "charge"
             sequence:
               - service: script.solar_battery_mode
-                # Charge from grid, InWRte positiv
+                # Charge, InWRte positiv
                 data:
                   StorCTLMod: 3
                   MinRsvPct: "{{ states('sensor.soc_batt_forecast') | int(0) * 100 }}"
@@ -195,7 +188,7 @@ automation:
                   # Only permit energy storage discharging
                   StorCTLMod: 1
                   #MinRsvPct: "{{ states('sensor.soc_batt_forecast') | int(0) * 100 }}"
-                  MinRsvPct: 1000
+                  MinRsvPct: 3000
                   #
                   OutWRte: 10000
                   # Set charge limit of WchaMax to 0%
@@ -231,6 +224,7 @@ automation:
                   OutWRte: 0
                   InWRte: 0
 #
+# Not in use
   - alias: solar_battery_disabled
     id: solar_battery_disabled
     trigger:
