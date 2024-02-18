@@ -86,6 +86,7 @@ template:
             {{ [8, 8] | list }}
           {% endif %}
       #
+      #
       - name: emhass_operating_hours_sbv
         unique_id: emhass_operating_hours_sbv
         state: >
@@ -108,6 +109,7 @@ template:
             0
           {% endif %}
 #
+#
       - name: emhass_nominal_power
         unique_id: emhass_nominal_power
         state: >
@@ -128,6 +130,15 @@ template:
             {{ [1500, 1] | list }}
           {% else %}
             {{ [1000, 1] | list }}
+          {% endif %}
+      #
+      - name: emhass_def_total_hours
+        unique_id: emhass_def_total_hours
+        state: >
+          {% if now().hour == 3 or now().hour == 11 or now().hour == 19 %}
+          {{ states('emhass_operating_hours_sbv') }}
+          {% else %}
+          {{ state_attr('sensor.p_deferrable1','deferrables_schedule') | map(attribute='p_deferrable1') | select('search', '[1-9]') | list | count / 2 }}
           {% endif %}
       #
       - name: emhass_end_timestep
