@@ -65,7 +65,7 @@ template:
       - name: emhass_operating_hours
         unique_id: emhass_operating_hours
         state: >
-          {% set temp = states('sensor.smhi_sannesholma_forecast_tomorrow_templow') | float(0) %}
+          {% set temp = state_attr('weather.sannesholma_hourly', 'forecast')[:24] | map(attribute='temperature') | average | round(1) %}
           {% if temp < -20 %}
             {{ [16, 21] | list }}
           {% elif -20 <= temp < -15 %}
@@ -75,7 +75,7 @@ template:
           {% elif -10 <= temp < -5 %}
             {{ [12, 16] | list }}
           {% elif -5 <= temp < 0 %}
-            {{ [10, 14] | list }}
+            {{ [10, 12] | list }}
           {% elif 0 <= temp < 5 %}
             {{ [9, 10] | list }}
           {% elif 5 <= temp < 10 %}
@@ -91,7 +91,7 @@ template:
         state: >
           {% set temp = state_attr('weather.sannesholma_hourly', 'forecast')[:8] | map(attribute='temperature') | average | round(1) %}
           {% if temp < -20 %}
-            5
+            6
           {% elif -20 <= temp < -15 %}
             5
           {% elif -15 <= temp < -10 %}
@@ -103,7 +103,7 @@ template:
           {% elif 0 <= temp < 5 %}
             1
           {% elif 5 <= temp < 10 %}
-            1
+            0
           {% else %}
             0
           {% endif %}
@@ -130,6 +130,61 @@ template:
             {{ [1000, 1] | list }}
           {% endif %}
       #
+      - name: emhass_end_timestep
+        unique_id: emhass_end_timestep
+        state: >
+          {% if now().hour == 0 %}
+          6
+          {% elif now().hour == 1 %}
+          4
+          {% elif now().hour == 2 %}
+          2
+          {% elif now().hour == 3 %}
+          16
+          {% elif now().hour == 4 %}
+          14
+          {% elif now().hour == 5 %}
+          12
+          {% elif now().hour == 6 %}
+          10
+          {% elif now().hour == 7 %}
+          8
+          {% elif now().hour == 8 %}
+          6
+          {% elif now().hour == 9 %}
+          4
+          {% elif now().hour == 10 %}
+          2
+          {% elif now().hour == 11 %}
+          16
+          {% elif now().hour == 12 %}
+          14
+          {% elif now().hour == 13 %}
+          12
+          {% elif now().hour == 14 %}
+          10
+          {% elif now().hour == 15 %}
+          8
+          {% elif now().hour == 16 %}
+          6
+          {% elif now().hour == 17 %}
+          4
+          {% elif now().hour == 18 %}
+          2
+          {% elif now().hour == 19 %}
+          16
+          {% elif now().hour == 20 %}
+          14
+          {% elif now().hour == 21 %}
+          12
+          {% elif now().hour == 22 %}
+          10
+          {% elif now().hour == 23 %}
+          8
+          {% else %}
+          2
+          {% endif %}
+      #
       - name: smhi_sannesholma_forecast_tomorrow_templow
         unique_id: smhi_sannesholma_forecast_tomorrow_templow
         availability: >
@@ -138,6 +193,7 @@ template:
         state_class: measurement
         state: >
           {{ state_attr('weather.smhi_sannesholma','forecast')[1].templow }}
+      #
       #
       - name: sannesholma_forecast_rolling
         unique_id: sannesholma_forecast_rolling
@@ -149,6 +205,7 @@ template:
         state: >
           {{ state_attr('weather.sannesholma_hourly', 'forecast')[:8]
           | map(attribute='temperature') | average | round(1) }}
+      #
       #
       - name: ehl75l9h_power_watt
         unique_id: ehl75l9h_power_watt
@@ -316,7 +373,7 @@ automation:
     trigger:
       - platform: time_pattern
         #
-        minutes: 10
+        minutes: 5
     action:
       - service: shell_command.trigger_nordpool_solcast_mpc
 #
