@@ -20,7 +20,7 @@ shell_command:
     "soc_init": {{ states('sensor.solar_battery_soc') | float(0) / 100 }}}' http://localhost:5000/action/dayahead-optim
   #
   #MPC
-  trigger_nordpool_solcast_mpc: >
+  trigger_nordpool_solcast_mpc_old: >
     curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp') | list }},
     "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},
     "pv_power_forecast":{{ state_attr('sensor.solcast_pv_forecast', 'pv_estimate') | list }},
@@ -28,6 +28,17 @@ shell_command:
     "def_total_hours":[{{ state_attr('sensor.p_deferrable0','deferrables_schedule') | map(attribute='p_deferrable0') | select('search', '[1-9]') | list | count / 2 }},
                       {{ state_attr('sensor.p_deferrable1','deferrables_schedule') | map(attribute='p_deferrable1') | select('search', '[1-9]') | list | count / 2 }}],
     "soc_init": {{ states('sensor.solar_battery_soc') | float(0) / 100 }}}' http://localhost:5000/action/naive-mpc-optim
+  #
+  trigger_nordpool_solcast_mpc: >
+    curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp') | list }},
+      "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},
+      "pv_power_forecast":{{ state_attr('sensor.solcast_pv_forecast', 'pv_estimate') | list }},
+      "prediction_horizon":{{ state_attr('sensor.p_deferrable0', 'deferrables_schedule') | map(attribute='p_deferrable0') | list | length }},
+      "def_total_hours":[{{ state_attr('sensor.p_deferrable0','deferrables_schedule') | map(attribute='p_deferrable0') | select('search', '[1-9]') | list | count / 2 }},
+                        {{ states('sensor.emhass_def_total_hours') }}],
+      "soc_init": {{ states('sensor.solar_battery_soc') | float(0) / 100 }},
+      "def_end_timestep":[0,{{ states('sensor.emhass_end_timestep') }}]
+      }' http://localhost:5000/action/naive-mpc-optim
   #
   publish_data: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"custom_deferrable_forecast_id\": [{\"entity_id\": \"sensor.p_deferrable0\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Värmepump\"},{\"entity_id\": \"sensor.p_deferrable1\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Deferrable Load 1\"}],
     \"custom_unit_load_cost_id\": {\"entity_id\": \"sensor.unit_load_cost\",\"unit_of_measurement\": \"SEK/kWh\", \"friendly_name\": \"Unit load cost\"},
@@ -106,7 +117,7 @@ template:
           {% elif 5 <= temp < 10 %}
             0
           {% else %}
-            0
+            2
           {% endif %}
 #
 #
@@ -136,7 +147,7 @@ template:
         unique_id: emhass_def_total_hours
         state: >
           {% if now().hour == 3 or now().hour == 11 or now().hour == 19 %}
-          {{ states('emhass_operating_hours_sbv') }}
+          {{ states('sensor.emhass_operating_hours_sbv') }}
           {% else %}
           {{ state_attr('sensor.p_deferrable1','deferrables_schedule') | map(attribute='p_deferrable1') | select('search', '[1-9]') | list | count / 2 }}
           {% endif %}
@@ -250,6 +261,7 @@ template:
             - states('sensor.heatpump_addheat1_power') | float(0)
             ) | round(0) ) }}
 #
+# Diskmaskin?
 #
       - name: power_sannesholma_2181_no_var_loads_filtered
         unique_id: power_sannesholma_2181_no_var_loads_filtered
@@ -374,8 +386,7 @@ automation:
     id: EMHASS forecast
     trigger:
       - platform: time
-        at: "19:01"
-        #at: "23:01"
+        at: "20:01"
     action:
       - service: shell_command.trigger_nordpool_solcast_forecast
 #
