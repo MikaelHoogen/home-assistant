@@ -33,7 +33,7 @@ shell_command:
     curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp') | list }},
       "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},
       "pv_power_forecast":{{ state_attr('sensor.solcast_pv_forecast', 'pv_estimate') | list }},
-      "prediction_horizon":{{ state_attr('sensor.p_deferrable0', 'deferrables_schedule') | map(attribute='p_deferrable0') | list | length }},
+      "prediction_horizon":{{ max(12, state_attr('sensor.p_deferrable0', 'deferrables_schedule') | map(attribute='p_deferrable0') | list | length ) }},
       "def_total_hours":[{{ state_attr('sensor.p_deferrable0','deferrables_schedule') | map(attribute='p_deferrable0') | select('search', '[1-9]') | list | count / 2 }},
                         {{ states('sensor.emhass_def_total_hours') }}],
       "soc_init": {{ states('sensor.solar_battery_soc') | float(0) / 100 }},
@@ -146,7 +146,7 @@ template:
       - name: emhass_def_total_hours
         unique_id: emhass_def_total_hours
         state: >
-          {% if now().hour == 3 or now().hour == 11 or now().hour == 19 %}
+          {% if now().hour == 4 or now().hour == 12 or now().hour == 20 %}
           {{ states('sensor.emhass_operating_hours_sbv') }}
           {% else %}
           {{ state_attr('sensor.p_deferrable1','deferrables_schedule') | map(attribute='p_deferrable1') | select('search', '[1-9]') | list | count / 2 }}
@@ -156,53 +156,53 @@ template:
         unique_id: emhass_end_timestep
         state: >
           {% if now().hour == 0 %}
-          6
+          8
           {% elif now().hour == 1 %}
-          4
+          6
           {% elif now().hour == 2 %}
-          2
+          4
           {% elif now().hour == 3 %}
-          16
+          2
           {% elif now().hour == 4 %}
-          14
+          16
           {% elif now().hour == 5 %}
-          12
+          14
           {% elif now().hour == 6 %}
-          10
+          12
           {% elif now().hour == 7 %}
-          8
+          10
           {% elif now().hour == 8 %}
-          6
+          8
           {% elif now().hour == 9 %}
-          4
-          {% elif now().hour == 10 %}
-          2
-          {% elif now().hour == 11 %}
-          16
-          {% elif now().hour == 12 %}
-          14
-          {% elif now().hour == 13 %}
-          12
-          {% elif now().hour == 14 %}
-          10
-          {% elif now().hour == 15 %}
-          8
-          {% elif now().hour == 16 %}
           6
-          {% elif now().hour == 17 %}
+          {% elif now().hour == 10 %}
           4
-          {% elif now().hour == 18 %}
+          {% elif now().hour == 11 %}
           2
-          {% elif now().hour == 19 %}
+          {% elif now().hour == 12 %}
           16
-          {% elif now().hour == 20 %}
+          {% elif now().hour == 13 %}
           14
-          {% elif now().hour == 21 %}
+          {% elif now().hour == 14 %}
           12
-          {% elif now().hour == 22 %}
+          {% elif now().hour == 15 %}
           10
-          {% elif now().hour == 23 %}
+          {% elif now().hour == 16 %}
           8
+          {% elif now().hour == 17 %}
+          6
+          {% elif now().hour == 18 %}
+          4
+          {% elif now().hour == 19 %}
+          2
+          {% elif now().hour == 20 %}
+          16
+          {% elif now().hour == 21 %}
+          14
+          {% elif now().hour == 22 %}
+          12
+          {% elif now().hour == 23 %}
+          10
           {% else %}
           2
           {% endif %}
@@ -305,6 +305,7 @@ template:
             {% endfor %}
             {{ ns.x }}
 #
+## Solcast forecast
       - name: solcast_pv_forecast
         unique_id: solcast_pv_forecast
         state_class: measurement
@@ -318,6 +319,7 @@ template:
             {% endfor %}
             {{ ns.x }}
 #
+# To get long term statistics ##
       - name: p_pv_forecast_measure
         unique_id: p_pv_forecast_measure
         availability: >
@@ -327,6 +329,7 @@ template:
         state: >
           {{ states('sensor.p_pv_forecast') }}
 #
+#### Forecast table #####
       - name: p_forecast
         unique_id: p_forecast
         availability: >
