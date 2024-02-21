@@ -8,7 +8,5 @@ light.datorrum_skrivbord:
 light.koksentre_dorr:
   min_mireds: 250
   max_mireds: 455
-sensor.elpris_totalt_sek:
-  icon: mdi:cash-multiple
 #
 #
