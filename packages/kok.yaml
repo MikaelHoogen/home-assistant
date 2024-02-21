@@ -94,6 +94,7 @@ template:
         entity_id: binary_sensor.koksentre_dorrbrytare
     binary_sensor:
       - name: Köksentré dörrtrigger
+        unique_id: Köksentré dörrtrigger
         auto_off: 5
         state: "true"
   #
