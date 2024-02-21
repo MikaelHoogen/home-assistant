@@ -16,8 +16,11 @@ shell_command:
     curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp') | list }},
     "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},
     "pv_power_forecast":{{ state_attr('sensor.solcast_pv_forecast', 'pv_estimate') | list }},
-    "def_total_hours":{{ states('sensor.emhass_operating_hours') }},
-    "soc_init": {{ states('sensor.solar_battery_soc') | float(0) / 100 }}}' http://localhost:5000/action/dayahead-optim
+    "def_total_hours":[{{ states('sensor.emhass_def_total_hours_vp') }},
+                      {{ states('sensor.emhass_def_total_hours_sbv') }}],
+    "soc_init": {{ max(0.3,states('sensor.solar_battery_soc') | float(0) / 100 ) }},
+    "def_end_timestep":{{ states('sensor.emhass_def_end_timestep') }}
+    }' http://localhost:5000/action/dayahead-optim
   #
   #MPC
   trigger_nordpool_solcast_mpc_old: >
@@ -34,10 +37,10 @@ shell_command:
       "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},
       "pv_power_forecast":{{ state_attr('sensor.solcast_pv_forecast', 'pv_estimate') | list }},
       "prediction_horizon":{{ max(12, state_attr('sensor.p_deferrable0', 'deferrables_schedule') | map(attribute='p_deferrable0') | list | length ) }},
-      "def_total_hours":[{{ state_attr('sensor.p_deferrable0','deferrables_schedule') | map(attribute='p_deferrable0') | select('search', '[1-9]') | list | count / 2 }},
-                        {{ states('sensor.emhass_def_total_hours') }}],
-      "soc_init": {{ states('sensor.solar_battery_soc') | float(0) / 100 }},
-      "def_end_timestep":[0,{{ states('sensor.emhass_end_timestep') }}]
+      "def_total_hours":[{{ states('sensor.emhass_def_total_hours_vp') }},
+                        {{ states('sensor.emhass_def_total_hours_sbv') }}],
+      "soc_init": {{ max(0.3,states('sensor.solar_battery_soc') | float(0) / 100 ) }},
+      "def_end_timestep":{{ states('sensor.emhass_def_end_timestep') }}
       }' http://localhost:5000/action/naive-mpc-optim
   #
   publish_data: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"custom_deferrable_forecast_id\": [{\"entity_id\": \"sensor.p_deferrable0\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Värmepump\"},{\"entity_id\": \"sensor.p_deferrable1\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Deferrable Load 1\"}],
@@ -120,6 +123,49 @@ template:
             2
           {% endif %}
 #
+      - name: emhass_operating_hours_vp_12
+        unique_id: emhass_operating_hours_vp_12
+        state: >
+          {% set temp = state_attr('weather.sannesholma_hourly', 'forecast')[:12] | map(attribute='temperature') | average | round(1) %}
+          {% if temp < -20 %}
+            12
+          {% elif -20 <= temp < -15 %}
+            12
+          {% elif -15 <= temp < -10 %}
+            12
+          {% elif -10 <= temp < -5 %}
+            10
+          {% elif -5 <= temp < 0 %}
+            9
+          {% elif 0 <= temp < 5 %}
+            8
+          {% elif 5 <= temp < 10 %}
+            7
+          {% else %}
+            7
+          {% endif %}
+#
+      - name: emhass_operating_hours_vp_24
+        unique_id: emhass_operating_hours_vp_24
+        state: >
+          {% set temp = state_attr('weather.sannesholma_hourly', 'forecast')[:12] | map(attribute='temperature') | average | round(1) %}
+          {% if temp < -20 %}
+            4
+          {% elif -20 <= temp < -15 %}
+            2
+          {% elif -15 <= temp < -10 %}
+            1
+          {% elif -10 <= temp < -5 %}
+            0
+          {% elif -5 <= temp < 0 %}
+            0
+          {% elif 0 <= temp < 5 %}
+            0
+          {% elif 5 <= temp < 10 %}
+            0
+          {% else %}
+            0
+          {% endif %}
 #
       - name: emhass_nominal_power
         unique_id: emhass_nominal_power
@@ -143,68 +189,80 @@ template:
             {{ [1000, 1] | list }}
           {% endif %}
       #
-      - name: emhass_def_total_hours
-        unique_id: emhass_def_total_hours
+      #
+      - name: emhass_def_total_hours_sbv
+        unique_id: emhass_def_total_hours_sbv
         state: >
           {% if now().hour == 4 or now().hour == 12 or now().hour == 20 %}
           {{ states('sensor.emhass_operating_hours_sbv') }}
           {% else %}
           {{ state_attr('sensor.p_deferrable1','deferrables_schedule') | map(attribute='p_deferrable1') | select('search', '[1-9]') | list | count / 2 }}
           {% endif %}
+#
+      - name: emhass_def_total_hours_vp
+        unique_id: emhass_def_total_hours_vp
+        state: >
+          {% if now().hour == 20 %}
+          {{ states('sensor.emhass_operating_hours_vp_12') }}
+          {% elif now().hour == 8 %}
+          {{ states('sensor.emhass_operating_hours_vp_24') }}
+          {% else %}
+          {{ state_attr('sensor.p_deferrable0','deferrables_schedule') | map(attribute='p_deferrable0') | select('search', '[1-9]') | list | count / 2 }}
+          {% endif %}
       #
-      - name: emhass_end_timestep
-        unique_id: emhass_end_timestep
+      - name: emhass_def_end_timestep
+        unique_id: emhass_def_end_timestep
         state: >
           {% if now().hour == 0 %}
-          8
+          {{ [16, 8] | list }}
           {% elif now().hour == 1 %}
-          6
+          {{ [14, 6] | list }}
           {% elif now().hour == 2 %}
-          4
+          {{ [12, 4] | list }}
           {% elif now().hour == 3 %}
-          2
+          {{ [10, 2] | list }}
           {% elif now().hour == 4 %}
-          16
+          {{ [8, 16] | list }}
           {% elif now().hour == 5 %}
-          14
+          {{ [6, 14] | list }}
           {% elif now().hour == 6 %}
-          12
+          {{ [4, 12] | list }}
           {% elif now().hour == 7 %}
-          10
+          {{ [2, 10] | list }}
           {% elif now().hour == 8 %}
-          8
+          {{ [24, 8] | list }}
           {% elif now().hour == 9 %}
-          6
+          {{ [22, 6] | list }}
           {% elif now().hour == 10 %}
-          4
+          {{ [20, 4] | list }}
           {% elif now().hour == 11 %}
-          2
+          {{ [18, 2] | list }}
           {% elif now().hour == 12 %}
-          16
+          {{ [16, 16] | list }}
           {% elif now().hour == 13 %}
-          14
+          {{ [14, 14] | list }}
           {% elif now().hour == 14 %}
-          12
+          {{ [12, 12] | list }}
           {% elif now().hour == 15 %}
-          10
+          {{ [10, 10] | list }}
           {% elif now().hour == 16 %}
-          8
+          {{ [8, 8] | list }}
           {% elif now().hour == 17 %}
-          6
+          {{ [6, 6] | list }}
           {% elif now().hour == 18 %}
-          4
+          {{ [4, 4] | list }}
           {% elif now().hour == 19 %}
-          2
+          {{ [2, 2] | list }}
           {% elif now().hour == 20 %}
-          16
+          {{ [24, 16] | list }}
           {% elif now().hour == 21 %}
-          14
+          {{ [22, 14] | list }}
           {% elif now().hour == 22 %}
-          12
+          {{ [20, 12] | list }}
           {% elif now().hour == 23 %}
-          10
+          {{ [18, 10] | list }}
           {% else %}
-          2
+          {{ [24, 2] | list }}
           {% endif %}
       #
       - name: smhi_sannesholma_forecast_tomorrow_templow
@@ -217,8 +275,8 @@ template:
           {{ state_attr('weather.smhi_sannesholma','forecast')[1].templow }}
       #
       #
-      - name: sannesholma_forecast_rolling
-        unique_id: sannesholma_forecast_rolling
+      - name: sannesholma_forecast_rolling_8h
+        unique_id: sannesholma_forecast_rolling_8h
         availability: >
           {{ is_number(state_attr('weather.sannesholma_hourly', 'forecast')[:8]
           | map(attribute='temperature') | average | round(1) ) }}
@@ -302,6 +360,43 @@ template:
               + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)] %}
               {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100
               + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)] %}
+            {% endfor %}
+            {{ ns.x }}
+          #
+          #
+          sälj_ny: >
+            {% set ns = namespace(x=[]) %}
+            {% for i in (state_attr('sensor.elpris_24h_30m', 'sälj_24h') | list)[((now().hour*60 + now().minute) / 30) | int:][:48] %}
+              {% set ns.x = ns.x + [(i + 0.6 + states('sensor.elpris_natnytta') | float(0)) | round(3)] %}
+            {% endfor %}
+            {{ ns.x }}
+          #
+          köp_ny: >
+            {% set ns = namespace(x=[]) %}
+            {% for i in (state_attr('sensor.elpris_24h_30m', 'köp_24h') | list)[((now().hour*60 + now().minute) / 30) | int:][:48] %}
+              {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100
+              + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)] %}
+            {% endfor %}
+            {{ ns.x }}
+#
+      - name: elpris_24h_30m
+        unique_id: elpris_24h_30m
+        state: >
+          {{ states('sensor.elpris') }}
+        #
+        attributes:
+          sälj_24h: >
+            {% set ns = namespace(x=[]) %}
+            {% for i in ((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list)) %}
+              {% set ns.x = ns.x + [i] %}
+              {% set ns.x = ns.x + [i] %}
+            {% endfor %}
+            {{ ns.x }}
+          köp_24h: >
+            {% set ns = namespace(x=[]) %}
+            {% for i in ((state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today') | map(attribute='total') | list + state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow') | map(attribute='total') | list)) %}
+              {% set ns.x = ns.x + [i] %}
+              {% set ns.x = ns.x + [i] %}
             {% endfor %}
             {{ ns.x }}
 #
