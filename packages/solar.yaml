@@ -52,7 +52,8 @@ template:
           {% endif %}
 #
           # Lägg till Manual discharge
-#
+#          {% if states('sensor.p_batt_forecast') | float(0) < 0
+#            and states('sensor.soc_batt_forecast') | int(0) > states('sensor.solar_battery_soc') | int(0) %}
 #
 sensor:
     - platform: integration
@@ -99,6 +100,7 @@ sensor:
       unit_prefix: k
       method: left
 #
+### Skript för att styra batteri ####
 script:
   solar_battery_mode:
     #
@@ -142,6 +144,8 @@ automation:
       - platform: state
         entity_id: sensor.p_batt_forecast
     action:
+      - delay:
+          seconds: 30
       - choose:
           #
           ### Charge##
