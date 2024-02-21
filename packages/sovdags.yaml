@@ -65,6 +65,7 @@ automation:
               data:
                 entity_id:
                   - switch.adaptive_lighting_sovrum
+                  - switch.adaptive_lighting_mikaels_rum
                   #
         # Sovdags av
         - conditions:
@@ -99,4 +100,5 @@ automation:
               data:
                 entity_id:
                   - switch.adaptive_lighting_sovrum
+                  - switch.adaptive_lighting_mikaels_rum
       #
