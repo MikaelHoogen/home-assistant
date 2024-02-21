@@ -341,7 +341,12 @@ template:
         unique_id: varmegolv_block
         state: >
           {{ is_state('binary_sensor.heatpump_emhass', 'off')
-          or ( states('sensor.heatpump_integral') | float(0) < -150.0 ) }}
+          or is_state('binary_sensor.heatpump_integral_block', 'on') }}
+#
+      - name: heatpump_integral_block
+        unique_id: heatpump_integral_block
+        state: >
+          {{ states('sensor.heatpump_integral') | float(0) < -600.0 }}
 #
       ########################################################################
       # Värme
@@ -418,13 +423,13 @@ template:
           {{((( states('sensor.voltage_phase1_sannesholma_2181') | float(230)
                 + states('sensor.voltage_phase2_sannesholma_2181') | float(230)
                 + states('sensor.voltage_phase3_sannesholma_2181') | float(230) )
-                / sqrt(3) ) * 5.0 ) | round (1) }}
+                / sqrt(3) ) * 4.9 ) | round (1) }}
           {% elif is_state('binary_sensor.heatpump_switchvalve_state', 'on') %}
           {{
             ((( states('sensor.voltage_phase1_sannesholma_2181') | float(230)
                 + states('sensor.voltage_phase2_sannesholma_2181') | float(230)
                 + states('sensor.voltage_phase3_sannesholma_2181') | float(230) )
-                / sqrt(3) ) * 6 ) | round (1) }}
+                / sqrt(3) ) * 5.1 ) | round (1) }}
           {% else %}
           0.0
           {% endif %}
@@ -450,6 +455,18 @@ template:
         device_class: power
         state: >
           {{ states('sensor.heatpump_coldcircuitpump_real_power') | float(0) + states('sensor.heatpump_compressor_real_power') | float(0) }}
+#
+      - name: heatpump_addheat1_power
+        unique_id: heatpump_addheat1_power
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {% if is_state('binary_sensor.heatpump_addheat1state', 'on') %}
+          {{ 3000 }}
+          {% elif is_state('binary_sensor.heatpump_addheat1state', 'off') %}
+          0.0
+          {% endif %}
 #
       - unique_id: heatpump_addheat2_power
         unit_of_measurement: "W"
