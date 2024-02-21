@@ -46,6 +46,17 @@ input_number:
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
 #
+climate:
+  - platform: generic_thermostat
+    name: Gästrum värmegolv
+    unique_id: gastrum_varmegolv
+    cold_tolerance: 0.0
+    hot_tolerance: 0.2
+    precision: 0.1
+    heater: switch.gastrum_varmegolv
+    target_sensor: sensor.gastrum_temperature
+    min_temp: 7
+#
 template:
   - binary_sensor:
       #
@@ -121,3 +132,35 @@ automation:
       - service: input_boolean.toggle
         target:
           entity_id: input_boolean.sovdags_gastrum
+#
+  - alias: Gästrum värme
+    id: gastrum_varme
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.varmegolv_block
+      - platform: homeassistant
+        event: start
+    action:
+      - choose:
+        #
+        - conditions:
+            - condition: state
+              state: 'on'
+              entity_id: binary_sensor.varmegolv_block
+          sequence:
+            - service: climate.set_hvac_mode
+              target:
+                entity_id: climate.gastrum_varmegolv
+              data:
+                hvac_mode: 'off'
+        #
+        - conditions:
+            - condition: state
+              state: 'off'
+              entity_id: binary_sensor.varmegolv_block
+          sequence:
+            - service: climate.set_hvac_mode
+              target:
+                entity_id: climate.gastrum_varmegolv
+              data:
+                hvac_mode: 'heat'
