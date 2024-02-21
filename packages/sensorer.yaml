@@ -54,9 +54,9 @@ template:
       #  #friendly_name: "1 Sovrum"
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.netatmo_rosa_van_temperature') | round(1,'round-to-even', '-') }}°C"
-          humidity: "{{ states('sensor.netatmo_rosa_van_humidity') | round(0, 'round-to-even', '-') }}"
-          co2: "{{ states('sensor.netatmo_rosa_van_co2') | round(0, 'round-to-even', '-')}} ppm"
+          temperature: "{{ states('sensor.sovrum_temperature') | round(1,'round-to-even', '-') }}°C"
+          humidity: "{{ states('sensor.sovrum_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: "{{ states('sensor.sovrum_co2') | round(0, 'round-to-even', '-')}} ppm"
           v: "{{ states('sensor.sovrum_v') | round(1, 'round-to-even', '-') }} g/m³"
 #
 
@@ -88,9 +88,9 @@ template:
         #friendly_name: "1 Allrum"
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_temperature') | round(1,'round-to-even', '-') }}°C"
-          humidity: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_humidity') | round(0, 'round-to-even', '-') }}"
-          co2: "{{ states('sensor.netatmo_sannesholma_weather_station_allrum_co2') | round(0, 'round-to-even', '-')}} ppm"
+          temperature: "{{ states('sensor.allrum_temperature') | round(1,'round-to-even', '-') }}°C"
+          humidity: "{{ states('sensor.allrum_humidity') | round(0, 'round-to-even', '-') }}"
+          co2: ""
           v: "{{ states('sensor.allrum_v') | round(1, 'round-to-even', '-') }} g/m³"
       #
       - name: sensorer_ute
@@ -124,7 +124,7 @@ template:
         attributes:
           temperature: "{{ states('sensor.barnrum_temperature') | round(1,'round-to-even', '-') }}°C"
           humidity: "{{ states('sensor.barnrum_humidity') | round(0, 'round-to-even', '-') }}"
-          co2: ""
+          co2: "{{ states('sensor.barnrum_co2') | round(0, 'round-to-even', '-')}} ppm"
           v: "{{ states('sensor.barnrum_v') | round(1, 'round-to-even', '-') }} g/m³"
 #
           ### gastrum
