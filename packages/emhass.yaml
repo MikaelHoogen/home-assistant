@@ -33,10 +33,10 @@ shell_command:
     "soc_init": {{ states('sensor.solar_battery_soc') | float(0) / 100 }}}' http://localhost:5000/action/naive-mpc-optim
   #
   trigger_nordpool_solcast_mpc: >
-    curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp') | list }},
-      "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},
-      "pv_power_forecast":{{ state_attr('sensor.solcast_pv_forecast', 'pv_estimate') | list }},
-      "prediction_horizon":{{ max(12, state_attr('sensor.p_deferrable0', 'deferrables_schedule') | map(attribute='p_deferrable0') | list | length ) }},
+    curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp_ny') | list }},
+      "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj_ny') | list }},
+      "pv_power_forecast":{{ [states('sensor.solar_power_photovoltaics')] + state_attr('sensor.solcast_pv_forecast', 'pv_estimate')[1:] }},
+      "prediction_horizon":{{ min(48, state_attr('sensor.elpris_sb', 'sälj_ny') | list | length ) }},
       "def_total_hours":[{{ states('sensor.emhass_def_total_hours_vp') }},
                         {{ states('sensor.emhass_def_total_hours_sbv') }}],
       "soc_init": {{ max(0.3,states('sensor.solar_battery_soc') | float(0) / 100 ) }},
@@ -193,7 +193,9 @@ template:
       - name: emhass_def_total_hours_sbv
         unique_id: emhass_def_total_hours_sbv
         state: >
-          {% if now().hour == 4 or now().hour == 12 or now().hour == 20 %}
+          {% if ( now().hour == 4 and now().minute < 30 )
+            or ( now().hour == 12 and now().minute < 30 )
+            or ( now().hour == 20 and now().minute < 30 ) %}
           {{ states('sensor.emhass_operating_hours_sbv') }}
           {% else %}
           {{ state_attr('sensor.p_deferrable1','deferrables_schedule') | map(attribute='p_deferrable1') | select('search', '[1-9]') | list | count / 2 }}
@@ -202,9 +204,9 @@ template:
       - name: emhass_def_total_hours_vp
         unique_id: emhass_def_total_hours_vp
         state: >
-          {% if now().hour == 20 %}
+          {% if now().hour == 20 and now().minute < 30 %}
           {{ states('sensor.emhass_operating_hours_vp_12') }}
-          {% elif now().hour == 8 %}
+          {% elif now().hour == 8 and now().minute < 30 %}
           {{ states('sensor.emhass_operating_hours_vp_24') }}
           {% else %}
           {{ state_attr('sensor.p_deferrable0','deferrables_schedule') | map(attribute='p_deferrable0') | select('search', '[1-9]') | list | count / 2 }}
@@ -219,28 +221,36 @@ template:
           {{ [14, 6] | list }}
           {% elif now().hour == 2 %}
           {{ [12, 4] | list }}
-          {% elif now().hour == 3 %}
+          {% elif now().hour == 3 and now().minute < 30 %}
           {{ [10, 2] | list }}
+          {% elif now().hour == 3 and now().minute >= 30 %}
+          {{ [9, 1] | list }}
           {% elif now().hour == 4 %}
           {{ [8, 16] | list }}
           {% elif now().hour == 5 %}
           {{ [6, 14] | list }}
           {% elif now().hour == 6 %}
           {{ [4, 12] | list }}
-          {% elif now().hour == 7 %}
+          {% elif now().hour == 7 and now().minute < 30 %}
           {{ [2, 10] | list }}
+          {% elif now().hour == 7 and now().minute >= 30 %}
+          {{ [1, 9] | list }}
           {% elif now().hour == 8 %}
           {{ [24, 8] | list }}
           {% elif now().hour == 9 %}
           {{ [22, 6] | list }}
           {% elif now().hour == 10 %}
           {{ [20, 4] | list }}
-          {% elif now().hour == 11 %}
+          {% elif now().hour == 11 and now().minute < 30 %}
           {{ [18, 2] | list }}
+          {% elif now().hour == 11 and now().minute >= 30 %}
+          {{ [17, 1] | list }}
           {% elif now().hour == 12 %}
           {{ [16, 16] | list }}
-          {% elif now().hour == 13 %}
+          {% elif now().hour == 13 and now().minute < 30 %}
           {{ [14, 14] | list }}
+          {% elif now().hour == 13 and now().minute >= 30 %}
+          {{ [13, 13] | list }}
           {% elif now().hour == 14 %}
           {{ [12, 12] | list }}
           {% elif now().hour == 15 %}
@@ -251,8 +261,10 @@ template:
           {{ [6, 6] | list }}
           {% elif now().hour == 18 %}
           {{ [4, 4] | list }}
-          {% elif now().hour == 19 %}
+          {% elif now().hour == 19 and now().minute < 30 %}
           {{ [2, 2] | list }}
+          {% elif now().hour == 19 and now().minute >= 30 %}
+          {{ [1, 1] | list }}
           {% elif now().hour == 20 %}
           {{ [24, 16] | list }}
           {% elif now().hour == 21 %}
@@ -344,6 +356,8 @@ template:
         unique_id: elpris_sb
         state: >
           {{ states('sensor.elpris') }}
+        availability: >
+          {{ is_number(states('sensor.elpris_24h_30m')) }}
         attributes:
           sälj: >
             {% set ns = namespace(x=[]) %}
@@ -484,7 +498,7 @@ automation:
     id: EMHASS forecast
     trigger:
       - platform: time
-        at: "20:01"
+        at: "20:02"
     action:
       - service: shell_command.trigger_nordpool_solcast_forecast
 #
@@ -493,8 +507,10 @@ automation:
     trigger:
       - platform: time_pattern
         #
-        minutes: 5
+        minutes: /4
     action:
+      - delay:
+          seconds: 30
       - service: shell_command.trigger_nordpool_solcast_mpc
 #
   - alias: solcast_update
