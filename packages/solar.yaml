@@ -42,6 +42,9 @@ template:
         unique_id: solar_battery_mode
         state: >
           {% if states('sensor.p_batt_forecast') | float(0) < 0
+            and states('sensor.p_grid_forecast') | float(0) == 0.0 %}
+          charge_from_solar
+          {% elif states('sensor.p_batt_forecast') | float(0) < 0
             and states('sensor.soc_batt_forecast') | int(0) > states('sensor.solar_battery_soc') | int(0) %}
           charge
           {% elif states('sensor.p_batt_forecast') | float(0) > 0
@@ -158,7 +161,7 @@ automation:
                 # Charge, InWRte positiv
                 data:
                   StorCTLMod: 3
-                  MinRsvPct: "{{ states('sensor.soc_batt_forecast') | int(0) * 100 }}"
+                  MinRsvPct: 2000
                   OutWRte: "{{ 65536 - (0 - states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
                   InWRte: "{{ (0 - states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
           #
@@ -173,8 +176,7 @@ automation:
                 data:
                   # Only permit energy storage charging
                   StorCTLMod: 2
-                  MinRsvPct: >
-                    {{ states('sensor.soc_batt_forecast') | int(0) * 100 }}
+                  MinRsvPct: 2000
                   # Set discharge limit of WchaMax to 0%
                   OutWRte: 0
                   #
@@ -192,7 +194,7 @@ automation:
                   # Only permit energy storage discharging
                   StorCTLMod: 1
                   #MinRsvPct: "{{ states('sensor.soc_batt_forecast') | int(0) * 100 }}"
-                  MinRsvPct: 3000
+                  MinRsvPct: 2000
                   #
                   OutWRte: 10000
                   # Set charge limit of WchaMax to 0%
