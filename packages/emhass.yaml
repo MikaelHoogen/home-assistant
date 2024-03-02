@@ -18,7 +18,7 @@ shell_command:
     "pv_power_forecast":{{ state_attr('sensor.solcast_pv_forecast', 'pv_estimate') | list }},
     "def_total_hours":[{{ states('sensor.emhass_def_total_hours_vp') }},
                       {{ states('sensor.emhass_def_total_hours_sbv') }}],
-    "soc_init": {{ max(0.3,states('sensor.solar_battery_soc') | float(0) / 100 ) }},
+    "soc_init": {{ min(0.9,(max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
     "def_end_timestep":{{ states('sensor.emhass_def_end_timestep') }}
     }' http://localhost:5000/action/dayahead-optim
   #
@@ -35,11 +35,11 @@ shell_command:
   trigger_nordpool_solcast_mpc: >
     curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp_ny') | list }},
       "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj_ny') | list }},
-      "pv_power_forecast":{{ [states('sensor.solar_power_photovoltaics')] + state_attr('sensor.solcast_pv_forecast', 'pv_estimate_new')[1:] }},
+      "pv_power_forecast":{{ [states('sensor.solar_power_photovoltaics') | int] + state_attr('sensor.solcast_pv_forecast', 'pv_estimate_new')[1:] }},
       "prediction_horizon":{{ min(48, state_attr('sensor.elpris_sb', 'sälj_ny') | list | length ) }},
       "def_total_hours":[{{ states('sensor.emhass_def_total_hours_vp') }},
                         {{ states('sensor.emhass_def_total_hours_sbv') }}],
-      "soc_init": {{ max(0.3,states('sensor.solar_battery_soc') | float(0) / 100 ) }},
+      "soc_init": {{ max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ) }},
       "def_end_timestep":{{ states('sensor.emhass_def_end_timestep') }}
       }' http://localhost:5000/action/naive-mpc-optim
   #
@@ -47,12 +47,18 @@ shell_command:
     \"custom_unit_load_cost_id\": {\"entity_id\": \"sensor.unit_load_cost\",\"unit_of_measurement\": \"SEK/kWh\", \"friendly_name\": \"Unit load cost\"},
     \"custom_unit_prod_price_id\": {\"entity_id\": \"sensor.unit_prod_price\",\"unit_of_measurement\": \"SEK/kWh\", \"friendly_name\": \"Unit prod price\"}}' http://localhost:5000/action/publish-data"
 #
-  emhass_machine_learn: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\",\"days_to_retrieve\": 13, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\"}' http://localhost:5000/action/forecast-model-fit"
+  emhass_machine_learn: >
+    curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
+      "days_to_retrieve": 30,
+      "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered"}' http://localhost:5000/action/forecast-model-fit
 #
   emhass_machine_learn_test: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\", \"days_to_retrieve\": 15, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\", \"model_predict_publish\": \"True\"}' http://localhost:5000/action/forecast-model-predict"
 
-  emhass_machine_learn_predict: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\", \"days_to_retrieve\": 13, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\", \"model_predict_publish\": \"True\"}' http://localhost:5000/action/forecast-model-predict"
-#
+  emhass_machine_learn_predict: >
+    curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
+      "days_to_retrieve": 50,
+      "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered",
+      "model_predict_publish": "True"}' http://localhost:5000/action/forecast-model-predict
 # {{ state_attr('weather.smhi_sannesholma','forecast')[1].templow }}
 #
 sensor:
@@ -88,9 +94,9 @@ template:
           {% elif -15 <= temp < -10 %}
             4
           {% elif -10 <= temp < -5 %}
-            4
+            3
           {% elif -5 <= temp < 0 %}
-            2
+            1.5
           {% elif 0 <= temp < 5 %}
             0.5
           {% elif 5 <= temp < 10 %}
@@ -108,13 +114,13 @@ template:
           {% elif -20 <= temp < -15 %}
             12
           {% elif -15 <= temp < -10 %}
-            12
+            11
           {% elif -10 <= temp < -5 %}
             10
           {% elif -5 <= temp < 0 %}
             9
           {% elif 0 <= temp < 5 %}
-            8
+            7.5
           {% elif 5 <= temp < 10 %}
             7
           {% else %}
@@ -132,15 +138,15 @@ template:
           {% elif -15 <= temp < -10 %}
             1
           {% elif -10 <= temp < -5 %}
-            0.5
+            0
           {% elif -5 <= temp < 0 %}
-            0.5
+            0
           {% elif 0 <= temp < 5 %}
-            0.5
+            0
           {% elif 5 <= temp < 10 %}
-            0.5
+            0
           {% else %}
-            0.5
+            0
           {% endif %}
 #
       #
@@ -171,101 +177,101 @@ template:
         unique_id: emhass_def_end_timestep
         state: >
           {% if now().hour == 0 and now().minute < 30 %}
-          {{ [17, 8] | list }}
+          {{ [17, 9] | list }}
           {% elif now().hour == 0 and now().minute >= 30 %}
-          {{ [16, 7] | list }}
+          {{ [16, 8] | list }}
           {% elif now().hour == 1 and now().minute < 30 %}
-          {{ [15, 6] | list }}
+          {{ [15, 7] | list }}
           {% elif now().hour == 1 and now().minute >= 30 %}
-          {{ [14, 5] | list }}
+          {{ [14, 6] | list }}
           {% elif now().hour == 2 and now().minute < 30 %}
-          {{ [13, 4] | list }}
+          {{ [13, 5] | list }}
           {% elif now().hour == 2 and now().minute >= 30 %}
-          {{ [12, 3] | list }}
+          {{ [12, 4] | list }}
           {% elif now().hour == 3 and now().minute < 30 %}
-          {{ [11, 2] | list }}
+          {{ [11, 3] | list }}
           {% elif now().hour == 3 and now().minute >= 30 %}
-          {{ [10, 1] | list }}
+          {{ [10, 2] | list }}
           {% elif now().hour == 4 and now().minute < 30 %}
-          {{ [9, 16] | list }}
+          {{ [9, 17] | list }}
           {% elif now().hour == 4 and now().minute >= 30 %}
-          {{ [8, 15] | list }}
+          {{ [8, 16] | list }}
           {% elif now().hour == 5 and now().minute < 30 %}
-          {{ [7, 14] | list }}
+          {{ [7, 15] | list }}
           {% elif now().hour == 5 and now().minute >= 30 %}
-          {{ [6, 13] | list }}
+          {{ [6, 14] | list }}
           {% elif now().hour == 6 and now().minute < 30 %}
-          {{ [5, 12] | list }}
+          {{ [5, 13] | list }}
           {% elif now().hour == 6 and now().minute >= 30 %}
-          {{ [4, 11] | list }}
+          {{ [4, 12] | list }}
           {% elif now().hour == 7 and now().minute < 30 %}
-          {{ [3, 10] | list }}
+          {{ [3, 11] | list }}
           {% elif now().hour == 7 and now().minute >= 30 %}
-          {{ [2, 9] | list }}
+          {{ [2, 10] | list }}
           {% elif now().hour == 8 and now().minute < 30 %}
-          {{ [25, 8] | list }}
+          {{ [25, 9] | list }}
           {% elif now().hour == 8 and now().minute >= 30 %}
-          {{ [24, 7] | list }}
+          {{ [24, 8] | list }}
           {% elif now().hour == 9 and now().minute < 30 %}
-          {{ [23, 6] | list }}
+          {{ [23, 7] | list }}
           {% elif now().hour == 9 and now().minute >= 30 %}
-          {{ [22, 5] | list }}
+          {{ [22, 6] | list }}
           {% elif now().hour == 10 and now().minute < 30 %}
-          {{ [21, 4] | list }}
+          {{ [21, 5] | list }}
           {% elif now().hour == 10 and now().minute >= 30 %}
-          {{ [20, 3] | list }}
+          {{ [20, 4] | list }}
           {% elif now().hour == 11 and now().minute < 30 %}
-          {{ [19, 2] | list }}
+          {{ [19, 3] | list }}
           {% elif now().hour == 11 and now().minute >= 30 %}
-          {{ [18, 1] | list }}
+          {{ [18, 2] | list }}
           {% elif now().hour == 12 and now().minute < 30 %}
-          {{ [17, 16] | list }}
+          {{ [17, 17] | list }}
           {% elif now().hour == 12 and now().minute >= 30 %}
-          {{ [16, 15] | list }}
+          {{ [16, 16] | list }}
           {% elif now().hour == 13 and now().minute < 30 %}
-          {{ [15, 14] | list }}
+          {{ [15, 15] | list }}
           {% elif now().hour == 13 and now().minute >= 30 %}
-          {{ [14, 13] | list }}
+          {{ [14, 14] | list }}
           {% elif now().hour == 14 and now().minute < 30 %}
-          {{ [13, 12] | list }}
+          {{ [13, 13] | list }}
           {% elif now().hour == 14 and now().minute >= 30 %}
-          {{ [12, 11] | list }}
+          {{ [12, 12] | list }}
           {% elif now().hour == 15 and now().minute < 30 %}
-          {{ [11, 10] | list }}
+          {{ [11, 11] | list }}
           {% elif now().hour == 15 and now().minute >= 30 %}
-          {{ [10, 9] | list }}
+          {{ [10, 10] | list }}
           {% elif now().hour == 16 and now().minute < 30 %}
-          {{ [9, 8] | list }}
+          {{ [9, 9] | list }}
           {% elif now().hour == 16 and now().minute >= 30 %}
-          {{ [8, 7] | list }}
+          {{ [8, 8] | list }}
           {% elif now().hour == 17 and now().minute < 30 %}
-          {{ [7, 6] | list }}
+          {{ [7, 7] | list }}
           {% elif now().hour == 17 and now().minute >= 30 %}
-          {{ [6, 5] | list }}
+          {{ [6, 6] | list }}
           {% elif now().hour == 18 and now().minute < 30 %}
-          {{ [5, 4] | list }}
+          {{ [5, 5] | list }}
           {% elif now().hour == 18 and now().minute >= 30 %}
-          {{ [4, 3] | list }}
+          {{ [4, 4] | list }}
           {% elif now().hour == 19 and now().minute < 30 %}
-          {{ [3, 2] | list }}
+          {{ [3, 3] | list }}
           {% elif now().hour == 19 and now().minute >= 30 %}
-          {{ [2, 1] | list }}
+          {{ [2, 2] | list }}
           {% elif now().hour == 20 and now().minute < 30 %}
-          {{ [25, 16] | list }}
+          {{ [25, 17] | list }}
           {% elif now().hour == 20 and now().minute >= 30 %}
-          {{ [24, 15] | list }}
+          {{ [24, 16] | list }}
           {% elif now().hour == 21 and now().minute < 30 %}
-          {{ [23, 14] | list }}
+          {{ [23, 15] | list }}
           {% elif now().hour == 21 and now().minute >= 30 %}
-          {{ [22, 13] | list }}
+          {{ [22, 14] | list }}
           {% elif now().hour == 22 and now().minute < 30 %}
-          {{ [21, 12] | list }}
+          {{ [21, 13] | list }}
           {% elif now().hour == 22 and now().minute >= 30 %}
-          {{ [20, 11] | list }}
+          {{ [20, 12] | list }}
           {% elif now().hour == 23 and now().minute < 30 %}
-          {{ [19, 10] | list }}
+          {{ [19, 11] | list }}
           {% elif now().hour == 23 and now().minute >= 30 %}
-          {{ [18, 9] | list }}
+          {{ [18, 10] | list }}
           {% else %}
           {{ [25, 2] | list }}
           {% endif %}
@@ -516,8 +522,11 @@ automation:
     trigger:
       - platform: time_pattern
         #
-        minutes: /1
-        #minutes: 55
+        #minutes: /5
+        minutes: 0
+      - platform: time_pattern
+        #
+        minutes: 30
     action:
       - delay:
           #minutes: 1
