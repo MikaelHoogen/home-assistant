@@ -42,7 +42,7 @@ template:
         unique_id: solar_battery_mode
         state: >
           {% if states('sensor.p_batt_forecast') | float(0) < 0
-            and states('sensor.p_grid_forecast') | float(0) == 0.0 %}
+            and states('sensor.p_pv_forecast') | float(0) > 10 %}
           charge_from_solar
           {% elif states('sensor.p_batt_forecast') | float(0) < 0
             and states('sensor.soc_batt_forecast') | int(0) > states('sensor.solar_battery_soc') | int(0) %}
@@ -193,7 +193,7 @@ automation:
                 data:
                   # Only permit energy storage discharging
                   StorCTLMod: 1
-                  #MinRsvPct: "{{ states('sensor.soc_batt_forecast') | int(0) * 100 }}"
+                  #MinRsvPct: "{{ states('sensor.soc_batt_forecast') | float(0) * 100 }}"
                   MinRsvPct: 2000
                   #
                   OutWRte: 10000
