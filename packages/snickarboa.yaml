@@ -291,6 +291,8 @@ template:
       #
       - name: snickarboa_heater
         unique_id: snickarboa_heater
+        delay_on:
+          minutes: 1
         availability: >
           {{ is_number(states('sensor.p_deferrable1')) }}
         state: >
