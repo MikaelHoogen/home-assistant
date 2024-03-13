@@ -39,7 +39,7 @@ shell_command:
       "prediction_horizon":{{ min(48, state_attr('sensor.elpris_sb', 'sälj_ny') | list | length ) }},
       "def_total_hours":[{{ states('sensor.emhass_def_total_hours_vp') }},
                         {{ states('sensor.emhass_def_total_hours_sbv') }}],
-      "soc_init": {{ max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ) }},
+      "soc_init": {{ min(0.85,(max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
       "def_end_timestep":{{ states('sensor.emhass_def_end_timestep') }}
       }' http://localhost:5000/action/naive-mpc-optim
   #
@@ -80,13 +80,30 @@ sensor:
       minutes: 5
 #
 template:
+#
+  - trigger:
+      - platform: time_pattern
+        hours: /1
+    action:
+      - service: weather.get_forecasts
+        data:
+          type: hourly
+        target:
+          entity_id: weather.smhi_sannesholma
+        response_variable: hourly
+    sensor:
+      - name: smhi_sannesholma_hourly
+        unique_id: smhi_sannesholma_hourly
+        state: "{{ now().isoformat() }}"
+        attributes:
+          forecast: "{{ hourly['weather.smhi_sannesholma'].forecast }}"
   - sensor:
       #
       #
       - name: emhass_operating_hours_sbv
         unique_id: emhass_operating_hours_sbv
         state: >
-          {% set temp = state_attr('weather.sannesholma_hourly', 'forecast')[:8] | map(attribute='temperature') | average | round(1) %}
+          {% set temp = state_attr('sensor.smhi_sannesholma_hourly', 'forecast')[:8] | map(attribute='temperature') | average | round(1) %}
           {% if temp < -20 %}
             6
           {% elif -20 <= temp < -15 %}
@@ -95,9 +112,11 @@ template:
             4
           {% elif -10 <= temp < -5 %}
             3
-          {% elif -5 <= temp < 0 %}
-            1.5
-          {% elif 0 <= temp < 5 %}
+          {% elif -5 <= temp < -3 %}
+            2
+          {% elif -3 <= temp < 2 %}
+            1
+          {% elif 2 <= temp < 5 %}
             0.5
           {% elif 5 <= temp < 10 %}
             0
@@ -108,7 +127,7 @@ template:
       - name: emhass_operating_hours_vp_12
         unique_id: emhass_operating_hours_vp_12
         state: >
-          {% set temp = state_attr('weather.sannesholma_hourly', 'forecast')[:12] | map(attribute='temperature') | average | round(1) %}
+          {% set temp = state_attr('sensor.smhi_sannesholma_hourly', 'forecast')[:12] | map(attribute='temperature') | average | round(1) %}
           {% if temp < -20 %}
             12
           {% elif -20 <= temp < -15 %}
@@ -119,8 +138,10 @@ template:
             10
           {% elif -5 <= temp < 0 %}
             9
-          {% elif 0 <= temp < 5 %}
-            7.5
+          {% elif 0 <= temp < 2 %}
+            8.5
+          {% elif 2 <= temp < 5 %}
+            8
           {% elif 5 <= temp < 10 %}
             7
           {% else %}
@@ -130,7 +151,7 @@ template:
       - name: emhass_operating_hours_vp_24
         unique_id: emhass_operating_hours_vp_24
         state: >
-          {% set temp = state_attr('weather.sannesholma_hourly', 'forecast')[:12] | map(attribute='temperature') | average | round(1) %}
+          {% set temp = state_attr('sensor.smhi_sannesholma_hourly', 'forecast')[:12] | map(attribute='temperature') | average | round(1) %}
           {% if temp < -20 %}
             4
           {% elif -20 <= temp < -15 %}
@@ -138,13 +159,13 @@ template:
           {% elif -15 <= temp < -10 %}
             1
           {% elif -10 <= temp < -5 %}
-            0
+            0.5
           {% elif -5 <= temp < 0 %}
-            0
+            0.5
           {% elif 0 <= temp < 5 %}
-            0
+            0.5
           {% elif 5 <= temp < 10 %}
-            0
+            0.5
           {% else %}
             0
           {% endif %}
@@ -165,9 +186,9 @@ template:
       - name: emhass_def_total_hours_vp
         unique_id: emhass_def_total_hours_vp
         state: >
-          {% if now().hour == 20 and now().minute < 30 %}
+          {% if now().hour == 18 and now().minute < 30 %}
           {{ states('sensor.emhass_operating_hours_vp_12') }}
-          {% elif now().hour == 8 and now().minute < 30 %}
+          {% elif now().hour == 6 and now().minute < 30 %}
           {{ states('sensor.emhass_operating_hours_vp_24') }}
           {% else %}
           {{ state_attr('sensor.p_deferrable0','deferrables_schedule') | map(attribute='p_deferrable0') | select('search', '[1-9]') | list | count / 2 }}
@@ -177,105 +198,128 @@ template:
         unique_id: emhass_def_end_timestep
         state: >
           {% if now().hour == 0 and now().minute < 30 %}
-          {{ [17, 9] | list }}
+          {{ [13, 9] | list }}
           {% elif now().hour == 0 and now().minute >= 30 %}
-          {{ [16, 8] | list }}
+          {{ [12, 8] | list }}
           {% elif now().hour == 1 and now().minute < 30 %}
-          {{ [15, 7] | list }}
+          {{ [11, 7] | list }}
           {% elif now().hour == 1 and now().minute >= 30 %}
-          {{ [14, 6] | list }}
+          {{ [10, 6] | list }}
           {% elif now().hour == 2 and now().minute < 30 %}
-          {{ [13, 5] | list }}
+          {{ [9, 5] | list }}
           {% elif now().hour == 2 and now().minute >= 30 %}
-          {{ [12, 4] | list }}
+          {{ [8, 4] | list }}
           {% elif now().hour == 3 and now().minute < 30 %}
-          {{ [11, 3] | list }}
+          {{ [7, 3] | list }}
           {% elif now().hour == 3 and now().minute >= 30 %}
-          {{ [10, 2] | list }}
+          {{ [6, 2] | list }}
           {% elif now().hour == 4 and now().minute < 30 %}
-          {{ [9, 17] | list }}
+          {{ [5, 17] | list }}
           {% elif now().hour == 4 and now().minute >= 30 %}
-          {{ [8, 16] | list }}
+          {{ [4, 16] | list }}
           {% elif now().hour == 5 and now().minute < 30 %}
-          {{ [7, 15] | list }}
+          {{ [3, 15] | list }}
           {% elif now().hour == 5 and now().minute >= 30 %}
-          {{ [6, 14] | list }}
+          {{ [2, 14] | list }}
           {% elif now().hour == 6 and now().minute < 30 %}
-          {{ [5, 13] | list }}
+          {{ [25, 13] | list }}
           {% elif now().hour == 6 and now().minute >= 30 %}
-          {{ [4, 12] | list }}
+          {{ [24, 12] | list }}
           {% elif now().hour == 7 and now().minute < 30 %}
-          {{ [3, 11] | list }}
+          {{ [23, 11] | list }}
           {% elif now().hour == 7 and now().minute >= 30 %}
-          {{ [2, 10] | list }}
+          {{ [22, 10] | list }}
           {% elif now().hour == 8 and now().minute < 30 %}
-          {{ [25, 9] | list }}
+          {{ [21, 9] | list }}
           {% elif now().hour == 8 and now().minute >= 30 %}
-          {{ [24, 8] | list }}
+          {{ [20, 8] | list }}
           {% elif now().hour == 9 and now().minute < 30 %}
-          {{ [23, 7] | list }}
+          {{ [19, 7] | list }}
           {% elif now().hour == 9 and now().minute >= 30 %}
-          {{ [22, 6] | list }}
+          {{ [18, 6] | list }}
           {% elif now().hour == 10 and now().minute < 30 %}
-          {{ [21, 5] | list }}
+          {{ [17, 5] | list }}
           {% elif now().hour == 10 and now().minute >= 30 %}
-          {{ [20, 4] | list }}
+          {{ [16, 4] | list }}
           {% elif now().hour == 11 and now().minute < 30 %}
-          {{ [19, 3] | list }}
+          {{ [15, 3] | list }}
           {% elif now().hour == 11 and now().minute >= 30 %}
-          {{ [18, 2] | list }}
+          {{ [14, 2] | list }}
           {% elif now().hour == 12 and now().minute < 30 %}
-          {{ [17, 17] | list }}
+          {{ [13, 17] | list }}
           {% elif now().hour == 12 and now().minute >= 30 %}
-          {{ [16, 16] | list }}
+          {{ [12, 16] | list }}
           {% elif now().hour == 13 and now().minute < 30 %}
-          {{ [15, 15] | list }}
+          {{ [11, 15] | list }}
           {% elif now().hour == 13 and now().minute >= 30 %}
-          {{ [14, 14] | list }}
+          {{ [10, 14] | list }}
           {% elif now().hour == 14 and now().minute < 30 %}
-          {{ [13, 13] | list }}
+          {{ [9, 13] | list }}
           {% elif now().hour == 14 and now().minute >= 30 %}
-          {{ [12, 12] | list }}
+          {{ [8, 12] | list }}
           {% elif now().hour == 15 and now().minute < 30 %}
-          {{ [11, 11] | list }}
+          {{ [7, 11] | list }}
           {% elif now().hour == 15 and now().minute >= 30 %}
-          {{ [10, 10] | list }}
+          {{ [6, 10] | list }}
           {% elif now().hour == 16 and now().minute < 30 %}
-          {{ [9, 9] | list }}
+          {{ [5, 9] | list }}
           {% elif now().hour == 16 and now().minute >= 30 %}
-          {{ [8, 8] | list }}
+          {{ [4, 8] | list }}
           {% elif now().hour == 17 and now().minute < 30 %}
-          {{ [7, 7] | list }}
+          {{ [3, 7] | list }}
           {% elif now().hour == 17 and now().minute >= 30 %}
-          {{ [6, 6] | list }}
+          {{ [2, 6] | list }}
           {% elif now().hour == 18 and now().minute < 30 %}
-          {{ [5, 5] | list }}
+          {{ [25, 5] | list }}
           {% elif now().hour == 18 and now().minute >= 30 %}
-          {{ [4, 4] | list }}
+          {{ [24, 4] | list }}
           {% elif now().hour == 19 and now().minute < 30 %}
-          {{ [3, 3] | list }}
+          {{ [23, 3] | list }}
           {% elif now().hour == 19 and now().minute >= 30 %}
-          {{ [2, 2] | list }}
+          {{ [22, 2] | list }}
           {% elif now().hour == 20 and now().minute < 30 %}
-          {{ [25, 17] | list }}
+          {{ [21, 17] | list }}
           {% elif now().hour == 20 and now().minute >= 30 %}
-          {{ [24, 16] | list }}
+          {{ [20, 16] | list }}
           {% elif now().hour == 21 and now().minute < 30 %}
-          {{ [23, 15] | list }}
+          {{ [19, 15] | list }}
           {% elif now().hour == 21 and now().minute >= 30 %}
-          {{ [22, 14] | list }}
+          {{ [18, 14] | list }}
           {% elif now().hour == 22 and now().minute < 30 %}
-          {{ [21, 13] | list }}
+          {{ [17, 13] | list }}
           {% elif now().hour == 22 and now().minute >= 30 %}
-          {{ [20, 12] | list }}
+          {{ [16, 12] | list }}
           {% elif now().hour == 23 and now().minute < 30 %}
-          {{ [19, 11] | list }}
+          {{ [15, 11] | list }}
           {% elif now().hour == 23 and now().minute >= 30 %}
-          {{ [18, 10] | list }}
+          {{ [14, 10] | list }}
           {% else %}
           {{ [25, 2] | list }}
           {% endif %}
+      
+      - name: emhass_def_3_start_timestep
+        unique_id: emhass_def_3_start_timestep
+        state: >
+          {% set ts = ((today_at(states('input_datetime.p_deferrable3_start_time')) | as_timestamp - now() | as_timestamp)/1800) | round(0) | int(0) %}
+          {% if states('input_datetime.p_deferrable3_start_time') > states('input_datetime.emhass_p_deferrable_0_end_time') %}
+            {% if now() < today_at(states('input_datetime.p_deferrable3_end_time')) %}
+              {% set ts = ts - 48 %}
+            {% endif %}
+          {% endif %}
+          {{ ts * is_state('input_boolean.p_deferrable_3_timestep','on') }}
+
+      - name: emhass_def_3_end_timestep
+        unique_id: emhass_def_3_end_timestep
+        state: >
+          {% set ts = ((today_at(states('input_datetime.p_deferrable3_end_time')) | as_timestamp - now() | as_timestamp) / 1800) | round(0) | int(0) %}
+          {% if states('input_datetime.p_deferrable3_start_time') > states('input_datetime.p_deferrable3_end_time') %}
+            {% if now() > today_at(states('input_datetime.p_deferrable3_end_time')) %}
+              {% set ts = ts + 48 %}
+            {% endif %}
+          {% endif %}
+          {{ ts * is_state('input_boolean.p_deferrable_3_timestep','on') }}
       #
+
       - name: smhi_sannesholma_forecast_tomorrow_templow
         unique_id: smhi_sannesholma_forecast_tomorrow_templow
         availability: >
@@ -289,23 +333,23 @@ template:
       - name: sannesholma_forecast_rolling_8h
         unique_id: sannesholma_forecast_rolling_8h
         availability: >
-          {{ is_number(state_attr('weather.sannesholma_hourly', 'forecast')[:8]
+          {{ is_number(state_attr('sensor.smhi_sannesholma_hourly', 'forecast')[:8]
           | map(attribute='temperature') | average | round(1) ) }}
         unit_of_measurement: "°C"
         state_class: measurement
         state: >
-          {{ state_attr('weather.sannesholma_hourly', 'forecast')[:8]
+          {{ state_attr('sensor.smhi_sannesholma_hourly', 'forecast')[:8]
           | map(attribute='temperature') | average | round(1) }}
       #
       - name: sannesholma_forecast_rolling_12h
         unique_id: sannesholma_forecast_rolling_12h
         availability: >
-          {{ is_number(state_attr('weather.sannesholma_hourly', 'forecast')[:12]
+          {{ is_number(state_attr('sensor.smhi_sannesholma_hourly', 'forecast')[:12]
           | map(attribute='temperature') | average | round(1) ) }}
         unit_of_measurement: "°C"
         state_class: measurement
         state: >
-          {{ state_attr('weather.sannesholma_hourly', 'forecast')[:12]
+          {{ state_attr('sensor.smhi_sannesholma_hourly', 'forecast')[:12]
           | map(attribute='temperature') | average | round(1) }}
       #
       - name: ehl75l9h_power_watt
@@ -316,11 +360,7 @@ template:
         state_class: measurement
         device_class: power
         state: >
-          {% if is_state('sensor.ehl75l9h_status', 'charging') %}
-            {{ ( states('sensor.ehl75l9h_power') | float('naan') * 1000 ) | round(0) }}
-          {% else %}
-            0.0
-          {% endif %}
+          {{ ( states('sensor.ehl75l9h_power') | float('naan') * 1000 ) | round(0) }}
 #
       - name: power_sannesholma_2181_no_var_loads
         unique_id: power_sannesholma_2181_no_var_loads
@@ -527,6 +567,23 @@ automation:
       - platform: time_pattern
         #
         minutes: 30
+    action:
+      - delay:
+          #minutes: 1
+          seconds: 30
+      - service: shell_command.trigger_nordpool_solcast_mpc
+#
+  - alias: EMHASS_forecast_mpc_defblock
+    id: EMHASS_forecast_mpc_defblock
+    trigger:
+      - platform: time_pattern
+        #
+        #minutes: /5
+        minutes: 0
+      - platform: time_pattern
+        #
+        minutes: 30
+    condition: "{{ states('sensor.p_deferrable0') != 2000 }}"
     action:
       - delay:
           #minutes: 1
