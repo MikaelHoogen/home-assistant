@@ -45,7 +45,7 @@ template:
             and states('sensor.p_pv_forecast') | float(0) > 10 %}
           charge_from_solar
           {% elif states('sensor.p_batt_forecast') | float(0) < 0
-            and states('sensor.soc_batt_forecast') | int(0) > states('sensor.solar_battery_soc') | int(0) %}
+            and states('sensor.soc_batt_forecast') | float(0) > states('sensor.solar_battery_soc') | float(0) %}
           charge
           {% elif states('sensor.p_batt_forecast') | float(0) > 0
             and not is_state('sensor.ehl75l9h_status', 'charging') %}
@@ -230,66 +230,3 @@ automation:
                   OutWRte: 0
                   InWRte: 0
 #
-# Not in use
-  - alias: solar_battery_disabled
-    id: solar_battery_disabled
-    trigger:
-      - platform: state
-        entity_id: sensor.ehl75l9h_status
-      - platform: homeassistant
-        event: start
-    action:
-      - choose:
-          #
-          - conditions:
-              - condition: state
-                entity_id: sensor.ehl75l9h_status
-                state: "charging"
-            sequence:
-              - service: modbus.write_register
-                data:
-                  slave: 1
-                  # StorCTLMod
-                  address: 40348
-                  value: 3
-                  hub: gen24
-              - service: modbus.write_register
-                data:
-                  slave: 1
-                  # OutWRte
-                  address: 40355
-                  value: 0
-                  hub: gen24
-              - service: modbus.write_register
-                data:
-                  slave: 1
-                  # InWRte
-                  address: 40356
-                  value: 0
-                  hub: gen24
-  #
-          - conditions:
-              - condition: template
-                value_template: "{{ not is_state('sensor.ehl75l9h_status', 'charging') }}"
-            sequence:
-              - service: modbus.write_register
-                data:
-                  slave: 1
-                  # StorCTLMod
-                  address: 40348
-                  value: 0
-                  hub: gen24
-              - service: modbus.write_register
-                data:
-                  slave: 1
-                  # OutWRte
-                  address: 40355
-                  value: 10000
-                  hub: gen24
-              - service: modbus.write_register
-                data:
-                  slave: 1
-                  # InWRte
-                  address: 40356
-                  value: 10000
-                  hub: gen24
