@@ -39,8 +39,20 @@ shell_command:
       "prediction_horizon":{{ min(48, state_attr('sensor.elpris_sb', 'sälj_ny') | list | length ) }},
       "def_total_hours":[{{ states('sensor.emhass_def_total_hours_vp') }},
                         {{ states('sensor.emhass_def_total_hours_sbv') }}],
-      "soc_init": {{ min(0.85,(max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
+      "soc_init": {{ min(0.8,(max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
       "def_end_timestep":{{ states('sensor.emhass_def_end_timestep') }}
+      }' http://localhost:5000/action/naive-mpc-optim
+  #
+  trigger_nordpool_solcast_mpc_fix: >
+    curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp_ny') | list }},
+      "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj_ny') | list }},
+      "pv_power_forecast":{{ [states('sensor.solar_power_photovoltaics') | int] + state_attr('sensor.solcast_pv_forecast', 'pv_estimate_new')[1:] }},
+      "prediction_horizon":{{ min(48, state_attr('sensor.elpris_sb', 'sälj_ny') | list | length ) }},
+      "def_total_hours":[{{ states('sensor.emhass_def_total_hours_vp') }},
+                        {{ states('sensor.emhass_def_total_hours_sbv') }}],
+      "soc_init": {{ min(0.8,(max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
+      "def_end_timestep":[{{ max((states('sensor.emhass_def_total_hours_vp') | float(0) * 2 + 0.5), states('sensor.emhass_def_3_end_timestep')| float(0)) }},
+                        {{states('sensor.emhass_def_1_end_timestep') }}]
       }' http://localhost:5000/action/naive-mpc-optim
   #
   publish_data: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"custom_deferrable_forecast_id\": [{\"entity_id\": \"sensor.p_deferrable0\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Värmepump\"},{\"entity_id\": \"sensor.p_deferrable1\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Deferrable Load 1\"}],
@@ -297,26 +309,129 @@ template:
           {{ [25, 2] | list }}
           {% endif %}
       
+      - name: emhass_def_1_end_timestep
+        unique_id: emhass_def_1_end_timestep
+        state: >
+          {% if now().hour == 0 and now().minute < 30 %}
+          {{ 9 }}
+          {% elif now().hour == 0 and now().minute >= 30 %}
+          {{ 8 }}
+          {% elif now().hour == 1 and now().minute < 30 %}
+          {{ 7 }}
+          {% elif now().hour == 1 and now().minute >= 30 %}
+          {{ 6 }}
+          {% elif now().hour == 2 and now().minute < 30 %}
+          {{ 5 }}
+          {% elif now().hour == 2 and now().minute >= 30 %}
+          {{ 4 }}
+          {% elif now().hour == 3 and now().minute < 30 %}
+          {{ 3 }}
+          {% elif now().hour == 3 and now().minute >= 30 %}
+          {{ 2 }}
+          {% elif now().hour == 4 and now().minute < 30 %}
+          {{ 17 }}
+          {% elif now().hour == 4 and now().minute >= 30 %}
+          {{ 16 }}
+          {% elif now().hour == 5 and now().minute < 30 %}
+          {{ 15 }}
+          {% elif now().hour == 5 and now().minute >= 30 %}
+          {{ 14 }}
+          {% elif now().hour == 6 and now().minute < 30 %}
+          {{ 13 }}
+          {% elif now().hour == 6 and now().minute >= 30 %}
+          {{ 12 }}
+          {% elif now().hour == 7 and now().minute < 30 %}
+          {{ 11 }}
+          {% elif now().hour == 7 and now().minute >= 30 %}
+          {{ 10 }}
+          {% elif now().hour == 8 and now().minute < 30 %}
+          {{ 9 }}
+          {% elif now().hour == 8 and now().minute >= 30 %}
+          {{ 8 }}
+          {% elif now().hour == 9 and now().minute < 30 %}
+          {{ 7 }}
+          {% elif now().hour == 9 and now().minute >= 30 %}
+          {{ 6 }}
+          {% elif now().hour == 10 and now().minute < 30 %}
+          {{ 5 }}
+          {% elif now().hour == 10 and now().minute >= 30 %}
+          {{ 4 }}
+          {% elif now().hour == 11 and now().minute < 30 %}
+          {{ 3 }}
+          {% elif now().hour == 11 and now().minute >= 30 %}
+          {{ 2 }}
+          {% elif now().hour == 12 and now().minute < 30 %}
+          {{ 17 }}
+          {% elif now().hour == 12 and now().minute >= 30 %}
+          {{ 16 }}
+          {% elif now().hour == 13 and now().minute < 30 %}
+          {{ 15 }}
+          {% elif now().hour == 13 and now().minute >= 30 %}
+          {{ 14 }}
+          {% elif now().hour == 14 and now().minute < 30 %}
+          {{ 13 }}
+          {% elif now().hour == 14 and now().minute >= 30 %}
+          {{ 12 }}
+          {% elif now().hour == 15 and now().minute < 30 %}
+          {{ 11 }}
+          {% elif now().hour == 15 and now().minute >= 30 %}
+          {{ 10 }}
+          {% elif now().hour == 16 and now().minute < 30 %}
+          {{ 9 }}
+          {% elif now().hour == 16 and now().minute >= 30 %}
+          {{ 8 }}
+          {% elif now().hour == 17 and now().minute < 30 %}
+          {{ 7 }}
+          {% elif now().hour == 17 and now().minute >= 30 %}
+          {{ 6 }}
+          {% elif now().hour == 18 and now().minute < 30 %}
+          {{ 5 }}
+          {% elif now().hour == 18 and now().minute >= 30 %}
+          {{ 4 }}
+          {% elif now().hour == 19 and now().minute < 30 %}
+          {{ 3 }}
+          {% elif now().hour == 19 and now().minute >= 30 %}
+          {{ 2 }}
+          {% elif now().hour == 20 and now().minute < 30 %}
+          {{ 17 }}
+          {% elif now().hour == 20 and now().minute >= 30 %}
+          {{ 16 }}
+          {% elif now().hour == 21 and now().minute < 30 %}
+          {{ 15 }}
+          {% elif now().hour == 21 and now().minute >= 30 %}
+          {{ 14 }}
+          {% elif now().hour == 22 and now().minute < 30 %}
+          {{ 13 }}
+          {% elif now().hour == 22 and now().minute >= 30 %}
+          {{ 12 }}
+          {% elif now().hour == 23 and now().minute < 30 %}
+          {{ 11 }}
+          {% elif now().hour == 23 and now().minute >= 30 %}
+          {{ 10 }}
+          {% else %}
+          {{ 2 }}
+          {% endif %}
+#
       - name: emhass_def_3_start_timestep
         unique_id: emhass_def_3_start_timestep
         state: >
-          {% set ts = ((today_at(states('input_datetime.p_deferrable3_start_time')) | as_timestamp - now() | as_timestamp)/1800) | round(0) | int(0) %}
+          {% set ts = (((today_at(states('input_datetime.p_deferrable3_start_time'))|as_timestamp - now()|as_timestamp)+900)/1800) | round(0) | int(0) %}
           {% if states('input_datetime.p_deferrable3_start_time') > states('input_datetime.emhass_p_deferrable_0_end_time') %}
             {% if now() < today_at(states('input_datetime.p_deferrable3_end_time')) %}
               {% set ts = ts - 48 %}
             {% endif %}
-          {% endif %}
+          {% endif %} 
           {{ ts * is_state('input_boolean.p_deferrable_3_timestep','on') }}
 
       - name: emhass_def_3_end_timestep
         unique_id: emhass_def_3_end_timestep
         state: >
-          {% set ts = ((today_at(states('input_datetime.p_deferrable3_end_time')) | as_timestamp - now() | as_timestamp) / 1800) | round(0) | int(0) %}
+          {% set ts = (((today_at(states('input_datetime.p_deferrable3_end_time'))|as_timestamp - now()|as_timestamp)+900)/1800) | round(0) | int(0) %}
           {% if states('input_datetime.p_deferrable3_start_time') > states('input_datetime.p_deferrable3_end_time') %}
             {% if now() > today_at(states('input_datetime.p_deferrable3_end_time')) %}
               {% set ts = ts + 48 %}
             {% endif %}
-          {% endif %}
+          {% endif %} 
           {{ ts * is_state('input_boolean.p_deferrable_3_timestep','on') }}
       #
 
@@ -573,8 +688,8 @@ automation:
           seconds: 30
       - service: shell_command.trigger_nordpool_solcast_mpc
 #
-  - alias: EMHASS_forecast_mpc_defblock
-    id: EMHASS_forecast_mpc_defblock
+  - alias: EMHASS_forecast_mpc_fix
+    id: EMHASS_forecast_mpc_fix
     trigger:
       - platform: time_pattern
         #
@@ -583,12 +698,12 @@ automation:
       - platform: time_pattern
         #
         minutes: 30
-    condition: "{{ states('sensor.p_deferrable0') != 2000 }}"
     action:
       - delay:
           #minutes: 1
           seconds: 30
-      - service: shell_command.trigger_nordpool_solcast_mpc
+      - service: shell_command.trigger_nordpool_solcast_mpc_fix
+#
 #
   - alias: solcast_update
     id: solcast_update
