@@ -10,16 +10,9 @@ automation:
       id_string: "b38d00:32"
       values:
         Sensor Status: "Panic"
-#  - platform: state
-#    entity_id:
-#      - binary_sensor.kd101_smoke_detector_b38d00_32
-#    to: 'on'
+#
   action:
-#  - service: notify.pushbullet
-#    data_template:
-#      message: "Brandvarnare aktiv"
-#      title: "Rök detekterad"
-  - service: notify.mobile_app_sm_n975f
+  - service: notify.mobile_app_mikael_iphone
     data_template:
       message: "Brandvarnare aktiv"
       title: "Rök detekterad"
@@ -27,29 +20,30 @@ automation:
     data_template:
       message: "Brandvarnare aktiv"
       title: "Rök detekterad"
-#  - service: notify.pushbullet_lina
-#    data_template:
-#      message: "Brandvarnare aktiv"
-#      title: "Rök detekterad"
   - service: persistent_notification.create
     data_template:
       message: "Brandvarnare aktiv"
       title: "Rök detekterad"
       #
 template:
-- trigger:
-  - platform: event
-    event_type: rfxtrx_event
-    event_data:
-      packet_type: 32
-      sub_type: 3
-      id_string: "b38d00:32"
-      values:
-        Sensor Status: "Panic"
-  binary_sensor:
-    - name: Brandvarnare
-      auto_off: 300
-      state: "true"
+  - trigger:
+    - platform: event
+      event_type: rfxtrx_event
+      event_data:
+        packet_type: 32
+        sub_type: 3
+        id_string: "b38d00:32"
+        values:
+          Sensor Status: "Panic"
+    binary_sensor:
+      - name: Brandvarnare
+        auto_off: 300
+        state: "true"
+#
+input_boolean:
+  larmtest:
+    name: Larmtest
+#
 alert:
   fire:
     name: Brandvarnare utlöst, risk för brand!
@@ -61,8 +55,14 @@ alert:
     skip_first: false
     notifiers:
       - mobile_app_sm_n975f
+      - mobile_app_mikael_iphone
       - mobile_app_sm_g998b
       - persistent_notification
+    data:
+      push:
+        sound:
+          critical: 1
+          volume: 1.0
 #
 #
   kok_lackagevakt:
@@ -77,8 +77,13 @@ alert:
     skip_first: false
     notifiers:
       - mobile_app_sm_n975f
-      - mobile_app_sm_g998b
+      - mobile_app_mikael_iphone
       - persistent_notification
+    data:
+      push:
+        sound:
+          critical: 1
+          volume: 1.0
 #
   heatpump_sumalarm:
     name: Sumalarm Värmepump
@@ -92,6 +97,7 @@ alert:
     skip_first: false
     notifiers:
       - mobile_app_sm_n975f
+      - mobile_app_mikael_iphone
 #      - mobile_app_sm_g998b
       - persistent_notification
 #
@@ -108,6 +114,7 @@ alert:
     notifiers:
       - mobile_app_sm_n975f
       - mobile_app_sm_g998b
+      - mobile_app_mikael_iphone
       - persistent_notification
 #
   snickarboa_frys_temperature_low:
@@ -123,4 +130,23 @@ alert:
     notifiers:
       - mobile_app_sm_n975f
       - mobile_app_sm_g998b
+      - mobile_app_mikael_iphone
       - persistent_notification
+#
+  test:
+    name: Hög temperatur frys i snickarboa
+    title: Hög temperatur frys i snickarboa
+    message: Risk för att det tinar
+    done_message: Temperaturen är bra igen
+    entity_id: input_boolean.larmtest
+    state: 'on'
+    repeat: 10
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - mobile_app_mikael_iphone
+    data:
+      push:
+        sound:
+          critical: 1
+          volume: 1.0
