@@ -283,7 +283,10 @@ template:
         unit_of_measurement: "SEK"
         state_class: total_increasing
         availability: "{{ is_number(states('sensor.accumulated_reward_sannesholma_2181')) and is_number(states('sensor.accumulated_production_sannesholma_2181')) }}"
-        state: "{{ ( states ('sensor.accumulated_reward_sannesholma_2181') | float('not_a_number') + states('sensor.accumulated_production_sannesholma_2181') | float('not_a_number') * 0.6 ) | round(3) }}"
+        state: >
+          {{ ( states ('sensor.accumulated_reward_sannesholma_2181') | float('not_a_number')
+          + states('sensor.accumulated_production_sannesholma_2181') | float('not_a_number')
+          * ( states('sensor.elpris_natnytta') | float(0) + 0.6 ) ) | round(3) }}
       #
       ### Total Kostnad
       - name: accumulated_total_cost_hour
