@@ -5,9 +5,9 @@ adaptive_lighting:
     - light.barnrum_skank
     - light.barnrum_fonster_1
     - light.barnrum_fonster_2
-    - light.barnrum_tak_1
+    - light.barnrum_tak
     # Julstjärna
-    - light.barnrum_fonster
+    #- light.barnrum_fonster
     prefer_rgb_color: false
     transition: 30
     initial_transition: 5
