@@ -20,6 +20,15 @@ adaptive_lighting:
     take_over_control: true
     detect_non_ha_changes: true
 #
+input_number:
+#
+  hall_light_level:
+    name: Ljusstyrka hall för belysning
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
 #
 template:
   - trigger:
@@ -33,33 +42,41 @@ template:
         auto_off: 30
         state: "true"
 #
-binary_sensor:
-  #
-  - platform: template
-    sensors:
+  -  binary_sensor:
       ### Närvaro
-      hall_presence:
+      - name: hall_presence
+        unique_id: hall_presence
         device_class: motion
-        friendly_name: Hall
         delay_off:
           minutes: 10
-        value_template: >-
+        state: >
           {{ is_state('binary_sensor.hall_hue_motion_sensor_motion', 'on')
             or is_state('binary_sensor.hall_dorrtrigger', 'on') }}
       #
       ### Närvarostyrd belysning
-      hall_presence_light_automation_control:
-        friendly_name: Hall
-        value_template: >-
+      - name: hall_presence_light_automation_control
+        unique_id: hall_presence_light_automation_control
+        state: >
           {{ ( is_state('binary_sensor.vardagsrum_presence', 'on')
             or is_state('binary_sensor.kok_presence', 'on')
             or is_state('binary_sensor.hall_presence', 'on') )
-            and is_state('input_boolean.film_spelar', 'off') }}
+            and is_state('input_boolean.film_spelar', 'off')
+            and is_state('binary_sensor.hall_lightlevel', 'off') }}
 #
+      - name: hall_lightlevel
+        unique_id: hall_lightlevel
+        device_class: light
+        availability: "{{ is_number(states('sensor.hall_hue_motion_sensor_light_level')) and is_number(states('input_number.hall_light_level')) }}"
+        state: >
+          {{ ( states('sensor.hall_hue_motion_sensor_light_level') | float(0.0) > states('input_number.hall_light_level') | float(0.0)
+            and is_state('light.hall', 'off') ) 
+            or ( is_state('binary_sensor.hall_lightlevel', 'on')
+            and is_state('light.hall', 'on') ) }}
 #
 automation:
   #
   - alias: Hall takbelysning
+    id: Hall takbelysning
     trigger:
       - platform: state
         entity_id: binary_sensor.hall_presence_light_automation_control
