@@ -9,7 +9,15 @@ template:
           minutes: 5
         state: >
           {{ is_state('binary_sensor.carport_person', 'on') }}
-
+#
+camera:
+  - platform: local_file
+    name: carport person
+    file_path: /media/notify.jpg
+  - platform: local_file
+    name: carport car
+    file_path: /media/notify_car.jpg
+#
 automation:
   - id: Carport rörelse
     alias: Carport rörelse
@@ -50,6 +58,7 @@ automation:
           title: Rörelse person
           data:
             image: /media/local/notify.jpg
+            url: /lovelace/cam
       - service: notify.mobile_app_sm_g998b
         data:
           message: Någon rör sig
@@ -78,13 +87,16 @@ automation:
           message: Bil uptäckt
           title: Rörelse bil
           data:
-            image: media/local/notify_car.jpg
+            image: /media/local/notify_car.jpg
+            push:
+              sound:
+                volume: 1.0
       - service: notify.mobile_app_sm_g998b
         data:
           message: Bil uptäckt
           title: Rörelse bil
           data:
-            image: media/local/notify_car.jpg
+            image: /media/local/notify_car.jpg
       - delay:
           minutes: 5
       #
