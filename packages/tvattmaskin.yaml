@@ -116,8 +116,8 @@ template:
         delay_off:
           minutes: 2
         state: "{{ states('sensor.tvattmaskin_effekt') | float(0.0) > 5 }}"
-    #
 #
+      #
 #
 automation:
 ############## Tvättmaskin ######################################################
@@ -135,7 +135,7 @@ automation:
         data_template:
           message: "Tvättmaskin"
           title: "Tvätten är klar"
-      - service: notify.mobile_app_sm_n975f
+      - service: notify.mobile_app_mikael_iphone
         data_template:
           message: "Tvättmaskin klar"
           title: "Tvätten är klar"
