@@ -1,5 +1,5 @@
 powercalc:
-  create_utility_meters: true
+  create_utility_meters: false
 #  energy_sensor_precision: 0
   create_domain_groups:
     - light
