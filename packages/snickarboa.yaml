@@ -56,14 +56,14 @@ sensor:
     method: left
     #
   #
-  - platform: history_stats
-    unique_id: snickarboa_heater_today
-    name: snickarboa_heater_today
-    entity_id: switch.snickarboa_heater
-    state: "on"
-    type: time
-    start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
-    end: "{{ now().replace(microsecond=0) }}"
+#  - platform: history_stats
+#    unique_id: snickarboa_heater_today
+#    name: snickarboa_heater_today
+#    entity_id: switch.snickarboa_heater
+#    state: "on"
+#    type: time
+#    start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+#    end: "{{ now().replace(microsecond=0) }}"
   #
   - platform: history_stats
     unique_id: snickarboa_frys_time_today
@@ -123,19 +123,24 @@ utility_meter:
   ###################
   snickarboa_heater_timme:
     unique_id: snickarboa_heater_timme
-    source: sensor.snickarboa_heater_dag
+    source: sensor.shellyplug_s_c8c9a3a4f80a_energy
     cycle: hourly
+    periodically_resetting: false
+  snickarboa_heater_dag:
+    unique_id: snickarboa_heater_dag
+    source: sensor.shellyplug_s_c8c9a3a4f80a_energy
+    cycle: daily
   snickarboa_heater_vecka:
     unique_id: snickarboa_heater_vecka
-    source: sensor.snickarboa_heater_dag
+    source: sensor.shellyplug_s_c8c9a3a4f80a_energy
     cycle: weekly
   snickarboa_heater_manad:
     unique_id: snickarboa_heater_manad
-    source: sensor.snickarboa_heater_dag
+    source: sensor.shellyplug_s_c8c9a3a4f80a_energy
     cycle: monthly
   snickarboa_heater_ar:
     unique_id: snickarboa_heater_ar
-    source: sensor.snickarboa_heater_dag
+    source: sensor.shellyplug_s_c8c9a3a4f80a_energy
     cycle: yearly
   #
   ################
@@ -365,22 +370,19 @@ template:
         unit_of_measurement: "W"
         state_class: measurement
         device_class: power
+        availability: "{{ is_number(states('sensor.shellyplug_s_c8c9a3a4f80a_power')) }}"
         state: >
-          {% if is_state('switch.snickarboa_heater', 'on') %}
-          {{ 1200 }}
-          {% elif is_state('switch.snickarboa_heater', 'off') %}
-          0.0
-          {% endif %}
+          {{ states('sensor.shellyplug_s_c8c9a3a4f80a_power') }}
 #
       ### Förbrukning uppvärmning
-      - name: snickarboa_heater_dag
-        unique_id: snickarboa_heater_dag
-        unit_of_measurement: "kWh"
-        state_class: total_increasing
-        device_class: energy
-        availability: "{{ is_number(states('sensor.snickarboa_heater_today')) }}"
-        state: >
-          {{ ( 1200.0 * states('sensor.snickarboa_heater_today') | float('nan') / 1000.0 ) | round(3) }}
+#      - name: snickarboa_heater_dag
+#        unique_id: snickarboa_heater_dag
+#        unit_of_measurement: "kWh"
+#        state_class: total_increasing
+#        device_class: energy
+#        availability: "{{ is_number(states('sensor.snickarboa_heater_today')) }}"
+#        state: >
+#          {{ ( 1200.0 * states('sensor.snickarboa_heater_today') | float('nan') / 1000.0 ) | round(3) }}
       #
       #### Förbrukning frys
       - name: snickarboa_frys_dag
