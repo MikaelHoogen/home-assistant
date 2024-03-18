@@ -36,7 +36,10 @@ template:
         delay_on:
           minutes: 5
         state: >
-          {{ states('sensor.badrum_hue_motion_sensor_light_level') | float > states('input_number.badrum_light_level') | float }}
+          {{ ( states('sensor.badrum_hue_motion_sensor_light_level') | float(0.0) > states('input_number.badrum_light_level') | float(0.0)
+            and is_state('light.badrum', 'off') )
+            or ( is_state('binary_sensor.badrum_lightlevel', 'on')
+            and is_state('light.badrum', 'on') ) }}
       ### Närvaro
       - name: badrum_presence
         unique_id: badrum_presence
