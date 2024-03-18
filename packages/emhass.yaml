@@ -47,11 +47,24 @@ shell_command:
     curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp_ny') | list }},
       "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj_ny') | list }},
       "pv_power_forecast":{{ [states('sensor.solar_power_photovoltaics') | int] + state_attr('sensor.solcast_pv_forecast', 'pv_estimate_new')[1:] }},
-      "prediction_horizon":{{ min(48, state_attr('sensor.elpris_sb', 'sälj_ny') | list | length ) }},
+      "prediction_horizon":{{ min(48, [state_attr('sensor.elpris_sb', 'sälj_ny') | list | length, state_attr('sensor.elpris_sb', 'köp_ny') | list | length] | min ) }},
       "def_total_hours":[{{ states('sensor.emhass_def_total_hours_vp') }},
                         {{ states('sensor.emhass_def_total_hours_sbv') }}],
       "soc_init": {{ min(0.8,(max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
-      "def_end_timestep":[{{ max((states('sensor.emhass_def_total_hours_vp') | float(0) * 2 + 0.5), states('sensor.emhass_def_3_end_timestep')| float(0)) }},
+      "def_end_timestep":[{{ max(((states('sensor.emhass_def_total_hours_vp') | float(0) + 0.5 ) * 2) | int(0), states('sensor.emhass_def_0_end_timestep') | int(0)) }},
+                        {{states('sensor.emhass_def_1_end_timestep') }}]
+      }' http://localhost:5000/action/naive-mpc-optim
+  #
+  trigger_nordpool_solcast_mpc_sts: >
+    curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp_ny') | list }},
+      "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj_ny') | list }},
+      "pv_power_forecast":{{ [states('sensor.solar_power_photovoltaics') | float(0)] + state_attr('sensor.solcast_pv_forecast', 'pv_estimate_new')[1:] }},
+      "prediction_horizon":{{ min(48, [state_attr('sensor.elpris_sb', 'sälj_ny') | list | length, state_attr('sensor.elpris_sb', 'köp_ny') | list | length] | min ) }},
+      "def_total_hours":[{{ states('sensor.emhass_def_total_hours_vp_test') }},
+                        {{ states('sensor.emhass_def_total_hours_sbv') }}],
+      "soc_init": {{ min(0.8,(max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
+      "def_start_timestep":[{{states('sensor.emhass_def_0_start_timestep')}},0],
+      "def_end_timestep":[{{ max(((states('sensor.emhass_def_total_hours_vp_test') | float(0) + 0.5 ) * 2) | int(0), states('sensor.emhass_def_0_end_timestep') | int(0)) }},
                         {{states('sensor.emhass_def_1_end_timestep') }}]
       }' http://localhost:5000/action/naive-mpc-optim
   #
@@ -202,6 +215,28 @@ template:
           {{ states('sensor.emhass_operating_hours_vp_12') }}
           {% elif now().hour == 6 and now().minute < 30 %}
           {{ states('sensor.emhass_operating_hours_vp_24') }}
+          {% else %}
+          {{ state_attr('sensor.p_deferrable0','deferrables_schedule') | map(attribute='p_deferrable0') | select('search', '[1-9]') | list | count / 2 }}
+          {% endif %}
+      #
+      - name: emhass_def_total_hours_vp_test
+        unique_id: emhass_def_total_hours_vp_test
+        state: >
+          {% if states('sensor.emhass_def_0_start_timestep') | float(0) > 0
+                and states('sensor.emhass_def_0_start_timestep') | float(0) < states('sensor.emhass_def_0_end_timestep') | float(0)
+                and min(48, [state_attr('sensor.elpris_sb', 'sälj_ny') | list | length, state_attr('sensor.elpris_sb', 'köp_ny') | list | length] | min ) > states('sensor.emhass_def_0_end_timestep') | int(0) %}
+          {{ states('sensor.emhass_operating_hours_vp_12') }}
+          {% else %}
+          {{ state_attr('sensor.p_deferrable0','deferrables_schedule') | map(attribute='p_deferrable0') | select('search', '[1-9]') | list | count / 2 }}
+          {% endif %}
+      #
+      - name: emhass_def_total_hours_3
+        unique_id: emhass_def_total_hours_3
+        state: >
+          {% if states('sensor.emhass_def_3_start_timestep') | float(0) > 0
+                and states('sensor.emhass_def_3_start_timestep') | float(0) < states('sensor.emhass_def_3_end_timestep') | float(0)
+                and min(48, [state_attr('sensor.elpris_sb', 'sälj_ny') | list | length, state_attr('sensor.elpris_sb', 'köp_ny') | list | length] | min ) > states('sensor.emhass_def_3_end_timestep') | int(0) %}
+          {{ states('sensor.emhass_operating_hours_vp_12') }}
           {% else %}
           {{ state_attr('sensor.p_deferrable0','deferrables_schedule') | map(attribute='p_deferrable0') | select('search', '[1-9]') | list | count / 2 }}
           {% endif %}
@@ -412,15 +447,37 @@ template:
           {{ 2 }}
           {% endif %}
 #
+      - name: emhass_def_0_start_timestep
+        unique_id: emhass_def_0_start_timestep
+        state: >
+          {% set ts = (((today_at(states('input_datetime.emhass_p_deferrable0_start_time')) | as_timestamp - now()| as_timestamp) +900) / 1800) | round(0) | int(0) %}
+          {% if states('input_datetime.emhass_p_deferrable0_start_time') > states('input_datetime.emhass_p_deferrable0_end_time') %}
+            {% if now() < today_at(states('input_datetime.emhass_p_deferrable0_end_time')) %}
+              {% set ts = ts - 48 %}
+            {% endif %}
+          {% endif %}
+          {{ ts * is_state('input_boolean.emhass_p_deferrable0_timestep','on') }}
+
+      - name: emhass_def_0_end_timestep
+        unique_id: emhass_def_0_end_timestep
+        state: >
+          {% set ts = (((today_at(states('input_datetime.emhass_p_deferrable0_end_time')) | as_timestamp - now() | as_timestamp) + 900 ) / 1800) | round(0) | int(0) %}
+          {% if states('input_datetime.emhass_p_deferrable0_start_time') > states('input_datetime.emhass_p_deferrable0_end_time') %}
+            {% if now() > today_at(states('input_datetime.emhass_p_deferrable0_end_time')) %}
+              {% set ts = ts + 48 %}
+            {% endif %}
+          {% endif %}
+          {{ ts * is_state('input_boolean.emhass_p_deferrable0_timestep','on') }}
+#
       - name: emhass_def_3_start_timestep
         unique_id: emhass_def_3_start_timestep
         state: >
           {% set ts = (((today_at(states('input_datetime.p_deferrable3_start_time'))|as_timestamp - now()|as_timestamp)+900)/1800) | round(0) | int(0) %}
-          {% if states('input_datetime.p_deferrable3_start_time') > states('input_datetime.emhass_p_deferrable_0_end_time') %}
+          {% if states('input_datetime.p_deferrable3_start_time') > states('input_datetime.p_deferrable3_end_time') %}
             {% if now() < today_at(states('input_datetime.p_deferrable3_end_time')) %}
               {% set ts = ts - 48 %}
             {% endif %}
-          {% endif %} 
+          {% endif %}
           {{ ts * is_state('input_boolean.p_deferrable_3_timestep','on') }}
 
       - name: emhass_def_3_end_timestep
@@ -431,7 +488,7 @@ template:
             {% if now() > today_at(states('input_datetime.p_deferrable3_end_time')) %}
               {% set ts = ts + 48 %}
             {% endif %}
-          {% endif %} 
+          {% endif %}
           {{ ts * is_state('input_boolean.p_deferrable_3_timestep','on') }}
       #
 
@@ -704,6 +761,21 @@ automation:
           seconds: 30
       - service: shell_command.trigger_nordpool_solcast_mpc_fix
 #
+  - alias: EMHASS_forecast_mpc_sts
+    id: EMHASS_forecast_mpc_sts
+    trigger:
+      - platform: time_pattern
+        #
+        #minutes: /5
+        minutes: 0
+      - platform: time_pattern
+        #
+        minutes: 30
+    action:
+      - delay:
+          #minutes: 1
+          seconds: 30
+      - service: shell_command.trigger_nordpool_solcast_mpc_sts
 #
   - alias: solcast_update
     id: solcast_update
