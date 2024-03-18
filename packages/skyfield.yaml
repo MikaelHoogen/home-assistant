@@ -1,3 +1,6 @@
 camera:
   - platform: ha_skyfield
     show_constellations: true
+  - platform: local_file
+    name: sh
+    file_path: /media/SH.png
