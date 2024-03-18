@@ -42,11 +42,17 @@ template:
         unique_id: solar_battery_mode
         state: >
           {% if states('sensor.p_batt_forecast') | float(0) < 0
-            and states('sensor.p_pv_forecast') | float(0) > 10 %}
+            and states('sensor.p_pv_forecast') | float(0) > 10
+            and states('sensor.p_grid_forecast') | float(0) <= 0
+            and states('sensor.soc_batt_forecast') | float(0) > states('sensor.solar_battery_soc') | float(0) %}
           charge_from_solar
           {% elif states('sensor.p_batt_forecast') | float(0) < 0
             and states('sensor.soc_batt_forecast') | float(0) > states('sensor.solar_battery_soc') | float(0) %}
           charge
+          {% elif states('sensor.p_batt_forecast') | float(0) > 0
+            and states('sensor.p_grid_forecast') | float(0) > 0
+            and not is_state('sensor.ehl75l9h_status', 'charging') %}
+          discharge_fixed
           {% elif states('sensor.p_batt_forecast') | float(0) > 0
             and not is_state('sensor.ehl75l9h_status', 'charging') %}
           discharge
@@ -199,6 +205,24 @@ automation:
                   OutWRte: 10000
                   # Set charge limit of WchaMax to 0%
                   InWRte: 0
+          #
+          ### Discharge fixed ###
+          - conditions:
+              - condition: state
+                entity_id: sensor.solar_battery_mode
+                state: "discharge_fixed"
+            sequence:
+              - service: script.solar_battery_mode
+                # Discharge fixed
+                data:
+                  #
+                  StorCTLMod: 3
+                  #
+                  MinRsvPct: 2000
+                  #
+                  OutWRte: "{{ (states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
+                  #
+                  InWRte: "{{ 65536 - (states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
           #
           ### Block ###
           - conditions:
