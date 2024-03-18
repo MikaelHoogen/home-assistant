@@ -38,7 +38,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[0] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[0] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -88,7 +88,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[1] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[1] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -138,7 +138,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[2] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[2] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -188,7 +188,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[3] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[3] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -238,7 +238,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[4] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[4] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -288,7 +288,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[5] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[5] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -338,7 +338,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[6] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[6] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -388,7 +388,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[7] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[7] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -438,7 +438,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[8] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[8] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -488,7 +488,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[9] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[9] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -538,7 +538,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[10] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[10] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -588,7 +588,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[11] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[11] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -638,7 +638,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[12] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[12] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -688,7 +688,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[13] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[13] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -738,7 +738,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[14] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[14] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -788,7 +788,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[15] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[15] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -838,7 +838,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[16] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[16] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -888,7 +888,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[17] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[17] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -938,7 +938,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[18] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[18] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -988,7 +988,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[19] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[19] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -1038,7 +1038,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[20] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[20] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -1088,7 +1088,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[21] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[21] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -1138,7 +1138,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[22] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[22] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         
@@ -1188,7 +1188,7 @@ template:
           {% endif %}
         sälj: > 
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
-            {{ ( state_attr('sensor.elpris', 'tomorrow')[23] + 0.6 ) | round(3) }}
+            {{ ( state_attr('sensor.elpris', 'tomorrow')[23] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}
           {% else %}
           -
           {% endif %}         

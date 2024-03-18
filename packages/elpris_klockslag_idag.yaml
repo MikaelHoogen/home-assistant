@@ -23,7 +23,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[0] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[0] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[0] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[0]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -51,7 +51,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[1] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[1] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[1] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[1]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -79,7 +79,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[2] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[2] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[2] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[2]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -107,7 +107,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[3] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[3] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[3] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[3]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -135,7 +135,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[4] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[4] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[4] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[4]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -163,7 +163,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[5] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[5] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[5] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[5]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -191,7 +191,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[6] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[6] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[6] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[6]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -219,7 +219,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[7] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[7] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[7] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[7]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -247,7 +247,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[8] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[8] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[8] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[8]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -275,7 +275,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[9] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[9] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[9] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[9]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -303,7 +303,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[10] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[10] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[10] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[10]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -331,7 +331,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[11] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[11] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[11] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[11]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -359,7 +359,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[12] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[12] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[12] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[12]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -387,7 +387,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[13] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[13] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[13] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[13]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -415,7 +415,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[14] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[14] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[14] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[14]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -443,7 +443,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[15] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[15] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[15] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[15]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -471,7 +471,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[16] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[16] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[16] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[16]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -499,7 +499,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[17] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[17] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[17] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[17]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -527,7 +527,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[18] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[18] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[18] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[18]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -555,7 +555,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[19] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[19] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[19] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[19]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -583,7 +583,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[20] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[20] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[20] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[20]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -611,7 +611,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[21] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[21] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[21] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[21]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -639,7 +639,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[22] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[22] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[22] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[22]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
@@ -667,7 +667,7 @@ template:
           {% elif state_attr('sensor.elpris', 'today')[23] < state_attr('sensor.elpris', 'average') %}
           Under medel
           {% endif %}
-        sälj: "{{ ( state_attr('sensor.elpris', 'today')[23] + 0.6 ) | round(3) }}"
+        sälj: "{{ ( state_attr('sensor.elpris', 'today')[23] + 0.6 + states('sensor.elpris_natnytta') | float(0) ) | round(3) }}"
         köp: >
           {{ ( state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today')[23]['total'] | float('naan')
           + states('sensor.avgift_elnat') | float('naan') / 100 
