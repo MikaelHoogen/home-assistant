@@ -331,14 +331,16 @@ template:
       ### Blockera Kompressor
       - name: heatpump_block
         unique_id: heatpump_block
+        delay_off:
+          minutes: 1
         state: >
-          {{ is_state('binary_sensor.tvattmaskin_load', 'on')
-              or is_state('binary_sensor.diskmaskin_load', 'on')
-              or is_state('binary_sensor.heatpump_emhass', 'off') }}
+          {{ is_state('binary_sensor.heatpump_emhass', 'off') }}
 #
 #
       - name: varmegolv_block
         unique_id: varmegolv_block
+        delay_off:
+          minutes: 1
         state: >
           {{ is_state('binary_sensor.heatpump_emhass', 'off')
           or is_state('binary_sensor.heatpump_integral_block', 'on') }}
@@ -423,13 +425,13 @@ template:
           {{((( states('sensor.voltage_phase1_sannesholma_2181') | float(230)
                 + states('sensor.voltage_phase2_sannesholma_2181') | float(230)
                 + states('sensor.voltage_phase3_sannesholma_2181') | float(230) )
-                / sqrt(3) ) * 4.9 ) | round (1) }}
+                / sqrt(3) ) * 4.5 ) | round (1) }}
           {% elif is_state('binary_sensor.heatpump_switchvalve_state', 'on') %}
           {{
             ((( states('sensor.voltage_phase1_sannesholma_2181') | float(230)
                 + states('sensor.voltage_phase2_sannesholma_2181') | float(230)
                 + states('sensor.voltage_phase3_sannesholma_2181') | float(230) )
-                / sqrt(3) ) * 5.1 ) | round (1) }}
+                / sqrt(3) ) * 5.0 ) | round (1) }}
           {% else %}
           0.0
           {% endif %}
