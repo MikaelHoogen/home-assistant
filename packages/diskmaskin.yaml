@@ -122,9 +122,9 @@ template:
         delay_on:
           seconds: 30
         state: >
-          {{ states('sensor.diskmaskin_power') | float > 1 }}
+          {{ states('sensor.diskmaskin_power') | float(0.0) > 1 }}
 #
-#
+      #
 automation:
   #
   - alias: Diskmaskin klar
@@ -139,7 +139,7 @@ automation:
       data_template:
         message: "Diskmaskin"
         title: "Diskmaskinen är klar"
-    - service: notify.mobile_app_sm_n975f
+    - service: notify.mobile_app_mikael_iphone
       data_template:
         message: "Diskmaskin klar"
         title: "Diskmaskinen är klar"
