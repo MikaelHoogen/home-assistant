@@ -2,9 +2,6 @@ shell_command:
   #
   trigger_solcast_forecast: "curl -i -H \"Content-Type: application/json\" -X POST -d '{\"solcast_rooftop_id\":\"{{solcast_rooftop_id}}\",\"solcast_api_key\":\"{{solcast_api_key}}\"}' http://localhost:5000/action/dayahead-optim"
   #
-  trigger_nordpool_solcast_2_forecast: "curl -i -H \"Content-Type: application/json\" -X POST -d '{\"load_cost_forecast\":{{ state_attr('sensor.elpris_sb', 'köp') | list }},
-    \"prod_price_forecast\":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},
-    \"pv_power_forecast\":{{ state_attr('sensor.solcast_pv_forecast', 'pv_estimate') | list }}}' http://localhost:5000/action/dayahead-optim"
   #
   # Day ahead
   trigger_nordpool_solcast_forecast: >
@@ -19,16 +16,16 @@ shell_command:
   #
   #MPC
   #
-  trigger_nordpool_solcast_mpc: >
-    curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp_ny') | list }},
-      "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj_ny') | list }},
-      "pv_power_forecast":{{ [states('sensor.solar_power_photovoltaics') | int] + state_attr('sensor.solcast_pv_forecast', 'pv_estimate_new')[1:] }},
-      "prediction_horizon":{{ min(48, state_attr('sensor.elpris_sb', 'sälj_ny') | list | length ) }},
-      "def_total_hours":[{{ states('sensor.emhass_def_total_hours_vp') }},
-                        {{ states('sensor.emhass_def_total_hours_sbv') }}],
-      "soc_init": {{ min(0.95,(max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
-      "def_end_timestep":{{ states('sensor.emhass_def_end_timestep') }}
-      }' http://localhost:5000/action/naive-mpc-optim
+#  trigger_nordpool_solcast_mpc: >
+#    curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp_ny') | list }},
+#      "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj_ny') | list }},
+#      "pv_power_forecast":{{ [states('sensor.solar_power_photovoltaics') | int] + state_attr('sensor.solcast_pv_forecast', 'pv_estimate_new')[1:] }},
+#      "prediction_horizon":{{ min(48, state_attr('sensor.elpris_sb', 'sälj_ny') | list | length ) }},
+#      "def_total_hours":[{{ states('sensor.emhass_def_total_hours_vp') }},
+#                        {{ states('sensor.emhass_def_total_hours_sbv') }}],
+#      "soc_init": {{ min(0.95,(max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
+#      "def_end_timestep":{{ states('sensor.emhass_def_end_timestep') }}
+#      }' http://localhost:5000/action/naive-mpc-optim
   #
   trigger_nordpool_solcast_mpc_fix: >
     curl -i -H "Content-Type: application/json" -X POST -d '{"load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp_ny') | list }},
@@ -77,7 +74,7 @@ shell_command:
                         {{ states('sensor.emhass_def_total_hours_vp') }},
                         {{ states('sensor.emhass_def_total_hours_sbv') }},
                         {{ states('sensor.emhass_def_total_hours_vp_24')}}],
-      "soc_init": {{ min(0.95,(max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
+      "soc_init": {{ min(1.0,(max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
       "set_def_constant": [{{ 'false' if states('sensor.emhass_def_0_end_timestep') | int(0) <= ((states('sensor.emhass_def_total_hours_vp') | float(0)) * 2) | int(0) else 'true' }},
                           false,false],
       "def_start_timestep":[
@@ -89,6 +86,37 @@ shell_command:
                           {{states('sensor.emhass_def_2_end_timestep')}}]
       }' http://localhost:5000/action/naive-mpc-optim
   #
+  trigger_nordpool_solcast_mpc: >
+    curl -i -H "Content-Type: application/json" -X POST -d '{
+      "load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp') | list }},
+      "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},
+      "pv_power_forecast":{{ state_attr('sensor.solcast_pv_forecast', 'pv_estimate') }},
+      "prediction_horizon":{{ [state_attr('sensor.elpris_sb', 'sälj') | list | length, state_attr('sensor.elpris_sb', 'köp') | list | length] | min }},
+      "alpha": {{ ( 1.0 - states('input_number.emhass_beta') | float(0) ) | round(1) }},
+      "beta": {{ states('input_number.emhass_beta') }},
+      "num_def_loads": 3,
+      "num_lags":96
+      "P_deferrable_nom":[
+            2000,
+            1400,
+            2000
+          ],
+      "treat_def_as_semi_cont": [true, true, true],
+      "def_total_hours":[
+                        {{ states('sensor.emhass_def_total_hours_vp') }},
+                        {{ states('sensor.emhass_def_total_hours_sbv') }},
+                        {{ states('sensor.emhass_def_total_hours_vp_24')}}],
+      "soc_init": {{ min(1.0,(max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
+      "set_def_constant": [{{ 'false' if states('sensor.emhass_def_0_end_timestep') | int(0) <= ((states('sensor.emhass_def_total_hours_vp') | float(0)) * 2) | int(0) else 'true' }},
+                          false,false],
+      "def_start_timestep":[
+                            {{states('sensor.emhass_def_0_start_timestep')}},
+                            0,
+                            {{states('sensor.emhass_def_2_start_timestep')}}],
+      "def_end_timestep":[{{ max(((states('sensor.emhass_def_total_hours_vp') | float(0)) * 2) | int(0), states('sensor.emhass_def_0_end_timestep') | int(0)) }},
+                          {{states('sensor.emhass_def_1_end_timestep') }},
+                          {{states('sensor.emhass_def_2_end_timestep')}}]
+      }' http://localhost:5000/action/naive-mpc-optim
   #
   publish_data: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"custom_deferrable_forecast_id\": [{\"entity_id\": \"sensor.p_deferrable0\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Värmepump\"},{\"entity_id\": \"sensor.p_deferrable1\",\"unit_of_measurement\": \"W\", \"friendly_name\": \"Deferrable Load 1\"}],
     \"custom_unit_load_cost_id\": {\"entity_id\": \"sensor.unit_load_cost\",\"unit_of_measurement\": \"SEK/kWh\", \"friendly_name\": \"Unit load cost\"},
@@ -108,14 +136,27 @@ shell_command:
 #
   emhass_machine_learn: >
     curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
-      "days_to_retrieve": 40,
+      "days_to_retrieve": 59,
       "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered"}' http://localhost:5000/action/forecast-model-fit
 #
-  emhass_machine_learn_test: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\", \"days_to_retrieve\": 15, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\", \"model_predict_publish\": \"True\"}' http://localhost:5000/action/forecast-model-predict"
+  emhass_machine_learn_96h: >
+    curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
+      "days_to_retrieve": 59,
+      "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered",
+      "num_lags":96,
+      "split_date_delta":"48h",
+      "perform_backtest":"True"}' http://localhost:5000/action/forecast-model-fit
+#
+  emhass_machine_tune: >
+    curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
+      "days_to_retrieve": 59,
+      "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered"}' http://localhost:5000/action/forecast-model-tune
+#
+#  emhass_machine_learn_test: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\", \"days_to_retrieve\": 15, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\", \"model_predict_publish\": \"True\"}' http://localhost:5000/action/forecast-model-predict"
 #
   emhass_machine_learn_predict: >
     curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
-      "days_to_retrieve": 40,
+      "days_to_retrieve": 59,
       "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered",
       "model_predict_publish": "True"}' http://localhost:5000/action/forecast-model-predict
 # {{ state_attr('weather.smhi_sannesholma','forecast')[1].templow }}
@@ -178,9 +219,9 @@ template:
             2
           {% elif -3 <= temp < 2 %}
             1
-          {% elif 2 <= temp < 5 %}
+          {% elif 2 <= temp < 4 %}
             0.5
-          {% elif 5 <= temp < 10 %}
+          {% elif 4 <= temp < 10 %}
             0
           {% else %}
             0
@@ -206,8 +247,10 @@ template:
             8
           {% elif 5 <= temp < 10 %}
             7
+          {% elif temp >= 10 %}
+            6
           {% else %}
-            7
+            8
           {% endif %}
 #
       - name: emhass_operating_hours_vp_24
@@ -229,7 +272,7 @@ template:
           {% elif 5 <= temp < 10 %}
             0.5
           {% else %}
-            0
+            0.5
           {% endif %}
 #
       #
@@ -459,14 +502,14 @@ template:
           {{ ts * is_state('input_boolean.p_deferrable_3_timestep','on') }}
       #
 
-      - name: smhi_sannesholma_forecast_tomorrow_templow
-        unique_id: smhi_sannesholma_forecast_tomorrow_templow
-        availability: >
-          {{ is_number(state_attr('weather.smhi_sannesholma','forecast')[1].templow) }}
-        unit_of_measurement: "°C"
-        state_class: measurement
-        state: >
-          {{ state_attr('weather.smhi_sannesholma','forecast')[1].templow }}
+#      - name: smhi_sannesholma_forecast_tomorrow_templow
+#        unique_id: smhi_sannesholma_forecast_tomorrow_templow
+#        availability: >
+#          {{ is_number(state_attr('weather.smhi_sannesholma','forecast')[1].templow) }}
+#        unit_of_measurement: "°C"
+#        state_class: measurement
+#        state: >
+#          {{ state_attr('weather.smhi_sannesholma','forecast')[1].templow }}
       #
       #
       - name: sannesholma_forecast_rolling_8h
@@ -519,6 +562,35 @@ template:
             - states('sensor.heatpump_addheat1_power') | float(0)
             ) | round(0) ) }}
 #
+      - name: power_sannesholma_2181_no_var_loads_ev
+        unique_id: power_sannesholma_2181_no_var_loads_ev
+        availability: >
+          {{ is_number(states('sensor.power_usage'))
+          and is_number(states('sensor.heatpump_power'))
+          }}
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {{ max(0,( states('sensor.power_usage') | float('naan')
+            - states('sensor.heatpump_power') | float('naan')
+            - states('sensor.snickarboa_heater_power') | float(0)
+            ) | round(0) ) }}
+#
+      - name: power_sannesholma_2181_no_var_loads_test
+        unique_id: power_sannesholma_2181_no_var_loads_test
+        availability: >
+          {{ is_number(states('sensor.power_usage')) }}
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        state: >
+          {{ ( states('sensor.power_usage') | float('naan')
+            - states('sensor.p_deferrable0') | float(0)
+            - states('sensor.p_deferrable1') | float(0)
+            - states('sensor.p_deferrable2') | float(0)
+            ) | round(0) }}
+#
 # Diskmaskin?
 #
       - name: power_sannesholma_2181_no_var_loads_filtered
@@ -547,23 +619,23 @@ template:
         availability: >
           {{ is_number(states('sensor.elpris_24h_30m')) }}
         attributes:
-          sälj: >
-            {% set ns = namespace(x=[]) %}
-            {% for i in ((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24] %}
-              {% set ns.x = ns.x + [(i + 0.6 + states('sensor.elpris_natnytta') | float(0)) | round(3)] %}
-              {% set ns.x = ns.x + [(i + 0.6 + states('sensor.elpris_natnytta') | float(0)) | round(3)] %}
-            {% endfor %}
-            {{ ns.x }}
+#          sälj: >
+#            {% set ns = namespace(x=[]) %}
+#            {% for i in ((state_attr('sensor.elpris', 'raw_today') | map(attribute='value') | list + state_attr('sensor.elpris', 'raw_tomorrow') | map(attribute='value') | list))[now().hour:][:24] %}
+#              {% set ns.x = ns.x + [(i + 0.6 + states('sensor.elpris_natnytta') | float(0)) | round(3)] %}
+#              {% set ns.x = ns.x + [(i + 0.6 + states('sensor.elpris_natnytta') | float(0)) | round(3)] %}
+#            {% endfor %}
+#            {{ ns.x }}
           #
-          köp: >
-            {% set ns = namespace(x=[]) %}
-            {% for i in ((state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today') | map(attribute='total') | list + state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow') | map(attribute='total') | list))[now().hour:][:24] %}
-              {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100
-              + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)] %}
-              {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100
-              + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)] %}
-            {% endfor %}
-            {{ ns.x }}
+#          köp: >
+#            {% set ns = namespace(x=[]) %}
+#            {% for i in ((state_attr('sensor.electricity_price_sannesholma_2181_prices', 'today') | map(attribute='total') | list + state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow') | map(attribute='total') | list))[now().hour:][:24] %}
+#              {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100
+#              + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)] %}
+#              {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100
+#              + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)] %}
+#            {% endfor %}
+#            {{ ns.x }}
           #
           #
           sälj_ny: >
@@ -576,6 +648,21 @@ template:
           köp_ny: >
             {% set ns = namespace(x=[]) %}
             {% for i in (state_attr('sensor.elpris_24h_30m', 'köp_24h') | list)[((now().hour*60 + now().minute) / 30) | int:][:48] %}
+              {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100
+              + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)] %}
+            {% endfor %}
+            {{ ns.x }}
+#
+          sälj: >
+            {% set ns = namespace(x=[]) %}
+            {% for i in (state_attr('sensor.elpris_24h_30m', 'sälj_24h') | list)[((now().hour*60 + now().minute) / 30) | int:] %}
+              {% set ns.x = ns.x + [(i + 0.6 + states('sensor.elpris_natnytta') | float(0)) | round(3)] %}
+            {% endfor %}
+            {{ ns.x }}
+#
+          köp: >
+            {% set ns = namespace(x=[]) %}
+            {% for i in (state_attr('sensor.elpris_24h_30m', 'köp_24h') | list)[((now().hour*60 + now().minute) / 30) | int:] %}
               {% set ns.x = ns.x + [(i + states('sensor.avgift_elnat') | float('naan') / 100
               + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3)] %}
             {% endfor %}
@@ -609,12 +696,20 @@ template:
         state: >
           {{ states('sensor.solcast_pv_forecast_forecast_today') }}
         attributes:
+#          pv_estimate: >
+#            {% set ns = namespace(x=[]) %}
+#            {% for i in ((state_attr('sensor.solcast_pv_forecast_forecast_today', 'detailedForecast') | map(attribute='pv_estimate') | list + state_attr('sensor.solcast_pv_forecast_forecast_tomorrow', 'detailedForecast') | map(attribute='pv_estimate') | list))[now().hour*2:][:48] %}
+#              {% set ns.x = ns.x + [i | round(3) * 1000 ] %}
+#            {% endfor %}
+#            {{ ns.x }}
+#
           pv_estimate: >
             {% set ns = namespace(x=[]) %}
-            {% for i in ((state_attr('sensor.solcast_pv_forecast_forecast_today', 'detailedForecast') | map(attribute='pv_estimate') | list + state_attr('sensor.solcast_pv_forecast_forecast_tomorrow', 'detailedForecast') | map(attribute='pv_estimate') | list))[now().hour*2:][:48] %}
+            {% for i in ((state_attr('sensor.solcast_pv_forecast_forecast_today', 'detailedForecast') | map(attribute='pv_estimate') | list + state_attr('sensor.solcast_pv_forecast_forecast_tomorrow', 'detailedForecast') | map(attribute='pv_estimate') | list))[((now().hour*60 + now().minute) / 30) | int:] %}
               {% set ns.x = ns.x + [i | round(3) * 1000 ] %}
             {% endfor %}
             {{ ns.x }}
+#
           pv_estimate_new: >
             {% set ns = namespace(x=[]) %}
             {% for i in ((state_attr('sensor.solcast_pv_forecast_forecast_today', 'detailedForecast') | map(attribute='pv_estimate') | list + state_attr('sensor.solcast_pv_forecast_forecast_tomorrow', 'detailedForecast') | map(attribute='pv_estimate') | list))[((now().hour*60 + now().minute) / 30) | int:][:48] %}
@@ -689,6 +784,7 @@ automation:
     action:
       - service: shell_command.publish_data
 #
+#
   - alias: EMHASS_publicera_data_def2
     id: EMHASS_publicera_data_def2
     trigger:
@@ -699,13 +795,15 @@ automation:
     action:
       - service: shell_command.publish_data_def2
   #
-  - alias: EMHASS forecast
-    id: EMHASS forecast
-    trigger:
-      - platform: time
-        at: "20:02"
-    action:
-      - service: shell_command.trigger_nordpool_solcast_forecast
+  #
+#  - alias: EMHASS forecast
+#    id: EMHASS forecast
+#    trigger:
+#      - platform: time
+#        at: "20:02"
+#    action:
+#      - service: shell_command.trigger_nordpool_solcast_forecast
+#
 #
   - alias: EMHASS_forecast_mpc
     id: EMHASS_forecast_mpc
@@ -739,16 +837,6 @@ automation:
           seconds: 30
       - service: shell_command.trigger_nordpool_solcast_mpc_sts
 #
-  - alias: EMHASS_forecast_mpc_sts_5
-    id: EMHASS_forecast_mpc_sts_5
-    trigger:
-      - platform: time_pattern
-        #
-        minutes: /5
-    action:
-      - delay:
-          seconds: 30
-      - service: shell_command.trigger_nordpool_solcast_mpc_sts
 #
   - alias: EMHASS_forecast_mpc_def2
     id: EMHASS_forecast_mpc_def2
@@ -759,7 +847,23 @@ automation:
     action:
       - delay:
           seconds: 30
+      - condition: template
+        value_template: "{{ states('sensor.p_deferrable2') | float(0) == 0 }}"
       - service: shell_command.trigger_nordpool_solcast_mpc_def2
+#
+  - alias: EMHASS_forecast_mpc_def2_running
+    id: EMHASS_forecast_mpc_def2_running
+    trigger:
+      - platform: time_pattern
+        #
+        minutes: /30
+    action:
+      - delay:
+          seconds: 2
+      - service: shell_command.trigger_nordpool_solcast_mpc_def2
+      - delay:
+          seconds: 2
+      - service: shell_command.publish_data_def2
 #
   - alias: solcast_update
     id: solcast_update
