@@ -43,15 +43,14 @@ template:
         state: >
           {% if states('sensor.p_batt_forecast') | float(0) < 0
             and states('sensor.p_pv_forecast') | float(0) > 10
-            and states('sensor.p_grid_forecast') | float(0) <= 0
-            and states('sensor.soc_batt_forecast') | float(0) > states('sensor.solar_battery_soc') | float(0) %}
+            and states('sensor.p_grid_forecast') | float(0) <= 0 %}
           charge_from_solar
           {% elif states('sensor.p_batt_forecast') | float(0) < 0
             and states('sensor.soc_batt_forecast') | float(0) > states('sensor.solar_battery_soc') | float(0) %}
           charge
           {% elif states('sensor.p_batt_forecast') | float(0) > 0
             and ( states('sensor.p_grid_forecast') | float(0) > 0
-            or states('sensor.p_grid_forecast') | float(0) < -50 )
+            or states('sensor.p_grid_forecast') | float(0) < -200 )
             and not is_state('sensor.ehl75l9h_status', 'charging') %}
           discharge_fixed
           {% elif states('sensor.p_batt_forecast') | float(0) > 0
@@ -151,11 +150,22 @@ script:
         data:
           # Only permit energy storage charging
           StorCTLMod: 2
-          MinRsvPct: 2000
+          MinRsvPct: 1000
           # Set discharge limit of WchaMax to 0%
           OutWRte: 0
           #
           InWRte: 10000
+#
+  solar_battery_charge_fixed:
+    sequence:
+      - service: script.solar_battery_mode
+        # Charge fixed
+        data:
+          StorCTLMod: 3
+          MinRsvPct: 1000
+          OutWRte: "{{ 65536 - (states('input_number.solar_battery_charge') | int(0) / 10240 * 10000) | int(0) }}"
+          #
+          InWRte: "{{ (states('input_number.solar_battery_charge') | int(0) / 10240 * 10000) | int(0) }}"
 #
   solar_battery_discharge:
     sequence:
@@ -165,7 +175,7 @@ script:
           # Only permit energy storage discharging
           StorCTLMod: 1
           #MinRsvPct: "{{ states('sensor.soc_batt_forecast') | float(0) * 100 }}"
-          MinRsvPct: 2000
+          MinRsvPct: 1000
           #
           OutWRte: 10000
           # Set charge limit of WchaMax to 0%
@@ -206,7 +216,7 @@ automation:
                 # Charge, InWRte positiv
                 data:
                   StorCTLMod: 3
-                  MinRsvPct: 2000
+                  MinRsvPct: 1000
                   OutWRte: "{{ 65536 - (0 - states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
                   InWRte: "{{ (0 - states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
           #
@@ -221,7 +231,7 @@ automation:
                 data:
                   # Only permit energy storage charging
                   StorCTLMod: 2
-                  MinRsvPct: 2000
+                  MinRsvPct: 1000
                   # Set discharge limit of WchaMax to 0%
                   OutWRte: 0
                   #
@@ -239,7 +249,7 @@ automation:
                   # Only permit energy storage discharging
                   StorCTLMod: 1
                   #MinRsvPct: "{{ states('sensor.soc_batt_forecast') | float(0) * 100 }}"
-                  MinRsvPct: 2000
+                  MinRsvPct: 1000
                   #
                   OutWRte: 10000
                   # Set charge limit of WchaMax to 0%
@@ -257,7 +267,7 @@ automation:
                   #
                   StorCTLMod: 3
                   #
-                  MinRsvPct: 2000
+                  MinRsvPct: 1000
                   #
                   OutWRte: "{{ (states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
                   #
