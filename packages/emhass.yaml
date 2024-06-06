@@ -95,9 +95,9 @@ shell_command:
       "alpha": {{ ( 1.0 - states('input_number.emhass_beta') | float(0) ) | round(1) }},
       "beta": {{ states('input_number.emhass_beta') }},
       "num_def_loads": 3,
-      "num_lags":96
+      "num_lags":96,
       "P_deferrable_nom":[
-            2000,
+            {{ states('input_number.emhass_p_deferrable0_nom') | float(2000) }},
             1400,
             2000
           ],
@@ -106,8 +106,8 @@ shell_command:
                         {{ states('sensor.emhass_def_total_hours_vp') }},
                         {{ states('sensor.emhass_def_total_hours_sbv') }},
                         {{ states('sensor.emhass_def_total_hours_vp_24')}}],
-      "soc_init": {{ min(1.0,(max(0.2,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
-      "set_def_constant": [{{ 'false' if states('sensor.emhass_def_0_end_timestep') | int(0) <= ((states('sensor.emhass_def_total_hours_vp') | float(0)) * 2) | int(0) else 'true' }},
+      "soc_init": {{ min(1.0,(max(0.1,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
+      "set_def_constant": [{{ 'false' if states('sensor.emhass_def_0_end_timestep') | int(0) <= ((states('sensor.emhass_def_total_hours_vp') | float(0)) * 2) | int(0) else states('input_select.emhass_def_0_set_def_constant') }},
                           false,false],
       "def_start_timestep":[
                             {{states('sensor.emhass_def_0_start_timestep')}},
@@ -145,7 +145,13 @@ shell_command:
       "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered",
       "num_lags":96,
       "split_date_delta":"48h",
-      "perform_backtest":"True"}' http://localhost:5000/action/forecast-model-fit
+      "perform_backtest":"False"}' http://localhost:5000/action/forecast-model-fit
+#
+  emhass_machine_tune_96h: >
+    curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
+      "days_to_retrieve": 59,
+      "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered",
+      "num_lags":96}' http://localhost:5000/action/forecast-model-tune
 #
   emhass_machine_tune: >
     curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
@@ -244,9 +250,9 @@ template:
           {% elif 0 <= temp < 2 %}
             8.5
           {% elif 2 <= temp < 5 %}
-            8
+            7.5
           {% elif 5 <= temp < 10 %}
-            7
+            6.5
           {% elif temp >= 10 %}
             6
           {% else %}
@@ -314,7 +320,9 @@ template:
       - name: emhass_def_total_hours_vp_24
         unique_id: emhass_def_total_hours_vp_24
         state: >
-          {% if states('sensor.emhass_def_2_start_timestep') | float(0) > 0
+          {% if is_state('input_boolean.emhass_p_deferrable2', 'off') %}
+          0
+          {% elif states('sensor.emhass_def_2_start_timestep') | float(0) > 0
                 and min(48, [state_attr('sensor.elpris_sb', 'sälj_ny') | list | length, state_attr('sensor.elpris_sb', 'köp_ny') | list | length] | min ) > states('sensor.emhass_def_2_end_timestep') | int(0) %}
           {{ states('sensor.emhass_operating_hours_vp_24') }}
           {% else %}
@@ -558,7 +566,7 @@ template:
           {{ max(0,( states('sensor.power_usage') | float('naan')
             - states('sensor.heatpump_power') | float('naan')
             - states('sensor.ehl75l9h_power_watt') | float('naan')
-            - states('sensor.snickarboa_heater_power') | float(0)
+            - states('sensor.shellyplug_s_c8c9a3a4f80a_power') | float(0)
             - states('sensor.heatpump_addheat1_power') | float(0)
             ) | round(0) ) }}
 #
@@ -574,7 +582,7 @@ template:
         state: >
           {{ max(0,( states('sensor.power_usage') | float('naan')
             - states('sensor.heatpump_power') | float('naan')
-            - states('sensor.snickarboa_heater_power') | float(0)
+            - states('sensor.shellyplug_s_c8c9a3a4f80a_power') | float(0)
             ) | round(0) ) }}
 #
       - name: power_sannesholma_2181_no_var_loads_test
@@ -607,7 +615,7 @@ template:
           {{ max(0,( states('sensor.power_usage_filtered') | float('naan')
             - states('sensor.heatpump_power') | float('naan')
             - states('sensor.ehl75l9h_power_watt') | float('naan')
-            - states('sensor.snickarboa_heater_power') | float(0)
+            - states('sensor.shellyplug_s_c8c9a3a4f80a_power') | float(0)
             - states('sensor.heatpump_addheat1_power') | float(0)
             ) | round(0) ) }}
 #
@@ -766,9 +774,10 @@ template:
       - name: heatpump_emhass
         unique_id: heatpump_emhass
         availability: >
-          {{ is_number(states('sensor.p_deferrable0')) }}
+          {{ is_number(states('sensor.p_deferrable0')) and is_number(states('sensor.p_deferrable2')) }}
         state: >
-          {{ states('sensor.p_deferrable0') | float('not_a_number') > 0}}
+          {{ states('sensor.p_deferrable0') | float('not_a_number') > 0
+            or states('sensor.p_deferrable2') | float('not_a_number') > 0 }}
 #
 #
 automation:
@@ -810,32 +819,29 @@ automation:
     trigger:
       - platform: time_pattern
         #
-        #minutes: /5
-        minutes: 0
-      - platform: time_pattern
-        #
-        minutes: 30
+        minutes: /1
     action:
       - delay:
-          #minutes: 1
           seconds: 30
+      - condition: template
+        value_template: >
+          {{ states('sensor.p_deferrable2') | float(0) == 0
+            and states('sensor.p_deferrable0') | float(0) == 0 }}
       - service: shell_command.trigger_nordpool_solcast_mpc
 #
-  - alias: EMHASS_forecast_mpc_sts
-    id: EMHASS_forecast_mpc_sts
+  - alias: EMHASS_forecast_mpc_running
+    id: EMHASS_forecast_mpc_running
     trigger:
       - platform: time_pattern
         #
-        #minutes: /5
-        minutes: 0
-      - platform: time_pattern
-        #
-        minutes: 30
+        minutes: /30
     action:
       - delay:
-          #minutes: 1
-          seconds: 30
-      - service: shell_command.trigger_nordpool_solcast_mpc_sts
+          seconds: 2
+      - service: shell_command.trigger_nordpool_solcast_mpc
+      - delay:
+          seconds: 2
+      - service: shell_command.publish_data_def2
 #
 #
   - alias: EMHASS_forecast_mpc_def2
@@ -848,7 +854,9 @@ automation:
       - delay:
           seconds: 30
       - condition: template
-        value_template: "{{ states('sensor.p_deferrable2') | float(0) == 0 }}"
+        value_template: >
+          {{ states('sensor.p_deferrable2') | float(0) == 0
+            and states('sensor.p_deferrable0') | float(0) == 0 }}
       - service: shell_command.trigger_nordpool_solcast_mpc_def2
 #
   - alias: EMHASS_forecast_mpc_def2_running
@@ -870,6 +878,7 @@ automation:
     trigger:
       - platform: time_pattern
         hours: "/3"
+        minutes: 14
     action:
       - service: solcast_solar.update_forecasts
 #
