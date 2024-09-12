@@ -54,7 +54,7 @@ alert:
     can_acknowledge: true
     skip_first: false
     notifiers:
-      - mobile_app_sm_n975f
+#      - mobile_app_sm_n975f
       - mobile_app_mikael_iphone
       - mobile_app_sm_g998b
       - persistent_notification
@@ -76,7 +76,7 @@ alert:
     can_acknowledge: true
     skip_first: false
     notifiers:
-      - mobile_app_sm_n975f
+#      - mobile_app_sm_n975f
       - mobile_app_mikael_iphone
       - persistent_notification
     data:
@@ -96,7 +96,7 @@ alert:
     can_acknowledge: true
     skip_first: false
     notifiers:
-      - mobile_app_sm_n975f
+#      - mobile_app_sm_n975f
       - mobile_app_mikael_iphone
 #      - mobile_app_sm_g998b
       - persistent_notification
@@ -112,7 +112,7 @@ alert:
     can_acknowledge: true
     skip_first: false
     notifiers:
-      - mobile_app_sm_n975f
+#      - mobile_app_sm_n975f
       - mobile_app_sm_g998b
       - mobile_app_mikael_iphone
       - persistent_notification
@@ -128,7 +128,7 @@ alert:
     can_acknowledge: true
     skip_first: false
     notifiers:
-      - mobile_app_sm_n975f
+#      - mobile_app_sm_n975f
       - mobile_app_sm_g998b
       - mobile_app_mikael_iphone
       - persistent_notification
@@ -150,3 +150,16 @@ alert:
         sound:
           critical: 1
           volume: 1.0
+#
+  solar_battery_mode:
+    name: solar_battery_mode är avstängd
+    title: solar_battery_mode är avstängd
+    message: solar_battery_mode är avstängd
+    done_message: solar_battery_mode är påslagen
+    entity_id: automation.solar_battery_mode
+    state: 'off'
+    repeat: 30
+    can_acknowledge: true
+    skip_first: true
+    notifiers:
+      - mobile_app_mikael_iphone
