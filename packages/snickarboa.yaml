@@ -123,24 +123,24 @@ utility_meter:
   ###################
   snickarboa_heater_timme:
     unique_id: snickarboa_heater_timme
-    source: sensor.shellyplug_s_c8c9a3a4f80a_energy
+    source: sensor.snickarboa_heater_energy
     cycle: hourly
     periodically_resetting: false
   snickarboa_heater_dag:
     unique_id: snickarboa_heater_dag
-    source: sensor.shellyplug_s_c8c9a3a4f80a_energy
+    source: sensor.snickarboa_heater_energy
     cycle: daily
   snickarboa_heater_vecka:
     unique_id: snickarboa_heater_vecka
-    source: sensor.shellyplug_s_c8c9a3a4f80a_energy
+    source: sensor.snickarboa_heater_energy
     cycle: weekly
   snickarboa_heater_manad:
     unique_id: snickarboa_heater_manad
-    source: sensor.shellyplug_s_c8c9a3a4f80a_energy
+    source: sensor.snickarboa_heater_energy
     cycle: monthly
   snickarboa_heater_ar:
     unique_id: snickarboa_heater_ar
-    source: sensor.shellyplug_s_c8c9a3a4f80a_energy
+    source: sensor.snickarboa_heater_energy
     cycle: yearly
   #
   ################
@@ -370,9 +370,18 @@ template:
         unit_of_measurement: "W"
         state_class: measurement
         device_class: power
-        availability: "{{ is_number(states('sensor.shellyplug_s_c8c9a3a4f80a_power')) }}"
+        #availability: "{{ is_number(states('sensor.shellyplug_s_c8c9a3a4f80a_power')) }}"
         state: >
-          {{ states('sensor.shellyplug_s_c8c9a3a4f80a_power') }}
+          {{ 0 }}
+      #
+      - name: snickarboa_heater_energy
+        unique_id: snickarboa_heater_energy
+        unit_of_measurement: kWh
+        #state_class: measurement
+        #device_class: power
+        #availability: "{{ is_number(states('sensor.shellyplug_s_c8c9a3a4f80a_power')) }}"
+        state: >
+          {{ 0 }}
 #
       ### Förbrukning uppvärmning
 #      - name: snickarboa_heater_dag
