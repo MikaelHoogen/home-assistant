@@ -61,6 +61,7 @@ alert:
     data:
       push:
         sound:
+          name: "default"
           critical: 1
           volume: 1.0
 #
@@ -82,6 +83,7 @@ alert:
     data:
       push:
         sound:
+          name: "default"
           critical: 1
           volume: 1.0
 #
@@ -147,9 +149,7 @@ alert:
       - mobile_app_mikael_iphone
     data:
       push:
-        sound:
-          critical: 1
-          volume: 1.0
+        interruption-level: critical
 #
   solar_battery_mode:
     name: solar_battery_mode är avstängd
@@ -163,3 +163,22 @@ alert:
     skip_first: true
     notifiers:
       - mobile_app_mikael_iphone
+#
+  eaton3s_status:
+    name: Eaton är på batteridrift!
+    title: Eaton är på batteridrift!
+    message: Strömlöst
+    done_message: Eaton är på batteridrift
+    entity_id: sensor.eaton3s_status_data
+    state: OB
+    repeat: 10
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - mobile_app_mikael_iphone
+    data:
+      push:
+        sound:
+          name: "default"
+          critical: 1
+          volume: 1.0
