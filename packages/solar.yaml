@@ -49,8 +49,11 @@ template:
             and states('sensor.soc_batt_forecast') | float(0) > states('sensor.solar_battery_soc') | float(0) %}
           charge
           {% elif states('sensor.p_batt_forecast') | float(0) > 0
-            and ( states('sensor.p_grid_forecast') | float(0) > 0
-            or states('sensor.p_grid_forecast') | float(0) < -200 )
+            and states('sensor.p_grid_forecast') | float(0) < -100
+            and not is_state('sensor.ehl75l9h_status', 'charging') %}
+          discharge_min_limit
+          {% elif states('sensor.p_batt_forecast') | float(0) > 0
+            and states('sensor.p_grid_forecast') | float(0) > 0
             and not is_state('sensor.ehl75l9h_status', 'charging') %}
           discharge_fixed
           {% elif states('sensor.p_batt_forecast') | float(0) > 0
@@ -270,6 +273,24 @@ automation:
                   MinRsvPct: 1000
                   #
                   OutWRte: "{{ (states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
+                  #
+                  InWRte: "{{ 65536 - (states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
+          #
+          ### Discharge min limit ###
+          - conditions:
+              - condition: state
+                entity_id: sensor.solar_battery_mode
+                state: "discharge_min_limit"
+            sequence:
+              - service: script.solar_battery_mode
+                # Discharge min limit
+                data:
+                  #
+                  StorCTLMod: 1
+                  #
+                  MinRsvPct: 1000
+                  #
+                  OutWRte: 10000
                   #
                   InWRte: "{{ 65536 - (states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
           #
