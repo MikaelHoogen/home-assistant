@@ -52,6 +52,7 @@ automation:
           entity_id: camera.carport_main
         data:
           filename: /media/notify.jpg
+      - delay: 1
       - service: notify.mobile_app_mikael_iphone
         data:
           message: Någon rör sig
@@ -82,15 +83,15 @@ automation:
           entity_id: camera.carport_main
         data:
           filename: /media/notify_car.jpg
+      - delay: 1
       - service: notify.mobile_app_mikael_iphone
         data:
           message: Bil uptäckt
           title: Rörelse bil
           data:
             image: /media/local/notify_car.jpg
-            push:
-              sound:
-                volume: 1.0
+            url: /lovelace/cam
+      - delay: 5
       - service: notify.mobile_app_sm_g998b
         data:
           message: Bil uptäckt
