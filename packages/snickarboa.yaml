@@ -160,30 +160,6 @@ utility_meter:
     source: sensor.snickarboa_heater_timme_kostnad
     cycle: yearly
   #
-  #######################################
-  ### Förbrukning från sol eller nät ####
-  #######################################
-  snickarboa_heater_timme_from:
-    unique_id: snickarboa_heater_timme_from
-    source: sensor.snickarboa_heater_dag
-    cycle: hourly
-    tariffs:
-      - grid
-      - solar
-  snickarboa_heater_dag_from:
-    unique_id: snickarboa_heater_dag_from
-    source: sensor.snickarboa_heater_dag
-    cycle: hourly
-    tariffs:
-      - grid
-      - solar
-  snickarboa_heater_manad_from:
-    unique_id: snickarboa_heater_manad_from
-    source: sensor.snickarboa_heater_dag
-    cycle: monthly
-    tariffs:
-      - grid
-      - solar
   #
   ########### Frys ########################################################
   #
@@ -224,47 +200,8 @@ utility_meter:
     source: sensor.snickarboa_frys_timme_kostnad
     cycle: yearly
   #
-  ################
-  ### Besparing ##
-  ################
+
   #
-  snickarboa_frys_dag_from_solar_savings:
-    unique_id: snickarboa_frys_dag_from_solar_savings
-    source: sensor.snickarboa_frys_timme_from_solar_savings
-    cycle: daily
-  snickarboa_frys_manad_from_solar_savings:
-    unique_id: snickarboa_frys_manad_from_solar_savings
-    source: sensor.snickarboa_frys_timme_from_solar_savings
-    cycle: monthly
-  snickarboa_frys_ar_from_solar_savings:
-    unique_id: snickarboa_frys_ar_from_solar_savings
-    source: sensor.snickarboa_frys_timme_from_solar_savings
-    cycle: yearly
-  #
-  #######################################
-  ### Förbrukning från sol eller nät ####
-  #######################################
-  snickarboa_frys_timme_from:
-    unique_id: snickarboa_frys_timme_from
-    source: sensor.snickarboa_frys_dag
-    cycle: hourly
-    tariffs:
-      - grid
-      - solar
-  snickarboa_frys_dag_from:
-    unique_id: snickarboa_frys_dag_from
-    source: sensor.snickarboa_frys_dag
-    cycle: hourly
-    tariffs:
-      - grid
-      - solar
-  snickarboa_frys_manad_from:
-    unique_id: snickarboa_frys_manad_from
-    source: sensor.snickarboa_frys_dag
-    cycle: monthly
-    tariffs:
-      - grid
-      - solar
 #
 input_number:
   snickarboa_light_level:
@@ -403,28 +340,6 @@ template:
         state: >
           {{ ( 75.0 * states('sensor.snickarboa_frys_time_today') | float('nan') / 1000.0 ) | round(3) }}
       #
-      ### Kostnad frys
-      - name: snickarboa_frys_timme_kostnad
-        unique_id: snickarboa_frys_timme_kostnad
-        unit_of_measurement: "SEK"
-        device_class: monetary
-        availability: "{{ is_number(states('sensor.snickarboa_frys_timme_from_grid')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-        state: "{{ ( states('sensor.snickarboa_frys_timme_from_grid') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
-      #
-      ### Besparing frys
-      - name: snickarboa_frys_timme_from_solar_savings
-        unique_id: snickarboa_frys_timme_from_solar_savings
-        unit_of_measurement: "SEK"
-        device_class: monetary
-        availability: "{{ is_number(states('sensor.snickarboa_frys_timme_from_solar')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-        state: "{{ ( states('sensor.snickarboa_frys_timme_from_solar') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
-      #
-      ### Avfuktare kostnad
-      - name: avfuktare_timme_kostnad
-        unique_id: avfuktare_timme_kostnad
-        unit_of_measurement: "SEK"
-        availability: "{{ is_number(states('sensor.avfuktare_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-        state: "{{ ( states('sensor.avfuktare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
         #
         ### Värmare kostnad
       - name: snickarboa_heater_timme_kostnad
@@ -514,42 +429,3 @@ automation:
           - light.snickarboa_arbetsbank
           - light.snickarboa_spotlights
   #
-  - alias: Snickarboa frys energikalla
-    id: Snickarboa frys energikalla
-    trigger:
-      - platform: state
-        entity_id:
-          - binary_sensor.power_from_grid
-      - platform: homeassistant
-        event: start
-    action:
-      - choose:
-          #
-          - conditions:
-              - condition: state
-                state: "on"
-                entity_id: binary_sensor.power_from_grid
-            sequence:
-              - service: select.select_option
-                target:
-                  entity_id:
-                    - select.snickarboa_frys_timme_from
-                    - select.snickarboa_frys_dag_from
-                    - select.snickarboa_frys_manad_from
-                data:
-                  option: "grid"
-          #
-          #
-          - conditions:
-              - condition: state
-                state: "off"
-                entity_id: binary_sensor.power_from_grid
-            sequence:
-              - service: select.select_option
-                target:
-                  entity_id: 
-                    - select.snickarboa_frys_timme_from
-                    - select.snickarboa_frys_dag_from
-                    - select.snickarboa_frys_manad_from
-                data:
-                  option: "solar"
