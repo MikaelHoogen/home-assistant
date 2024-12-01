@@ -3,16 +3,17 @@
 adaptive_lighting:
   - name: Ljusstakar
     lights:
-      # Mikaels rum
+      # Allrum mot altan dimmer
       - light.ac_000000a_1
       # Kök
       - light.ac_0000001_3
-    prefer_rgb_color: false
+      # Allrum mot entré dimmer
+      - light.ac0000001_4
     transition: 30
     initial_transition: 5
     interval: 90
     min_brightness: 60
-    max_brightness: 100
+    max_brightness: 80
     sleep_brightness: 1
     take_over_control: true
 #
@@ -24,10 +25,12 @@ light:
       # Allrum
       - light.ac_0000001_2
       - light.ac_0000002_4
+      # Allrum mot entré dimmer
+      - light.ac0000001_4
       # Vardagsrum
       - light.ac_0000002_3
       - light.ac_0ccc4aa_6
-      # Mikaels rum
+      # Allrum mot altan dimmer
       - light.ac_000000a_1
       # Kök
       - light.ac_0000001_3
@@ -116,15 +119,17 @@ automation:
           # Allrum
           - light.ac_0000001_2
           - light.ac_0000002_4
+          # Allrum mot entré dimmer
+          - light.ac0000001_4
           # Vardagsrum
           - light.ac_0000002_3
           - light.ac_0ccc4aa_6
-          # Mikaels rum
+          # Allrum mot altan dimmer
           - light.ac_000000a_1
           # Kök
           - light.ac_0000001_3
           # Barnrum
-          - light.barnrum_ljusstake
+#
 #
   ### Ljusstakar
   - alias: Gästrum Ljusstakar
