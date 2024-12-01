@@ -6,7 +6,7 @@ adaptive_lighting:
       - light.allrum_tak_2
       - light.allrum_tak_3
       - light.allrum_laslampa
-#      - light.allrum_klotlampa
+      - light.allrum_klotlampa
     transition: 30
     sleep_transition: 30
     initial_transition: 1
@@ -46,7 +46,7 @@ light:
       - light.allrum_tak_2
       - light.allrum_tak_3
       - light.allrum_laslampa
-#      - light.allrum_klotlampa
+      - light.allrum_klotlampa
       - light.allrum_fonster_betong
       - light.allrum_huslampa
 #
@@ -215,6 +215,7 @@ automation:
           {% endif %}
         entity_id:
           - light.allrum_fonster_betong
+          - light.allrum_klotlampa
 #
 #
   - alias: Allrum belysning tak
