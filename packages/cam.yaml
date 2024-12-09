@@ -10,13 +10,6 @@ template:
         state: >
           {{ is_state('binary_sensor.carport_person', 'on') }}
 #
-camera:
-  - platform: local_file
-    name: carport person
-    file_path: /media/notify.jpg
-  - platform: local_file
-    name: carport car
-    file_path: /media/notify_car.jpg
 #
 automation:
   - id: Carport rörelse
@@ -39,7 +32,7 @@ automation:
           data:
             image: /api/camera_proxy/camera.carport_main
 #
-#
+# Carport rörelse person
   - id: Carport rörelse person notifiering
     alias: Carport rörelse person
     trigger:
@@ -69,6 +62,35 @@ automation:
       #
       #
 #
+# Entré rörelse person
+  - alias: Entré rörelse person notifiering
+    id: Entré rörelse person notifiering
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.entre_reolink_person
+        to: 'on'
+    action:
+      - service: camera.snapshot
+        target:
+          entity_id: camera.entre_reolink_clear
+        data:
+          filename: /media/entre_notify.jpg
+      - delay: 1
+      - service: notify.mobile_app_mikael_iphone
+        data:
+          message: Någon rör sig vid entrén
+          title: Rörelse person
+          data:
+            image: /media/local/entre_notify.jpg
+            url: /lovelace/cam
+      - service: notify.mobile_app_sm_g998b
+        data:
+          message: Någon rör sig vid entrén
+          title: Rörelse person
+          data:
+            image: /media/local/entre_notify.jpg
+#
+# Carport rörelse bil
   - id: Carport rörelse bil notifiering
     alias: Carport rörelse bil notfiering
     mode: single
@@ -103,6 +125,7 @@ automation:
       #
       #
 #
+# Snapshot Carport
   - id: Carport snapshot
     alias: Carport snapshot
     trigger:
@@ -120,6 +143,7 @@ automation:
         data:
           filename: '/media/disk_f/snapshots/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d") }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.jpg'
 #
+# Inspelning Carport
   - mode: single
     max_exceeded: silent
     id: Carport inspelning
