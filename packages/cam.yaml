@@ -9,8 +9,25 @@ template:
           minutes: 5
         state: >
           {{ is_state('binary_sensor.carport_person', 'on') }}
+#     ### Närvaro djur
+      - name: entre_presence_animal
+        unique_id: entre_presence_animal
+        device_class: motion
+        delay_off:
+          minutes: 2
+        state: >
+          {{ is_state('binary_sensor.entre_reolink_animal', 'on') }}
 #
+#     ### Närvaro person
+      - name: entre_presence_person
+        unique_id: entre_presence_person
+        device_class: motion
+        delay_off:
+          minutes: 2
+        state: >
+          {{ is_state('binary_sensor.entre_reolink_person', 'on') }}
 #
+# Carport rörelse
 automation:
   - id: Carport rörelse
     alias: Carport rörelse
@@ -33,8 +50,8 @@ automation:
             image: /api/camera_proxy/camera.carport_main
 #
 # Carport rörelse person
-  - id: Carport rörelse person notifiering
-    alias: Carport rörelse person
+  - alias: Carport rörelse person
+    id: Carport rörelse person notifiering
     trigger:
       - platform: state
         entity_id: binary_sensor.carport_presence
@@ -67,7 +84,7 @@ automation:
     id: Entré rörelse person notifiering
     trigger:
       - platform: state
-        entity_id: binary_sensor.entre_reolink_person
+        entity_id: binary_sensor.entre_presence_person
         to: 'on'
     action:
       - service: camera.snapshot
@@ -89,6 +106,34 @@ automation:
           title: Rörelse person
           data:
             image: /media/local/entre_notify.jpg
+#
+# Entré rörelse djur
+  - alias: Entré rörelse djur notifiering
+    id: Entré rörelse djur notifiering
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.entre_presence_animal
+        to: 'on'
+    action:
+      - service: camera.snapshot
+        target:
+          entity_id: camera.entre_reolink_clear
+        data:
+          filename: /media/entre_notify_animal.jpg
+      - delay: 1
+      - service: notify.mobile_app_mikael_iphone
+        data:
+          message: Någon rör sig vid entrén
+          title: Rörelse djur
+          data:
+            image: /media/local/entre_notify_animal.jpg
+            url: /lovelace/cam
+      - service: notify.mobile_app_sm_g998b
+        data:
+          message: Någon rör sig vid entrén
+          title: Rörelse djur
+          data:
+            image: /media/local/entre_notify_animal.jpg
 #
 # Carport rörelse bil
   - id: Carport rörelse bil notifiering
