@@ -14,7 +14,7 @@ template:
         unique_id: entre_presence_animal
         device_class: motion
         delay_off:
-          minutes: 2
+          minutes: 5
         state: >
           {{ is_state('binary_sensor.entre_reolink_animal', 'on') }}
 #
@@ -23,7 +23,7 @@ template:
         unique_id: entre_presence_person
         device_class: motion
         delay_off:
-          minutes: 2
+          minutes: 5
         state: >
           {{ is_state('binary_sensor.entre_reolink_person', 'on') }}
 #
