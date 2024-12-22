@@ -11,7 +11,7 @@ adaptive_lighting:
     sleep_transition: 30
     initial_transition: 1
     interval: 90
-    min_brightness: 1
+    min_brightness: 20
     max_brightness: 100
     min_color_temp: 2000
     max_color_temp: 4000
@@ -49,6 +49,11 @@ light:
       - light.allrum_klotlampa
       - light.allrum_fonster_betong
       - light.allrum_huslampa
+      # Ljusstakar
+      - light.ac_000000a_1
+      - light.ac0000001_4
+      # Tomte
+      - light.ac_0000001_2
 #
 #
 input_number:
@@ -287,6 +292,8 @@ automation:
           {% endif %}
         entity_id:
           - light.allrum_huslampa
+          # Tomte
+          - light.ac_0000001_2
 #
   - alias: Allrum knapp vid fåtölj
     id: Allrum knapp vid fåtölj
