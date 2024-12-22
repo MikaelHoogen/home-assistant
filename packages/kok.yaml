@@ -12,7 +12,7 @@ adaptive_lighting:
     transition: 30
     initial_transition: 3
     interval: 90
-    min_brightness: 10
+    min_brightness: 20
     max_brightness: 100
     min_color_temp: 2000
     max_color_temp: 4000
@@ -50,6 +50,8 @@ light:
     entities:
       - light.kok
       - light.kok_fonsterbelysning
+      # Ljusstake
+      - light.ac_0000001_3
 #
 input_number:
   kok_light_level:
