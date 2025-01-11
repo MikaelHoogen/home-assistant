@@ -84,7 +84,7 @@ template:
       - name: tvattmaskin_timme_kostnad
         unique_id: tvattmaskin_timme_kostnad
         unit_of_measurement: "SEK"
-        device_class: monetary
+        #device_class: monetary
         availability: "{{ is_number(states('sensor.tvattmaskin_timme_from_grid')) and is_number(states('sensor.elpris_totalt_sek')) }}"
         state: "{{ ( states('sensor.tvattmaskin_timme_from_grid') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
       #
