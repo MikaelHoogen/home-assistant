@@ -70,7 +70,7 @@ automation:
           data:
             image: /media/local/notify.jpg
             url: /lovelace/cam
-      - service: notify.mobile_app_sm_g998b
+      - service: notify.mobile_app_lina_iphone
         data:
           message: Någon rör sig
           title: Rörelse person
@@ -100,7 +100,7 @@ automation:
           data:
             image: /media/local/entre_notify.jpg
             url: /lovelace/cam
-      - service: notify.mobile_app_sm_g998b
+      - service: notify.mobile_app_lina_iphone
         data:
           message: Någon rör sig vid entrén
           title: Rörelse person
@@ -128,12 +128,13 @@ automation:
           data:
             image: /media/local/entre_notify_animal.jpg
             url: /lovelace/cam
-      - service: notify.mobile_app_sm_g998b
+      - service: notify.mobile_app_lina_iphone
         data:
           message: Någon rör sig vid entrén
           title: Rörelse djur
           data:
             image: /media/local/entre_notify_animal.jpg
+            url: /lovelace/cam
 #
 # Carport rörelse bil
   - id: Carport rörelse bil notifiering
@@ -159,7 +160,7 @@ automation:
             image: /media/local/notify_car.jpg
             url: /lovelace/cam
       - delay: 5
-      - service: notify.mobile_app_sm_g998b
+      - service: notify.mobile_app_lina_iphone
         data:
           message: Bil uptäckt
           title: Rörelse bil
