@@ -40,6 +40,13 @@ template:
         auto_off: 300
         state: "true"
 #
+  - binary_sensor:
+      # 
+      - name: fronius_frekvens_noddrift
+        unique_id: fronius_frekvens_noddrift
+        state: >
+          {{ states('sensor.fronius_frekvens') | float(50) > 51 }}
+#
 input_boolean:
   larmtest:
     name: Larmtest
@@ -182,3 +189,16 @@ alert:
           name: "default"
           critical: 1
           volume: 1.0
+#
+  carport_belysning:
+    name: belysning i carport är påslagen
+    title: belysning i carport är påslagen
+    message: belysning i carport är påslagen
+    done_message: belysning i carport är släckt
+    entity_id: light.carport_belysning
+    state: 'on'
+    repeat: 30
+    can_acknowledge: true
+    skip_first: true
+    notifiers:
+      - mobile_app_mikael_iphone
