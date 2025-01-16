@@ -135,6 +135,11 @@ utility_meter:
     source: sensor.solar_battery_charged_from_solar_hour_cost
     cycle: monthly
   #
+  solar_battery_charged_from_solar_month_cost_only_elpris:
+    unique_id: solar_battery_charged_from_solar_month_cost_only_elpris
+    source: sensor.solar_battery_charged_from_solar_hour_cost_only_elpris
+    cycle: monthly
+  #
   # Avkastning Sol
   #
   solar_accumulated_total_return_month:
@@ -276,6 +281,12 @@ template:
         availability: "{{ is_number(states('sensor.solar_battery_charged_from_solar_hour')) and is_number(states('sensor.elpris_produktion')) }}"
         state: "{{ ( states('sensor.solar_battery_charged_from_solar_hour') | float(0) * states('sensor.elpris_produktion') | float(0) ) | round(3) }}"
       #
+      - name: solar_battery_charged_from_solar_hour_cost_only_elpris
+        unique_id: solar_battery_charged_from_solar_hour_cost_only_elpris
+        unit_of_measurement: "SEK"
+        state_class: total_increasing
+        availability: "{{ is_number(states('sensor.solar_battery_charged_from_solar_hour')) and is_number(states('sensor.elpris')) }}"
+        state: "{{ ( states('sensor.solar_battery_charged_from_solar_hour') | float(0) * states('sensor.elpris') | float(0) ) | round(3) }}"
       #
       ### Total förtjänst
       - name: solar_accumulated_total_earnings_day
@@ -342,6 +353,13 @@ template:
       #
 #
   ####################### Medelpriser ##########################################################
+  #
+      - name: solar_battery_total_return_average_price_month
+        unique_id: solar_battery_total_return_average_price_month
+        unit_of_measurement: "SEK/kWh"
+        state_class: total
+        state: >
+          {{ ( states('sensor.solar_battery_total_return_month') | float(0) / states('sensor.solar_battery_discharged_month') | float(0) ) | round(2) }}
   #
       ### Medel med moms och påslag förra månaden
       - name: average_price_last_month
