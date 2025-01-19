@@ -54,6 +54,8 @@ light:
       - light.ac0000001_4
       # Tomte
       - light.ac_0000001_2
+      # Julgran
+      - light.ac_0000002_4
 #
 #
 input_number:
@@ -294,6 +296,8 @@ automation:
           - light.allrum_huslampa
           # Tomte
           - light.ac_0000001_2
+          # Julgran
+          - light.ac_0000002_4
 #
   - alias: Allrum knapp vid fåtölj
     id: Allrum knapp vid fåtölj
