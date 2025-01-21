@@ -189,6 +189,21 @@ automation:
         data:
           filename: '/media/disk_f/snapshots/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d") }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.jpg'
 #
+# Snapshot Entré
+  - id: entre_snapshot
+    alias: entre_snapshot
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.entre_reolink_person
+        to: 'on'
+    action:
+      #
+      - service: camera.snapshot
+        target:
+          entity_id: camera.entre_reolink_clear
+        data:
+          filename: '/media/disk_f/snapshots/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d") }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.jpg'
+#
 # Inspelning Carport
   - mode: single
     max_exceeded: silent
