@@ -1161,7 +1161,7 @@ template:
         -
         {% endif %}
       attributes:
-        timme: "23:00 - 24:00"
+        timme: "23:00 - 00:00"
         tibber: >
           {% if not is_state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow', []) %}
             {{ state_attr('sensor.electricity_price_sannesholma_2181_prices', 'tomorrow')[23]['total'] | round(3) }}
