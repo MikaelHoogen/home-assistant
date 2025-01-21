@@ -331,19 +331,20 @@ template:
       ### Blockera Kompressor
       - name: heatpump_block
         unique_id: heatpump_block
-        delay_off:
-          minutes: 1
+#        delay_off:
+#          minutes: 10
         state: >
           {{ is_state('binary_sensor.heatpump_emhass', 'off') }}
 #
 #
       - name: varmegolv_block
         unique_id: varmegolv_block
-        delay_off:
-          minutes: 1
+#        delay_off:
+#          minutes: 1
         state: >
           {{ is_state('binary_sensor.heatpump_emhass', 'off')
-          or is_state('binary_sensor.heatpump_integral_block', 'on') }}
+          or is_state('binary_sensor.heatpump_integral_block', 'on')
+          or states('sensor.p_deferrable2') | float(0) > 0 }}
 #
       - name: heatpump_integral_block
         unique_id: heatpump_integral_block
@@ -668,8 +669,16 @@ automation:
   - alias: Heatpump blockera
     id: Heatpump blockera
     trigger:
-      - platform: state
-        entity_id: binary_sensor.heatpump_block
+#      - platform: state
+#        entity_id: binary_sensor.heatpump_block
+#        to: 'off'
+#      - platform: time_pattern
+        #
+#        minutes: /30
+      - trigger: time_pattern
+        minutes: 1
+      - trigger: time_pattern
+        minutes: 31
 #      - platform: homeassistant
 #        event: start
     action:
