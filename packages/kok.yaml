@@ -8,6 +8,7 @@ adaptive_lighting:
       - light.kok_kokso
       - light.kok_tak
       - light.kok_skafferi
+      - light.kok_vedspis
     prefer_rgb_color: false
     transition: 30
     initial_transition: 3
@@ -243,6 +244,7 @@ automation:
           - light.kok_koksbord_2
           - light.kok_kokso
           - light.hall_byra
+          - light.kok_vedspis
 #
   - alias: Kök skafferibelysning
     id: Kök skafferibelysning
