@@ -74,7 +74,7 @@ automation:
         entity_id:
           - light.sovrum_fonster
           - light.sovrum_byra
-#
+  #
   - alias: Sovrum Säng Mikael Knapp
     id: Sovrum Säng Mikael Knapp
     trigger:
@@ -84,33 +84,33 @@ automation:
           id: sovrum_sang_mikael_smart_switch
     action:
       - choose:
-        # Short press
-        - conditions:
-            - condition: template
-              value_template: '{{ trigger.event.data.event == 1002 }}'
-          sequence:
-            - service: input_boolean.toggle
-              target:
-                entity_id: input_boolean.sovdags
-#
-        # Double press
-        - conditions:
-            - condition: template
-              value_template: '{{ trigger.event.data.event == 1004 }}'
-          sequence:
-            - service: light.toggle
-              target:
-                entity_id: light.sovrum_sang_mikael
-#
-        # Long press
-        - conditions:
-            - condition: template
-              value_template: '{{ trigger.event.data.event == 1001 }}'
-          sequence:
-            - service: light.turn_off
-              entity_id: light.sovrum
-            - service: switch.turn_off
-              entity_id: switch.adaptive_lighting_sovrum
+          # Short press
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.event == 1002 }}"
+            sequence:
+              - service: input_boolean.toggle
+                target:
+                  entity_id: input_boolean.sovdags
+          #
+          # Double press
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.event == 1004 }}"
+            sequence:
+              - service: light.toggle
+                target:
+                  entity_id: light.sovrum_sang_mikael
+          #
+          # Long press
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.event == 1001 }}"
+            sequence:
+              - service: light.turn_off
+                entity_id: light.sovrum
+              - service: switch.turn_off
+                entity_id: switch.adaptive_lighting_sovrum
 #
 #
 # https://community.home-assistant.io/t/automation-with-templates-and-choose-action/218338
