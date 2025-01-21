@@ -34,9 +34,9 @@ light:
     - light.gastrum_fonster_1
     - light.gastrum_fonster_2
     # Julstjärna
-    - light.gastrum_fonster
+#    - light.gastrum_fonster
     # Ljusstake
-    - light.gastrum_ljusstake
+#    - light.gastrum_ljusstake
 #
 #
 input_number:
