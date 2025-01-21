@@ -7,7 +7,7 @@ adaptive_lighting:
     transition: 30
     initial_transition: 1
     interval: 90
-    min_brightness: 1
+    min_brightness: 20
     max_brightness: 100
     min_color_temp: 2000
     max_color_temp: 4000
@@ -45,7 +45,7 @@ template:
         unique_id: badrum_presence
         device_class: motion
         delay_off:
-          minutes: 10
+          minutes: 7
         state: >
           {{ is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'on') }}
       ### Närvarostyrd belysning
