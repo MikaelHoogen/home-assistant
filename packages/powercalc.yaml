@@ -1,8 +1,9 @@
 powercalc:
-  create_utility_meters: false
+#  create_utility_meters: false
 #  energy_sensor_precision: 0
   create_domain_groups:
     - light
+#  enable_autodiscovery: true
 
 #sensor:
 #  - platform: powercalc
