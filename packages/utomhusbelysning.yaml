@@ -2,7 +2,7 @@
 adaptive_lighting:
   - name: Utomhusbelysning
     lights:
-      - light.groventre_dorr
+#      - light.groventre_dorr
       - light.koksentre_dorr
     prefer_rgb_color: false
     transition: 0
@@ -44,7 +44,7 @@ adaptive_lighting:
       - light.kackorna_entre
       - light.stolpe_gang
       - light.stolpe_grind
-      - light.light_4
+      - light.groventre_dorr
     prefer_rgb_color: false
     transition: 30
     initial_transition: 5
@@ -55,7 +55,7 @@ adaptive_lighting:
     max_color_temp: 4000
     sleep_brightness: 1
     sleep_color_temp: 2200
-    take_over_control: true
+    take_over_control: false
     detect_non_ha_changes: false
     #
 light:
@@ -69,6 +69,7 @@ light:
       - light.entre_ljusslinga
       - light.koksentre_ljusslinga
       - light.vaxthus_ljusslinga
+      - light.lekstuga_ljusslinga
       - light.snickarboa_entre
       - light.stall_entre
       - light.carport_entre
@@ -76,7 +77,7 @@ light:
       - light.stall_entre
       - light.stolpe_gang
       - light.stolpe_grind
-      - light.light_4
+#      - light.light_4
       - light.carport_belysning
 #
 input_number:
@@ -174,7 +175,7 @@ automation:
           - light.carport_entre
           - light.stolpe_gang
           - light.stolpe_grind
-          - light.light_4
+          #- light.light_4
     #
     # Entré
   - alias: Entré belysning
@@ -236,6 +237,8 @@ automation:
         entity_id: binary_sensor.utomhusbelysning_film_automation_control
       - platform: homeassistant
         event: start
+      - platform: time_pattern
+        minutes: "/15"
     action:
       - service: >
           {% if is_state('binary_sensor.utomhusbelysning_film_automation_control', 'on') %}
@@ -268,3 +271,4 @@ automation:
           - light.entre_ljusslinga
           - light.koksentre_ljusslinga
           - light.vaxthus_ljusslinga
+          - light.lekstuga_ljusslinga
