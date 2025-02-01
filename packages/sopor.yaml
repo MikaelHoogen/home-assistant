@@ -1,20 +1,22 @@
-waste_collection_schedule:
-  sources:
-    - name: ssam_se
-      args:
-        street_address: Sännesholma 2181, Hallaryd
+#waste_collection_schedule:
+#  sources:
+#    - name: ssam_se
+#      args:
+#        street_address: Sännesholma 2181, Hallaryd
 
 
 automation:
-############## Tvättmaskin ######################################################
+############## Sopor ######################################################
   #
   #
-  - alias: Sophämtning kärl 1
-    id: Sophämtning kärl 1
+#
+  - alias: ssam_sophatmning_fni1
+    id: ssam_sophatmning_fni1
     trigger:
       platform: state
-      entity_id: sensor.karl_1
-      to: "tomorrow"
+      entity_id: sensor.ssam_sophatmning_fni1
+      attribute: days_from_today
+      to: 1
     action:
       - service: persistent_notification.create
         data_template:
@@ -24,17 +26,19 @@ automation:
         data_template:
           message: "Sophämtning"
           title: "Imorgon tömts kärl 1"
-      - service: notify.mobile_app_sm_g998b
+      - service: notify.mobile_app_lina_iphone
         data_template:
           message: "Sophämtning"
           title: "Imorgon tömts kärl 1"
 #
-  - alias: Sophämtning kärl 2
-    id: Sophämtning kärl 2
+#
+  - alias: ssam_sophatmning_fni2
+    id: ssam_sophatmning_fni2
     trigger:
       platform: state
-      entity_id: sensor.karl_2
-      to: "tomorrow"
+      entity_id: sensor.ssam_sophatmning_fni2
+      attribute: days_from_today
+      to: 1
     action:
       - service: persistent_notification.create
         data_template:
@@ -44,7 +48,7 @@ automation:
         data_template:
           message: "Sophämtning"
           title: "Imorgon tömts kärl 2"
-      - service: notify.mobile_app_sm_g998b
+      - service: notify.mobile_app_lina_iphone
         data_template:
           message: "Sophämtning"
           title: "Imorgon tömts kärl 2"
