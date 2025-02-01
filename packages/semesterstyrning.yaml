@@ -32,7 +32,7 @@ alert:
     can_acknowledge: true
     skip_first: false
     notifiers:
-      - mobile_app_sm_n975f
+      - mobile_app_mikael_iphone
       - persistent_notification
 #      - mobile_app_sm_g998b
 #
