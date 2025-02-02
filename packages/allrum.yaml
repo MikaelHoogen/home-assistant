@@ -26,7 +26,6 @@ adaptive_lighting:
     lights:
       - light.allrum_fonster_betong
       - light.allrum_huslampa
-    prefer_rgb_color: false
     transition: 45
     initial_transition: 5
     interval: 90
@@ -50,12 +49,12 @@ light:
       - light.allrum_fonster_betong
       - light.allrum_huslampa
       # Ljusstakar
-      - light.ac_000000a_1
-      - light.ac0000001_4
+#      - light.ac_000000a_1
+#      - light.ac0000001_4
       # Tomte
-      - light.ac_0000001_2
+#      - light.ac_0000001_2
       # Julgran
-      - light.ac_0000002_4
+#      - light.ac_0000002_4
 #
 #
 input_number:
@@ -87,26 +86,6 @@ input_number:
 #
 template:
 #
-  - sensor:
-      #
-      ###
-      - name: netatmo_allrum_tempdiff
-        unique_id: netatmo_allrum_tempdiff
-        unit_of_measurement: "°C"
-        state_class: measurement
-        device_class: temperature
-        availability: "{{ is_number(state_attr('climate.netatmo_allrum', 'current_temperature')) and is_number(states('sensor.allrum_temperature')) }}"
-        state: >
-          {{ ( state_attr('climate.netatmo_allrum', 'current_temperature') | float('nan') - states('sensor.allrum_temperature') | float('nan')) | round(1) }}
-#
-      - name: netatmo_allrum_target
-        unique_id: netatmo_allrum_target
-        unit_of_measurement: "°C"
-        state_class: measurement
-        device_class: temperature
-        availability: "{{ is_number(states('input_number.allrum_termostat_maltemperatur')) and is_number(states('sensor.netatmo_allrum_tempdiff')) }}"
-        state: >
-          {{ states('input_number.allrum_termostat_maltemperatur') | float('nan') + states('sensor.netatmo_allrum_tempdiff') | float('nan') }}
 #
 #
   - trigger:
@@ -295,9 +274,9 @@ automation:
         entity_id:
           - light.allrum_huslampa
           # Tomte
-          - light.ac_0000001_2
+#          - light.ac_0000001_2
           # Julgran
-          - light.ac_0000002_4
+#          - light.ac_0000002_4
 #
   - alias: Allrum knapp vid fåtölj
     id: Allrum knapp vid fåtölj
@@ -356,22 +335,3 @@ automation:
             - service: input_boolean.toggle
               entity_id: input_boolean.film_spelar
 #
-  - alias: allrum_termostat_targetdiff
-    id: allrum_termostat_targetdiff
-    trigger:
-      - platform: state
-        entity_id: sensor.netatmo_allrum_target
-      - platform: state
-        entity_id: input_number.allrum_termostat_maltemperatur
-      - platform: state
-        entity_id: binary_sensor.varmegolv_block
-    condition:
-      - condition: state
-        entity_id: binary_sensor.varmegolv_block
-        state: 'off'
-    action:
-      - service: climate.set_temperature
-        data:
-          temperature: "{{ states('sensor.netatmo_allrum_target') }}"
-        target:
-          device_id: c48ea5795d9d76a3397fce2bf090285b
