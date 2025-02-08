@@ -164,8 +164,8 @@ template:
       - name: allrum_belysning_laslampa_automation_control
         unique_id: allrum_belysning_laslampa_automation_control
         state: >
-          {{ is_state('binary_sensor.allrum_lashorna_presence_sensor_fp2', 'on') and is_state('input_boolean.film_spelar', 'off') }}
-      #
+          {{ is_state('binary_sensor.allrum_presence_sensor_fp2', 'on') and is_state('input_boolean.film_spelar', 'off') }}
+      # Test med att köra läslampa med övriga lampor 
       #
       - name: allrum_presence
         unique_id: allrum_presence
@@ -177,6 +177,8 @@ template:
       #
       - name: allrum_presence_hall
         unique_id: allrum_presence_hall
+        delay_off:
+          seconds: 90
         state: >
           {{ is_state('binary_sensor.allrum_rorelsesensor', 'on') }}
       #
