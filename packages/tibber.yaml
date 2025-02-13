@@ -47,3 +47,20 @@ rest:
         unique_id: bel_soc_lastupdate
         device_class: timestamp
         value_template: "{{ value_json.data.me.homes[0].electricVehicles[0].lastSeen | as_datetime | as_local }}"
+#
+automation:
+  - alias: tibber_reload
+    id: tibber_reload
+    trigger:
+      - platform: time_pattern
+        minutes: /10
+    condition:
+      - condition: template
+        value_template: >
+          {{ has_value('sensor.electricity_price_sannesholma_2181') == False }}
+    action:
+      - service: homeassistant.reload_config_entry
+        data: {}
+        target:
+          device_id: 03fdcc07bb636a9631c65c2dd1673eb5
+    mode: single
