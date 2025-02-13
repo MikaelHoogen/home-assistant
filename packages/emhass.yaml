@@ -100,7 +100,7 @@ shell_command:
       "num_lags":96,
       "P_deferrable_nom":[
             {{ states('input_number.emhass_p_deferrable0_nom') | float(2000) }},
-            1400,
+            900,
             2000
           ],
       "treat_def_as_semi_cont": [true, true, true],
@@ -299,7 +299,7 @@ template:
           {% elif -10 <= temp < -5 %}
             10
           {% elif -5 <= temp < 0 %}
-            9
+            9.5
           {% elif 0 <= temp < 2 %}
             8.5
           {% elif 2 <= temp < 5 %}
