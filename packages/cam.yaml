@@ -123,14 +123,14 @@ automation:
       - delay: 1
       - service: notify.mobile_app_mikael_iphone
         data:
-          message: Någon rör sig vid entrén
+          message: Djur rör sig vid entrén
           title: Rörelse djur
           data:
             image: /media/local/entre_notify_animal.jpg
             url: /lovelace/cam
       - service: notify.mobile_app_lina_iphone
         data:
-          message: Någon rör sig vid entrén
+          message: Djur rör sig vid entrén
           title: Rörelse djur
           data:
             image: /media/local/entre_notify_animal.jpg
