@@ -1,62 +1,37 @@
 utility_meter:
-  torktumlare_timme:
-    unique_id: torktumlare_timme
-    source: sensor.torktumlare_consumption
-    cycle: hourly
+  ###################
+  ### Förbrukning ###
+  ###################
   torktumlare_dag:
     unique_id: torktumlare_dag
     source: sensor.torktumlare_consumption
+    periodically_resetting: false
     cycle: daily
-  torktumlare_vecka:
-    unique_id: torktumlare_vecka
-    source: sensor.torktumlare_consumption
-    cycle: weekly
   torktumlare_manad:
     unique_id: torktumlare_manad
     source: sensor.torktumlare_consumption
+    periodically_resetting: false
     cycle: monthly
   torktumlare_ar:
     unique_id: torktumlare_ar
     source: sensor.torktumlare_consumption
+    periodically_resetting: false
     cycle: yearly
   #
-  torktumlare_dag_kostnad:
-    unique_id: torktumlare_dag_kostnad
-    source: sensor.torktumlare_timme_kostnad
-    cycle: daily
-  torktumlare_manad_kostnad:
-    unique_id: torktumlare_manad_kostnad
-    source: sensor.torktumlare_timme_kostnad
-    cycle: monthly
-  torktumlare_ar_kostnad:
-    unique_id: torktumlare_ar_kostnad
-    source: sensor.torktumlare_timme_kostnad
-    cycle: yearly
 #
 #
 template:
-  - sensor:
-      # Torktumlare
-      - name: torktumlare_timme_kostnad
-        unique_id: torktumlare_timme_kostnad
-        unit_of_measurement: "SEK"
-        device_class: monetary
-        availability: "{{ is_number(states('sensor.torktumlare_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-        state: "{{ ( states('sensor.torktumlare_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
-#
-binary_sensor:
+  - binary_sensor:
 # Torktumlare
-  - platform: template
-    sensors:
-      torktumlare:
-        friendly_name: Torktumlare
-        delay_on:
-          seconds: 10
-        delay_off:
-          minutes: 2
-        value_template: >-
-          {{ states('sensor.torktumlare_power') | float(0.0) > 1 }}
-        icon_template: mdi:tumble-dryer
+    - name: torktumlare
+      unique_id: torktumlare
+      delay_on:
+        seconds: 10
+      delay_off:
+        minutes: 2
+      state: >
+        {{ states('sensor.torktumlare_power') | float(0.0) > 1 }}
+#      icon_template: mdi:tumble-dryer
 #
 automation:
   - alias: Torktumlare klar
@@ -71,11 +46,12 @@ automation:
         data_template:
           message: "Torktumlare"
           title: "Torktumlaren är klar"
-      - service: notify.mobile_app_sm_n975f
+      - service: notify.mobile_app_mikael_iphone
         data_template:
           message: "Torktumlare klar"
           title: "Torktumlaren är klar"
-      - service: notify.mobile_app_sm_g998b
+      - service: notify.mobile_app_lina_iphone
         data_template:
           message: "Torktumlare"
           title: "Torktumlaren är klar"
+#
