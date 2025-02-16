@@ -71,10 +71,6 @@ utility_meter:
     unique_id: avfuktare_dag
     source: sensor.avfuktare_consumption
     cycle: daily
-  avfuktare_vecka:
-    unique_id: avfuktare_vecka
-    source: sensor.avfuktare_consumption
-    cycle: weekly
   avfuktare_manad:
     unique_id: avfuktare_manad
     source: sensor.avfuktare_consumption
@@ -84,20 +80,6 @@ utility_meter:
     source: sensor.avfuktare_consumption
     cycle: yearly
   ################
-  ### Kostnad ####
-  ################
-  avfuktare_dag_kostnad:
-    unique_id: avfuktare_dag_kostnad
-    source: sensor.avfuktare_timme_kostnad
-    cycle: daily
-  avfuktare_manad_kostnad:
-    unique_id: avfuktare_manad_kostnad
-    source: sensor.avfuktare_timme_kostnad
-    cycle: monthly
-  avfuktare_ar_kostnad:
-    unique_id: avfuktare_ar_kostnad
-    source: sensor.avfuktare_timme_kostnad
-    cycle: yearly
   #
   ########### Värmare ########################################################
   #
@@ -152,10 +134,6 @@ utility_meter:
     unique_id: snickarboa_frys_timme
     source: sensor.snickarboa_frys_dag
     cycle: hourly
-  snickarboa_frys_vecka:
-    unique_id: snickarboa_frys_vecka
-    source: sensor.snickarboa_frys_dag
-    cycle: weekly
   snickarboa_frys_manad:
     unique_id: snickarboa_frys_manad
     source: sensor.snickarboa_frys_dag
@@ -165,22 +143,6 @@ utility_meter:
     source: sensor.snickarboa_frys_dag
     cycle: yearly
   #
-  ################
-  ### Kostnad ####
-  ################
-  #
-  snickarboa_frys_dag_kostnad:
-    unique_id: snickarboa_frys_dag_kostnad
-    source: sensor.snickarboa_frys_timme_kostnad
-    cycle: daily
-  snickarboa_frys_manad_kostnad:
-    unique_id: snickarboa_frys_manad_kostnad
-    source: sensor.snickarboa_frys_timme_kostnad
-    cycle: monthly
-  snickarboa_frys_ar_kostnad:
-    unique_id: snickarboa_frys_ar_kostnad
-    source: sensor.snickarboa_frys_timme_kostnad
-    cycle: yearly
   #
 
   #
