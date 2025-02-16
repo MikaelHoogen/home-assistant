@@ -9,10 +9,6 @@ utility_meter:
     unique_id: ehl75l9h_dag
     source: sensor.ehl75l9h_session_energy
     cycle: daily
-  ehl75l9h_vecka:
-    unique_id: ehl75l9h_vecka
-    source: sensor.ehl75l9h_session_energy
-    cycle: weekly
   ehl75l9h_manad:
     unique_id: ehl75l9h_manad
     source: sensor.ehl75l9h_session_energy
@@ -24,12 +20,3 @@ utility_meter:
 #
 #
 #
-template:
-    - sensor:
-      #
-      - name: ehl75l9h_cellRSSI
-        unique_id: ehl75l9h_cellRSSI
-        state_class: measurement
-        availability: "{{ is_number(state_attr('binary_sensor.ehl75l9h_online', 'state_cellRSSI') ) }}"
-        state: >
-          {{ state_attr('binary_sensor.ehl75l9h_online', 'state_cellRSSI') | float('naan') }}
