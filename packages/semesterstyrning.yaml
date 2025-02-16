@@ -3,23 +3,22 @@ input_boolean:
     name: Semester
 #
 #
-binary_sensor:
-  - platform: template
-    sensors:
-      semester_rorelse:
-        device_class: presence
-        friendly_name: Närvaro hus semester
-        delay_off:
-          minutes: 1
-        value_template: >-
-          {{ is_state('input_boolean.semester', 'on')
-            and ( is_state('binary_sensor.allrum_rorelsesensor', 'on')
-            or is_state('binary_sensor.mikaels_rum_rorelsesensor', 'on')
-            or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
-            or is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'on')
-            or is_state('binary_sensor.hall_hue_motion_sensor_motion', 'on')
-            or is_state('binary_sensor.kok_hue_motion_sensor_motion', 'on')
-            or is_state('binary_sensor.vardagsrum_hue_motion_sensor_motion', 'on') ) }}
+template:
+  - binary_sensor:
+    - name: semester_rorelse
+      unique_id: semester_rorelse
+      device_class: presence
+      delay_off:
+        minutes: 1
+      state: >
+        {{ is_state('input_boolean.semester', 'on')
+          and ( is_state('binary_sensor.allrum_rorelsesensor', 'on')
+          or is_state('binary_sensor.mikaels_rum_rorelsesensor', 'on')
+          or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
+          or is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'on')
+          or is_state('binary_sensor.hall_hue_motion_sensor_motion', 'on')
+          or is_state('binary_sensor.kok_hue_motion_sensor_motion', 'on')
+          or is_state('binary_sensor.vardagsrum_hue_motion_sensor_motion', 'on') ) }}
             
 #
 alert:
@@ -39,6 +38,7 @@ alert:
 #
 automation:
 - alias: Semester sovdags
+  id: semester_sovdags
   trigger:
   - platform: time
     at: '21:00:00'
@@ -52,6 +52,7 @@ automation:
     entity_id: input_boolean.sovdags
 #
 - alias: Semester vakna
+  id: semester_vakna
   trigger:
   - platform: time
     at: '07:30:00'
