@@ -1,0 +1,5 @@
+homekit:
+  - filter:
+      include_entities:
+        - light.hall
+        - light.kok_bankbelysning
