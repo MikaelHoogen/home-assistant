@@ -13,11 +13,6 @@ utility_meter:
     source: sensor.diskmaskin_consumption
     periodically_resetting: false
     cycle: daily
-  diskmaskin_vecka:
-    unique_id: diskmaskin_vecka
-    source: sensor.diskmaskin_consumption
-    periodically_resetting: false
-    cycle: weekly
   diskmaskin_manad:
     unique_id: diskmaskin_manad
     source: sensor.diskmaskin_consumption
@@ -29,89 +24,10 @@ utility_meter:
     periodically_resetting: false
     cycle: yearly
   #
-  #######################################
-  ### Förbrukning från sol eller nät ####
-  #######################################
-  diskmaskin_timme_from:
-    unique_id: diskmaskin_timme_from
-    source: sensor.diskmaskin_consumption
-    periodically_resetting: false
-    cycle: hourly
-    tariffs:
-      - grid
-      - solar
-  diskmaskin_manad_from:
-    unique_id: diskmaskin_manad_from
-    source: sensor.diskmaskin_consumption
-    periodically_resetting: false
-    cycle: monthly
-    tariffs:
-      - grid
-      - solar
-  #
-  ################
-  ### Kostnad ####
-  ################
-  diskmaskin_dag_kostnad:
-    unique_id: diskmaskin_dag_kostnad
-    source: sensor.diskmaskin_timme_kostnad
-    cycle: daily
-  diskmaskin_manad_kostnad:
-    unique_id: diskmaskin_manad_kostnad
-    source: sensor.diskmaskin_timme_kostnad
-    cycle: monthly
-  diskmaskin_ar_kostnad:
-    unique_id: diskmaskin_ar_kostnad
-    source: sensor.diskmaskin_timme_kostnad
-    cycle: yearly
-#
-  ################
-  ### Besparing ##
-  ################
-  diskmaskin_dag_from_solar_savings:
-    unique_id: diskmaskin_dag_from_solar_savings
-    source: sensor.diskmaskin_timme_from_solar_savings
-    cycle: daily
-  diskmaskin_manad_from_solar_savings:
-    unique_id: diskmaskin_manad_from_solar_savings
-    source: sensor.diskmaskin_timme_from_solar_savings
-    cycle: monthly
-  diskmaskin_ar_from_solar_savings:
-    unique_id: diskmaskin_ar_from_solar_savings
-    source: sensor.diskmaskin_timme_from_solar_savings
-    cycle: yearly
 #
 #
 template:
   - sensor:
-      #######################################
-      #### Kostnad ##########################
-      #######################################
-      - name: diskmaskin_timme_kostnad
-        unique_id: diskmaskin_timme_kostnad
-        unit_of_measurement: "SEK"
-        device_class: monetary
-        availability: "{{ is_number(states('sensor.diskmaskin_timme_from_grid')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-        state: "{{ ( states('sensor.diskmaskin_timme_from_grid') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
-      #######################################
-      #### Besparing ###########################
-      #######################################
-      - name: diskmaskin_timme_from_solar_savings
-        unique_id: diskmaskin_timme_from_solar_savings
-        unit_of_measurement: "SEK"
-        device_class: monetary
-        availability: "{{ is_number(states('sensor.diskmaskin_timme_from_solar')) and is_number(states('sensor.elpris_totalt_sek')) }}"
-        state: "{{ ( states('sensor.diskmaskin_timme_from_solar') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
-      #######################################
-      #### Medelpris ########################
-      #######################################
-      - name: diskmaskin_average_price
-        unique_id: diskmaskin_average_price
-        unit_of_measurement: "SEK/kWh"
-        state_class: measurement
-        availability: "{{ is_number(states('sensor.diskmaskin_manad_kostnad')) and states('sensor.diskmaskin_manad_from_grid') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.diskmaskin_manad_kostnad') | float(0.0) / states('sensor.diskmaskin_manad_from_grid') | float(0.0) ) | round(2) }}"
-      #######################################
       #### Diskar ###########################
       #######################################
   - binary_sensor:
@@ -143,36 +59,8 @@ automation:
       data_template:
         message: "Diskmaskin klar"
         title: "Diskmaskinen är klar"
-    - service: notify.mobile_app_sm_g998b
+    - service: notify.mobile_app_lina_iphone
       data_template:
         message: "Diskmaskin klar"
         title: "Diskmaskinen är klar"
   #
-  - alias: Diskmaskin energikalla
-    id: Diskmaskin energikalla
-    trigger:
-      - platform: state
-        to: 'on'
-        entity_id:
-          - binary_sensor.power_from_grid
-        variables:
-          tariff: "grid"
-      - platform: state
-        to: 'off'
-        entity_id:
-          - binary_sensor.power_from_grid
-        variables:
-          tariff: "solar"
-    action:
-      - service: select.select_option
-        target:
-          entity_id: select.diskmaskin_timme_from
-        data:
-          option: "{{ tariff }}"
-#
-      - service: select.select_option
-        target:
-          entity_id: select.diskmaskin_manad_from
-        data:
-          option: "{{ tariff }}"
-#
