@@ -45,6 +45,9 @@ template:
             and states('sensor.p_pv_forecast') | float(0) > 10
             and states('sensor.p_grid_forecast') | float(0) <= 0 %}
           charge_from_solar
+          {% elif states('sensor.p_batt_forecast') | float(0) == -2700
+            and states('sensor.soc_batt_forecast') | float(0) > states('sensor.solar_battery_soc') | float(0) %}
+          charge_max
           {% elif states('sensor.p_batt_forecast') | float(0) < 0
             and states('sensor.soc_batt_forecast') | float(0) > states('sensor.solar_battery_soc') | float(0) %}
           charge
@@ -222,6 +225,20 @@ automation:
                   MinRsvPct: 1000
                   OutWRte: "{{ 65536 - (0 - states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
                   InWRte: "{{ (0 - states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
+          #
+          ### Charge##
+          - conditions:
+              - condition: state
+                entity_id: sensor.solar_battery_mode
+                state: "charge_max"
+            sequence:
+              - service: script.solar_battery_mode
+                # Charge, InWRte positiv
+                data:
+                  StorCTLMod: 3
+                  MinRsvPct: 1000
+                  OutWRte: "{{ 65536 - (0 - -5000 | int(0) / 10240 * 10000) | int(0) }}"
+                  InWRte: "{{ (0 - -5000 | int(0) / 10240 * 10000) | int(0) }}"
           #
           ### Charge from solar ##
           - conditions:
