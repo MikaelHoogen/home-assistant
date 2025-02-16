@@ -27,10 +27,6 @@ utility_meter:
     unique_id: accumulated_cost_day_sannesholma_2181
     source: sensor.accumulated_cost_sannesholma_2181
     cycle: daily
-  accumulated_cost_week_sannesholma_2181:
-    unique_id: accumulated_cost_week_sannesholma_2181
-    source: sensor.accumulated_cost_sannesholma_2181
-    cycle: weekly
   accumulated_cost_month_sannesholma_2181:
     unique_id: accumulated_cost_month_sannesholma_2181
     source: sensor.accumulated_cost_sannesholma_2181
@@ -252,6 +248,10 @@ template:
         unique_id: solar_battery_total_return_month
         unit_of_measurement: "SEK"
         state_class: total
+        availability: >
+          {{ has_value('sensor.solar_battery_discharged_savings_month') 
+            and has_value('sensor.solar_battery_charged_from_grid_month_cost')
+            and has_value('sensor.solar_battery_charged_from_solar_month_cost') }}
         state: >
           {{ states('sensor.solar_battery_discharged_savings_month') | float(0)
           - states('sensor.solar_battery_charged_from_grid_month_cost') | float(0)
