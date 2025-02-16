@@ -79,15 +79,15 @@ automation:
     id: Sovrum Säng Mikael Knapp
     trigger:
       - platform: event
-        event_type: deconz_event
+        event_type: zha_event
         event_data:
-          id: sovrum_sang_mikael_smart_switch
+          device_id: 2b619bd3a71fab5651a6bb9459f3558d
     action:
       - choose:
           # Short press
           - conditions:
               - condition: template
-                value_template: "{{ trigger.event.data.event == 1002 }}"
+                value_template: '{{ trigger.event.data.command == "single" }}'
             sequence:
               - service: input_boolean.toggle
                 target:
@@ -96,7 +96,7 @@ automation:
           # Double press
           - conditions:
               - condition: template
-                value_template: "{{ trigger.event.data.event == 1004 }}"
+                value_template: '{{ trigger.event.data.command == "double" }}'
             sequence:
               - service: light.toggle
                 target:
@@ -105,7 +105,7 @@ automation:
           # Long press
           - conditions:
               - condition: template
-                value_template: "{{ trigger.event.data.event == 1001 }}"
+                value_template: '{{ trigger.event.data.command == "hold" }}'
             sequence:
               - service: light.turn_off
                 entity_id: light.sovrum
