@@ -16,7 +16,7 @@ automation:
     data_template:
       message: "Brandvarnare aktiv"
       title: "Rök detekterad"
-  - service: notify.mobile_app_sm_g998b
+  - service: notify.mobile_app_lina_iphone
     data_template:
       message: "Brandvarnare aktiv"
       title: "Rök detekterad"
@@ -61,9 +61,27 @@ alert:
     can_acknowledge: true
     skip_first: false
     notifiers:
-#      - mobile_app_sm_n975f
       - mobile_app_mikael_iphone
-      - mobile_app_sm_g998b
+      - mobile_app_lina_iphone
+      - persistent_notification
+    data:
+      push:
+        sound:
+          name: "default"
+          critical: 1
+          volume: 1.0
+#
+  barnrum_brandvarnare_smoke:
+    name: Brandvarnare utlöst hos Kimi, risk för brand!
+    done_message: Brandvarnare hos Kimi är återställd
+    entity_id: binary_sensor.barnrum_brandvarnare_smoke
+    state: 'on'
+    repeat: 1
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - mobile_app_mikael_iphone
+      - mobile_app_lina_iphone
       - persistent_notification
     data:
       push:
@@ -84,7 +102,7 @@ alert:
     can_acknowledge: true
     skip_first: false
     notifiers:
-#      - mobile_app_sm_n975f
+      - mobile_app_lina_iphone
       - mobile_app_mikael_iphone
       - persistent_notification
     data:
@@ -121,8 +139,6 @@ alert:
     can_acknowledge: true
     skip_first: false
     notifiers:
-#      - mobile_app_sm_n975f
-      - mobile_app_sm_g998b
       - mobile_app_mikael_iphone
       - persistent_notification
 #
@@ -138,7 +154,6 @@ alert:
     skip_first: false
     notifiers:
 #      - mobile_app_sm_n975f
-      - mobile_app_sm_g998b
       - mobile_app_mikael_iphone
       - persistent_notification
 #
