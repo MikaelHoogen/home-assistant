@@ -8,7 +8,7 @@ template:
       unique_id: avgift_elnat
       unit_of_measurement: "Öre/kWh"
       state_class: measurement
-      state: "{{ 28.9 }}"
+      state: "{{ 30.7 }}"
       #
       # Avgift energiskatt
     - name: avgift_energiskatt
@@ -17,15 +17,6 @@ template:
       state_class: measurement
       state: "{{ 53.5 }}"
       #
-      # Elnätsabonnemang
-    - name: elpris_abonnemang
-      unique_id: elpris_abonnemang
-      unit_of_measurement: "SEK/kWh"
-      state_class: measurement
-#      availability: "{{ is_number(states('sensor.electricity_price_sannesholma_2181')) }}"
-      state: >
-        {{ ( 8010 / 13983 ) | round (3) }}
-#        {{ ( 612.5 / state_attr('sensor.electricity_price_sannesholma_2181', 'estimated_annual_consumption') ) | round (3) }}
       #
       ############# El totalpris ######################### TODO, hantera om någon faller bort
       # Öre
