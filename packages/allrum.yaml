@@ -298,16 +298,16 @@ automation:
     id: Allrum knapp vid tv
     trigger:
       - platform: event
-        event_type: deconz_event
+        event_type: zha_event
         event_data:
-          id: allrum_smart_switch
+          device_id: e84dd272e4d32d07e2da4ac46681159a
     action:
       - choose:
         #
         # Double press
         - conditions:
             - condition: template
-              value_template: '{{ trigger.event.data.event == 1004 }}'
+              value_template: '{{ trigger.event.data.command == "double" }}'
             - condition: state
               entity_id: input_boolean.film
               state: "off"
@@ -318,7 +318,7 @@ automation:
         # Short press
         - conditions:
             - condition: template
-              value_template: '{{ trigger.event.data.event == 1002 }}'
+              value_template: '{{ trigger.event.data.command == "single" }}'
           sequence:
             - service: >
                 {% if is_state('media_player.allrum', 'playing') %}
@@ -332,7 +332,7 @@ automation:
         # Long press
         - conditions:
             - condition: template
-              value_template: '{{ trigger.event.data.event == 1001 }}'
+              value_template: '{{ trigger.event.data.command == "hold" }}'
           sequence:
             - service: input_boolean.toggle
               entity_id: input_boolean.film_spelar
