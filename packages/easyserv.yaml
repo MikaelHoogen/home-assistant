@@ -675,9 +675,9 @@ automation:
         #
 #        minutes: /30
       - trigger: time_pattern
-        minutes: 1
+        minutes: 2
       - trigger: time_pattern
-        minutes: 31
+        minutes: 32
 #      - platform: homeassistant
 #        event: start
     action:
