@@ -59,6 +59,8 @@ automation:
                   - switch.adaptive_lighting_sleep_mode_vardagsrum_belysning_filament
                   #
                   - switch.adaptive_lighting_sleep_mode_hall
+                  #
+                  - switch.adaptive_lighting_sleep_mode_barnrum
             - delay:
                 seconds: 5
             - service: switch.turn_off
@@ -66,6 +68,17 @@ automation:
                 entity_id:
                   - switch.adaptive_lighting_sovrum
                   - switch.adaptive_lighting_mikaels_rum
+            #
+            - service: light.turn_on
+              data:
+                entity_id:
+                  - light.barnrum_fonster_1
+            #
+            - service: automation.turn_off
+              data:
+                entity_id:
+                  - automation.barnrum_belysning
+                  - automation.barnrum_belysning_fonster
                   #
         # Sovdags av
         - conditions:
