@@ -217,3 +217,15 @@ alert:
     skip_first: true
     notifiers:
       - mobile_app_mikael_iphone
+#
+#  tvattstuga_kattlucka:
+#    name: Kattluckan är öppen
+#    done_message: Kattluckan är stängd
+#    entity_id: binary_sensor.tvattstuga_kattlucka
+#    state: 'on'
+#    repeat: 5
+#    can_acknowledge: true
+#    skip_first: false
+#    notifiers:
+#      - mobile_app_mikael_iphone
+#      - mobile_app_lina_iphone
