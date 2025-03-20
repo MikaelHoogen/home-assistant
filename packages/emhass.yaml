@@ -300,9 +300,9 @@ template:
           {% elif 2 <= temp < 5 %}
             7.5
           {% elif 5 <= temp < 10 %}
-            6.5
+            7
           {% elif temp >= 10 %}
-            6
+            6.5
           {% else %}
             8
           {% endif %}
@@ -578,6 +578,7 @@ template:
           {{ state_attr('sensor.smhi_sannesholma_hourly', 'forecast')[:8]
           | map(attribute='temperature') | average | round(1) }}
       #
+      # Rullande 12h
       - name: sannesholma_forecast_rolling_12h
         unique_id: sannesholma_forecast_rolling_12h
         availability: >
@@ -598,6 +599,7 @@ template:
           {{ state_attr('sensor.smhi_sannesholma_hourly', 'forecast')[:24]
           | map(attribute='temperature') | average | round(1) }}
       #
+      #
       - name: ehl75l9h_power_watt
         unique_id: ehl75l9h_power_watt
         availability: >
@@ -607,6 +609,7 @@ template:
         device_class: power
         state: >
           {{ ( states('sensor.ehl75l9h_power') | float('naan') * 1000 ) | round(0) }}
+#
 #
       - name: power_sannesholma_2181_no_var_loads
         unique_id: power_sannesholma_2181_no_var_loads
@@ -625,6 +628,7 @@ template:
             - states('sensor.heatpump_addheat1_power') | float(0)
             ) | round(0) ) }}
 #
+#
       - name: power_sannesholma_2181_no_var_loads_ev
         unique_id: power_sannesholma_2181_no_var_loads_ev
         availability: >
@@ -640,21 +644,8 @@ template:
             - states('sensor.shellyplug_s_c8c9a3a4f80a_power') | float(0)
             ) | round(0) ) }}
 #
-      - name: power_sannesholma_2181_no_var_loads_test
-        unique_id: power_sannesholma_2181_no_var_loads_test
-        availability: >
-          {{ is_number(states('sensor.power_usage')) }}
-        unit_of_measurement: "W"
-        state_class: measurement
-        device_class: power
-        state: >
-          {{ ( states('sensor.power_usage') | float('naan')
-            - states('sensor.p_deferrable0') | float(0)
-            - states('sensor.p_deferrable1') | float(0)
-            - states('sensor.p_deferrable2') | float(0)
-            ) | round(0) }}
 #
-# Diskmaskin?
+# 
 #
       - name: power_sannesholma_2181_no_var_loads_filtered
         unique_id: power_sannesholma_2181_no_var_loads_filtered
@@ -822,6 +813,8 @@ template:
           solcast_pv_forecast_forecast_today: >
             {% set length = state_attr('sensor.p_deferrable0', 'deferrables_schedule') | map(attribute='date') | list | length %}
             {{ (state_attr('sensor.solcast_pv_forecast_forecast_today', 'detailedForecast') | map(attribute='pv_estimate') | list)[now().hour:][:length]}}
+          elpris: >
+            {{(state_attr('sensor.elpris_24h_30m', 'sälj_24h') | list)[((now().hour*60 + now().minute) / 30) | int:]}}
 #
       - name: solar_power_photovoltaics_emhass
         unique_id: solar_power_photovoltaics_emhass
