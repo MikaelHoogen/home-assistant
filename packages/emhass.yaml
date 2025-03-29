@@ -119,6 +119,39 @@ shell_command:
                           {{states('sensor.emhass_def_2_end_timestep')}}]
       }' http://localhost:5000/action/naive-mpc-optim
   #
+  trigger_nordpool_solcast_mpc_bil: >
+    curl -i -H "Content-Type: application/json" -X POST -d '{
+      "load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp') | list }},
+      "prod_price_forecast":{{ state_attr('sensor.elpris_sb', 'sälj') | list }},
+      "pv_power_forecast":{{ state_attr('sensor.solcast_pv_forecast', 'pv_estimate') }},
+      "prediction_horizon":{{ [state_attr('sensor.elpris_sb', 'sälj') | list | length, state_attr('sensor.elpris_sb', 'köp') | list | length] | min }},
+      "alpha": {{ ( 1.0 - states('input_number.emhass_beta') | float(0) ) | round(1) }},
+      "beta": {{ states('input_number.emhass_beta') }},
+      "num_def_loads": 3,
+      "num_lags":96,
+      "P_deferrable_nom":[
+            {{ states('input_number.emhass_p_deferrable0_nom') | float(2000) }},
+            900,
+            {{ states('input_number.emhass_p_deferrable3_nom') | float(2000) }}
+          ],
+      "treat_def_as_semi_cont": [true, true, true],
+      "def_total_hours":[
+                        {{ states('sensor.emhass_def_total_hours_vp') }},
+                        {{ states('sensor.emhass_def_total_hours_sbv') }},
+                        {{ min(states('sensor.emhass_def_3_end_timestep') | float() / 2, states('input_number.emhass_def_total_hours_bil') | float()) }}],
+      "soc_init": {{ min(1.0,(max(0.15,states('sensor.solar_battery_soc') | float(0) / 100 ))) }},
+      "set_def_constant": [{{ 'true' if states('sensor.emhass_def_0_end_timestep') | int(0) <= ((states('sensor.emhass_def_total_hours_vp') | float(0)) * 2) | int(0) else states('input_select.emhass_def_0_set_def_constant') }},
+                          false,
+                          true],
+      "def_start_timestep":[
+                            {{states('sensor.emhass_def_0_start_timestep')}},
+                            0,
+                            {{states('sensor.emhass_def_3_start_timestep')}}],
+      "def_end_timestep":[{{ max(((states('sensor.emhass_def_total_hours_vp') | float(0)) * 2) | int(0), states('sensor.emhass_def_0_end_timestep') | int(0)) }},
+                          {{states('sensor.emhass_def_1_end_timestep') }},
+                          {{states('sensor.emhass_def_3_end_timestep')}}]
+      }' http://localhost:5000/action/naive-mpc-optim
+  #
   trigger_nordpool_solcast_mpc_thermal: >
     curl -i -H "Content-Type: application/json" -X POST -d '{
       "load_cost_forecast":{{ state_attr('sensor.elpris_sb', 'köp') | list }},
@@ -842,8 +875,8 @@ template:
         availability: >
           {{ is_number(states('sensor.p_deferrable0')) and is_number(states('sensor.p_deferrable2')) }}
         state: >
-          {{ states('sensor.p_deferrable0') | float('not_a_number') > 0
-            or states('sensor.p_deferrable2') | float('not_a_number') > 0 }}
+          {{ states('sensor.p_deferrable0') | float('not_a_number') > 0 }}
+#            or states('sensor.p_deferrable2') | float('not_a_number') > 0 }}
 #
 #
 #
@@ -879,6 +912,16 @@ automation:
       - service: shell_command.trigger_nordpool_solcast_mpc
 #
 #
+  - alias: EMHASS_forecast_mpc_bil
+    id: EMHASS_forecast_mpc_bil
+    trigger:
+      - platform: time_pattern
+        #
+        minutes: /1
+    action:
+      - delay:
+          seconds: 30
+      - service: shell_command.trigger_nordpool_solcast_mpc_bil
 #
 #
   - alias: solcast_update
