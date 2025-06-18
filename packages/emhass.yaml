@@ -215,12 +215,12 @@ shell_command:
       "custom_unit_prod_price_id": {"entity_id": "sensor.unit_prod_price","unit_of_measurement": "SEK/kWh", "friendly_name": "Unit prod price"}
       }' http://localhost:5000/action/publish-data
 #
-  emhass_machine_learn: >
-    curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
-      "days_to_retrieve": 59,
-      "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered"}' http://localhost:5000/action/forecast-model-fit
+#  emhass_machine_learn: >
+#    curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
+#      "days_to_retrieve": 59,
+#      "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered"}' http://localhost:5000/action/forecast-model-fit
 #
-  emhass_machine_learn_96h: >
+  emhass_machine_learn: >
     curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
       "days_to_retrieve": 59,
       "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered",
@@ -228,16 +228,16 @@ shell_command:
       "split_date_delta":"48h",
       "perform_backtest":"False"}' http://localhost:5000/action/forecast-model-fit
 #
-  emhass_machine_tune_96h: >
+  emhass_machine_tune: >
     curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
       "days_to_retrieve": 59,
       "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered",
       "num_lags":96}' http://localhost:5000/action/forecast-model-tune
 #
-  emhass_machine_tune: >
-    curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
-      "days_to_retrieve": 59,
-      "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered"}' http://localhost:5000/action/forecast-model-tune
+#  emhass_machine_tune: >
+#    curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
+#      "days_to_retrieve": 59,
+#      "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered"}' http://localhost:5000/action/forecast-model-tune
 #
 #  emhass_machine_learn_test: "curl -i -H \"Content-Type:application/json\" -X POST -d '{\"model_type\": \"load_forecast\", \"days_to_retrieve\": 15, \"var_model\": \"sensor.power_sannesholma_2181_no_var_loads_filtered\", \"model_predict_publish\": \"True\"}' http://localhost:5000/action/forecast-model-predict"
 #
@@ -333,9 +333,9 @@ template:
           {% elif 2 <= temp < 5 %}
             7.5
           {% elif 5 <= temp < 10 %}
-            7
-          {% elif temp >= 10 %}
             6.5
+          {% elif temp >= 10 %}
+            6
           {% else %}
             8
           {% endif %}
@@ -923,6 +923,18 @@ automation:
           seconds: 30
       - service: shell_command.trigger_nordpool_solcast_mpc_bil
 #
+  - alias: EMHASS_machine_learn
+    id: EMHASS_machine_learn
+    triggers:
+      - trigger: time
+        at: "12:00:10"
+    actions:
+      - action: shell_command.emhass_machine_learn
+      - delay:
+          seconds: 1
+      - action: shell_command.emhass_machine_tune
+#
+#emhass_machine_learn
 #
   - alias: solcast_update
     id: solcast_update
