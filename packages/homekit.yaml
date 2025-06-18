@@ -1,5 +1,69 @@
 homekit:
   - filter:
       include_entities:
+        # Allrum
+        - light.allrum_tak
+        - light.allrum_tak_3
+        - light.allrum_laslampa
+        - light.allrum_fonster_betong
+        - light.allrum_huslampa
+        # Badrum
+        - light.badrum
+        # Barnrum
+        - light.barnrum_skank
+        - light.barnrum_fonster_1
+        - light.barnrum_fonster_2
+        - light.barnrum_tak
+        # Gästrum
+        - light.linas_skrivbord
+        - light.gastrum_fonster_1
+        - light.gastrum_fonster_2
+        # Hall
         - light.hall
+        # Kök
         - light.kok_bankbelysning
+        - light.kok_kokso
+        - light.kok_skafferi
+        - light.kok_vedspis
+        - light.kok_tak
+        - light.kok_koksbord
+        - light.kok_fonsterbelysning
+        # Sovrum
+        - light.sovrum_sang_mikael
+        - light.sovrum_sang_lina
+        - light.sovrum_byra
+        - light.sovrum_fonster
+        - light.walk_in_closet
+        # Mikaels rum
+        - light.mikaels_rum_fonster
+        - light.mikaels_rum_hue_play
+        - light.mikaels_rum_skrivbord
+        - light.mikaels_rum_tak
+        - light.mikaels_rum_ljusslinga
+        # Vardagsrum
+        - light.vardagsrum_fonster_hangande
+        - light.vardagsrum_fonster_fotogen
+        - light.vardagsrum_fonster_piano
+        - light.vardagsrum_fonster_trappa
+        - light.trappa
+        - light.vardagsrum_tak
+        - light.vardagsrum_fonster_ytterdorr
+        - light.vardagsrum_fonster_vitrinskap
+        - light.vardagsrum_bord
+        # Tvättstuga
+        - light.tvattstuga_fonster
+        # Utomhus
+        - light.entre_dorr
+        - light.groventre_dorr
+        - light.koksentre_dorr
+        - light.snickarboa_entre
+        - light.stall_entre
+        - light.carport_entre
+        - light.kackorna_entre
+        - light.stolpe_gang
+        - light.stolpe_grind
+        - light.carport_belysning
+        # Sovdags
+        - input_boolean.sovdags
+        # Kattmat
+        - button.foderautomat_utfodra
