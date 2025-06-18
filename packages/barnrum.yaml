@@ -145,10 +145,14 @@ automation:
   - alias: Barnrum värme
     id: Barnrum värme
     trigger:
-      - platform: state
-        entity_id: binary_sensor.varmegolv_block
-      - platform: homeassistant
-        event: start
+#      - platform: state
+#        entity_id: binary_sensor.varmegolv_block
+#      - platform: homeassistant
+#        event: start
+      - trigger: time_pattern
+        minutes: 2
+      - trigger: time_pattern
+        minutes: 32
     action:
       - choose:
         #
