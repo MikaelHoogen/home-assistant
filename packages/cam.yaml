@@ -169,6 +169,34 @@ automation:
       - delay:
           minutes: 5
       #
+# Kattkamera
+  - alias: Kattkamera rörelse notifiering
+    id: kattkamera_rorelse_notifiering
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.192_168_88_62_motion
+        above: 19
+    action:
+      - service: camera.snapshot
+        target:
+          entity_id: camera.192_168_88_62
+        data:
+          filename: /media/kattkamera_notify.jpg
+      - delay: 1
+      - service: notify.mobile_app_mikael_iphone
+        data:
+          message: Rörelse i tvättstugan
+          title: Katt?
+          data:
+            image: /media/local/kattkamera_notify.jpg
+            url: /lovelace/foder
+      - service: notify.mobile_app_lina_iphone
+        data:
+          message: Rörelse i tvättstugan
+          title: Katt?
+          data:
+            image: /media/local/kattkamera_notify.jpg
+            url: /lovelace/foder
       #
 #
 # Snapshot Carport
@@ -226,3 +254,22 @@ automation:
         target:
           entity_id: camera.carport_main
       - delay: 180
+#
+# Inspelning Kattkamera
+  - mode: single
+    max_exceeded: silent
+    id: kattkamera_inspelning
+    alias: Kattkamera inspelning
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.192_168_88_62_motion
+        above: 19
+#
+    action:
+      - service: camera.record
+        data:
+          filename: '/media/disk_f/recordings/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d") }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.mp4'
+          duration: 60
+        target:
+          entity_id: camera.192_168_88_62
+      - delay: 60
