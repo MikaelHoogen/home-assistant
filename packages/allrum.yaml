@@ -190,12 +190,12 @@ automation:
   - alias: Allrum belysning fönster
     id: Allrum belysning fönster
     trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.allrum_belysning_filament_automation_control
-      - platform: homeassistant
+      - trigger: homeassistant
         event: start
     action:
-      - service: >
+      - action: >
           {% if is_state('binary_sensor.allrum_belysning_filament_automation_control', 'on') %}
           light.turn_on
           {% elif is_state('binary_sensor.allrum_belysning_filament_automation_control', 'off') %}
