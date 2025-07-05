@@ -90,6 +90,43 @@ alert:
           critical: 1
           volume: 1.0
 #
+  allrum_randvarnare_rok:
+    name: Brandvarnare utlöst i allrum, risk för brand!
+    done_message: Brandvarnare hos allrum är återställd
+    entity_id: binary_sensor.allrum_brandvarnare_rok
+    state: 'on'
+    repeat: 1
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - mobile_app_mikael_iphone
+      - mobile_app_lina_iphone
+      - persistent_notification
+    data:
+      push:
+        sound:
+          name: "default"
+          critical: 1
+          volume: 1.0
+#
+  allrum_hall_brandvarnare_rok:
+    name: Brandvarnare utlöst i allrum, risk för brand!
+    done_message: Brandvarnare hos allrum är återställd
+    entity_id: binary_sensor.allrum_hall_brandvarnare_rok
+    state: 'on'
+    repeat: 1
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - mobile_app_mikael_iphone
+      - mobile_app_lina_iphone
+      - persistent_notification
+    data:
+      push:
+        sound:
+          name: "default"
+          critical: 1
+          volume: 1.0
 #
   kok_lackagevakt:
     name: Läckagevakt i kök
