@@ -27,6 +27,13 @@ template:
       unique_id: tvattstuga_belysning_automation_control
       state: >
         {{ is_state('binary_sensor.tvattstuga_belysning_lightlevel', 'on') }}
+    #
+    - name: tvattstuga_kattlucka
+      unique_id: tvattstuga_kattlucka
+      delay_off:
+        seconds: 10
+      state: >
+        {{ is_state('binary_sensor.tvattstuga_kattlucka_oppning', 'on') }}
 #
 automation:
   #
