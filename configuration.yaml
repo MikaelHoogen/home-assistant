@@ -15,7 +15,7 @@ tts:
 
 recorder:
   db_url: !secret maria
-  purge_keep_days: 60
+  purge_keep_days: 30
   exclude:
     entity_globs:
       - sensor.sensorer*
@@ -28,7 +28,7 @@ homeassistant:
 ## The configuration is based on packages corresponding to a room or function
   packages: !include_dir_named packages
 #
-#  customize: !include customize.yaml
+  customize: !include customize.yaml
 
 sensor:
     ##################
