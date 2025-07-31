@@ -1,12 +1,6 @@
-light.datorrum_skrivbord:
-  supported_color_modes:
-  - color_temp
-  - hs
-  - xy
-  min_mireds: '150'
-  max_mireds: '500'
-light.koksentre_dorr:
-  min_mireds: 250
-  max_mireds: 455
 #
 #
+sensor.foderautomat_vikt_utdelad_idag:
+  state_class: total_increasing
+sensor.foderautomat_portioner_utdelade_idag:
+  state_class: total_increasing
