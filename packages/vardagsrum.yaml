@@ -9,7 +9,6 @@ adaptive_lighting:
       - light.vardagsrum_fonster_trappa
       - light.vardagsrum_fonster_ytterdorr
       - light.vardagsrum_fonster_vitrinskap
-      - light.trappa
     prefer_rgb_color: false
     transition: 45
     initial_transition: 5
@@ -29,7 +28,6 @@ light:
       - light.vardagsrum_fonster_fotogen
       - light.vardagsrum_fonster_piano
       - light.vardagsrum_fonster_trappa
-      - light.trappa
       - light.vardagsrum_tak
       - light.vardagsrum_fonster_ytterdorr
       - light.vardagsrum_fonster_vitrinskap
@@ -191,10 +189,14 @@ automation:
   - alias: Vardagsrum värme
     id: Vardagsrum värme
     trigger:
-      - platform: state
-        entity_id: binary_sensor.varmegolv_block
-      - platform: homeassistant
-        event: start
+#      - platform: state
+#        entity_id: binary_sensor.varmegolv_block
+#      - platform: homeassistant
+#        event: start
+      - trigger: time_pattern
+        minutes: 2
+      - trigger: time_pattern
+        minutes: 32
     action:
       - choose:
         #
