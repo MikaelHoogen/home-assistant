@@ -31,7 +31,6 @@ template:
         minutes: 2
       state: >
         {{ states('sensor.torktumlare_power') | float(0.0) > 1 }}
-#      icon_template: mdi:tumble-dryer
 #
 automation:
   - alias: Torktumlare klar

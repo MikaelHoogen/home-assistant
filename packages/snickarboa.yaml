@@ -193,7 +193,7 @@ template:
         delay_on:
           minutes: 10
         state: >
-          {{ states('sensor.snickarboa_hue_motion_sensor_light_level') | float > states('input_number.snickarboa_light_level') | float }}
+          {{ states('sensor.snickarboa_hue_motion_sensor_light_level') | float(0) > states('input_number.snickarboa_light_level') | float(0)}}
       #
       # Belysning närvaro
       - name: snickarboa_presence_light_automation_control
