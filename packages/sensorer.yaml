@@ -36,7 +36,7 @@ template:
         attributes:
           temperature: "{{ states('sensor.mikaels_rum_temperature') | round(1,'round-to-even', '-' ) }}°C"
           humidity: "{{ states('sensor.mikaels_rum_humidity') | round(0, 'round-to-even', '-') }}"
-          co2: " "
+          co2: "{{ states('sensor.mikaels_rum_co2') | round(0, 'round-to-even', '-')}} ppm"
           v: "{{ states('sensor.mikaels_rum_v') | round(1, 'round-to-even', '-') }} g/m³"
       ### Teknikrum
       - name: sensorer_teknikrum
