@@ -1,0 +1,28 @@
+# --- Ljusgrupp för hela vardagsrummet ---
+light:
+  - platform: group
+    name: Vardagsrum
+    unique_id: vardagsrum
+    entities:
+      - light.vardagsrum_fonster_hangande
+      - light.vardagsrum_fonster_fotogen
+      - light.vardagsrum_fonster_piano
+      - light.vardagsrum_fonster_trappa
+      - light.vardagsrum_tak
+      - light.vardagsrum_fonster_ytterdorr
+      - light.vardagsrum_fonster_vitrinskap
+      - light.vardagsrum_bord
+      # Ljusstakar
+      # - light.ac_0000002_3
+      # - light.ac_0ccc4aa_6
+
+# --- Närvarosensor för hela vardagsrummet ---
+template:
+  - binary_sensor:
+      - name: vardagsrum_presence
+        unique_id: vardagsrum_presence
+        device_class: motion
+        delay_off:
+          minutes: 20
+        state: >
+          {{ is_state('binary_sensor.vardagsrum_hue_motion_sensor_motion', 'on') }}

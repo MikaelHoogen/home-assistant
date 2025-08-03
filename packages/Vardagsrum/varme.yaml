@@ -1,0 +1,27 @@
+# --- Termostat för värmegolvet ---
+climate:
+  - platform: generic_thermostat
+    name: Vardagsrum värmegolv
+    unique_id: Vardagsrum värmegolv
+    cold_tolerance: 0.0
+    hot_tolerance: 0.2
+    precision: 0.1
+    heater: switch.vardagsrum_varmegolv
+    target_sensor: sensor.vardagsrum_temperature
+    min_temp: 7
+
+# --- Automationen som styr termostaten ---
+automation:
+  - alias: Vardagsrum värme
+    id: Vardagsrum värme
+    triggers:
+      - trigger: time_pattern
+        minutes: 2
+      - trigger: time_pattern
+        minutes: 32
+    actions:
+      - action: climate.set_hvac_mode
+        target:
+          entity_id: climate.vardagsrum_varmegolv
+        data:
+          hvac_mode: "{{ iif(states('binary_sensor.varmegolv_block') == 'on', 'off', 'heat') }}"
