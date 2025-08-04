@@ -1,4 +1,10 @@
 # =================================================================
+# KONFIGURATION FÖR TVÄTTSTUGAN
+# =================================================================
+# All logik för att styra enheter och automationer i tvättstugan.
+# -----------------------------------------------------------------
+
+# =================================================================
 # ADAPTIVE LIGHTING-PROFIL
 # =================================================================
 # Justerar automatiskt färgtemperatur och ljusstyrka på
@@ -38,7 +44,7 @@ template:
       unique_id: tvattstuga_belysning_automation_control
       state: >
         {{ is_state('binary_sensor.tvattstuga_belysning_lightlevel', 'on') }}
-    
+
     # En sensor som indikerar när kattluckan har använts.
     - name: tvattstuga_kattlucka
       unique_id: tvattstuga_kattlucka
@@ -48,7 +54,7 @@ template:
         {{ is_state('binary_sensor.tvattstuga_kattlucka_oppning', 'on') }}
 
 # =================================================================
-# AUTOMATION
+# AUTOMATIONER
 # =================================================================
 # Tänder och släcker fönsterbelysningen baserat på ljusnivån utomhus.
 # -----------------------------------------------------------------

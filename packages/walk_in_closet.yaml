@@ -1,7 +1,40 @@
-#
+# =================================================================
+# KONFIGURATION FÖR WALK IN CLOSET
+# =================================================================
+# All logik för att styra belysningen i walk-in closet.
+# -----------------------------------------------------------------
+
+# =================================================================
+# ADAPTIVE LIGHTING-PROFIL
+# =================================================================
+# Justerar automatiskt färgtemperatur och ljusstyrka på
+# lampan baserat på solens position.
+# -----------------------------------------------------------------
+adaptive_lighting:
+  - name: Walk in closet
+    lights:
+      - light.walk_in_closet
+    transition: 30
+    initial_transition: 1
+    interval: 90
+    min_brightness: 10
+    max_brightness: 100
+    min_color_temp: 2000
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_rgb_color: [255, 161, 40]
+    take_over_control: true
+    detect_non_ha_changes: true
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Dessa sensorer utgör grunden för automationen.
+# -----------------------------------------------------------------
 template:
   - binary_sensor:
-      ### Närvaro
+      # Steg 1: En grundläggande närvarosensor med 2 minuters fördröjning.
       - name: walk_in_closet_presence
         unique_id: walk_in_closet_presence
         device_class: motion
@@ -9,27 +42,28 @@ template:
           minutes: 2
         state: >
           {{ is_state('binary_sensor.walk_in_closet_hue_motion_sensor_motion', 'on') }}
-      ### Närvarostyrd belysning
+
+      # Steg 2: Den slutgiltiga kontrollsensorn som triggar automationen.
       - name: walk_in_closet_presence_light_automation_control
         unique_id: walk_in_closet_presence_light_automation_control
         state: >
           {{ is_state('binary_sensor.walk_in_closet_presence', 'on') }}
-#
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# Tänder och släcker belysningen baserat på närvaro.
+# -----------------------------------------------------------------
 automation:
-#
   - alias: Walk in closet belysning
-    id: Walk in closet belysning
-    trigger:
-      - platform: state
+    id: walk_in_closet_belysning
+    triggers:
+      - trigger: state
         entity_id: binary_sensor.walk_in_closet_presence_light_automation_control
-      - platform: homeassistant
+      - trigger: homeassistant
         event: start
-    action:
-      - service: >
-          {% if is_state('binary_sensor.walk_in_closet_presence_light_automation_control', 'on') %}
-          light.turn_on
-          {% elif is_state('binary_sensor.walk_in_closet_presence_light_automation_control', 'off') %}
-          light.turn_off
-          {% endif %}
-        entity_id:
-          - light.walk_in_closet
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.walk_in_closet_presence_light_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.walk_in_closet
