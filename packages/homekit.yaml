@@ -5,7 +5,6 @@ homekit:
         - light.allrum_tak
         - light.allrum_tak_3
         - light.allrum_laslampa
-        - light.allrum_fonster_betong
         - light.allrum_huslampa
         # Badrum
         - light.badrum
@@ -16,8 +15,10 @@ homekit:
         - light.barnrum_tak
         # Gästrum
         - light.linas_skrivbord
-        - light.gastrum_fonster_1
+#        - light.gastrum_fonster_1
+        - light.gastrum_byra
         - light.gastrum_fonster_2
+        - light.gastrum_hylla
         # Hall
         - light.hall
         # Kök
@@ -32,7 +33,7 @@ homekit:
         - light.sovrum_sang_mikael
         - light.sovrum_sang_lina
         - light.sovrum_byra
-        - light.sovrum_fonster
+#        - light.sovrum_fonster
         - light.walk_in_closet
         # Mikaels rum
         - light.mikaels_rum_fonster
