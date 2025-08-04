@@ -1,4 +1,13 @@
+# =================================================================
+# ALLMÄNNA KONFIGURATIONER FÖR VARDAGSRUMMET
+# =================================================================
+# Detta paket innehåller entiteter som används av flera olika
+# funktioner i vardagsrummet.
+# -----------------------------------------------------------------
+
 # --- Ljusgrupp för hela vardagsrummet ---
+# En samlad grupp för att enkelt kunna styra alla lampor i
+# vardagsrummet samtidigt, t.ex. för en "släck allt"-knapp.
 light:
   - platform: group
     name: Vardagsrum
@@ -17,6 +26,9 @@ light:
       # - light.ac_0ccc4aa_6
 
 # --- Närvarosensor för hela vardagsrummet ---
+# Denna sensor blir 'on' vid rörelse och förblir 'on' i 20 minuter
+# efter senaste rörelse. Används som en grund för många andra
+# automationer som behöver veta om någon är i rummet.
 template:
   - binary_sensor:
       - name: vardagsrum_presence

@@ -1,3 +1,9 @@
+# =================================================================
+# LOGIK FÖR FILAMENTBELYSNING
+# =================================================================
+# All logik för att styra de dekorativa filamentlamporna.
+# -----------------------------------------------------------------
+
 # --- Profil för adaptiv belysning ---
 adaptive_lighting:
   - name: Vardagsrum belysning filament
@@ -31,12 +37,15 @@ input_number:
 # --- Sensorer som styr automationen ---
 template:
   - binary_sensor:
+      # Steg 1: Är det mörkt nog ute för filamentbelysning?
       - name: vardagsrum_belysning_filament_lightlevel
         unique_id: vardagsrum_belysning_filament_lightlevel
         delay_off:
           minutes: 10
         state: >
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.vardagsrum_filament_light_level') | float(0) }}
+      
+      # Steg 2: Kontrollsensor som triggar automationen.
       - name: vardagsrum_belysning_filament_automation_control
         unique_id: vardagsrum_belysning_filament_automation_control
         state: >

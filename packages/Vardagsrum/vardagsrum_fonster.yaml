@@ -1,12 +1,21 @@
+# =================================================================
+# LOGIK FÖR FÖNSTERBELYSNING
+# =================================================================
+# All logik för att styra den allmänna fönsterbelysningen.
+# -----------------------------------------------------------------
+
 # --- Sensorer som styr automationen ---
 template:
   - binary_sensor:
+      # Steg 1: Är det mörkt nog ute för fönsterbelysning?
       - name: vardagsrum_belysning_fonster_lightlevel
         unique_id: vardagsrum_belysning_fonster_lightlevel
         delay_off:
           minutes: 10
         state: >
           {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.fonsterbelysning_light_level') | float(0) }}
+      
+      # Steg 2: Kontrollsensor som triggar automationen.
       - name: vardagsrum_belysning_fonster_automation_control
         unique_id: vardagsrum_belysning_fonster_automation_control
         state: >

@@ -1,3 +1,9 @@
+# =================================================================
+# LOGIK FÖR TAKBELYSNING
+# =================================================================
+# All logik för att styra taklamporna (spottar och lampan över bordet).
+# -----------------------------------------------------------------
+
 # --- Profil för adaptiv belysning ---
 adaptive_lighting:
   - name: Vardagsrum tak
@@ -31,6 +37,7 @@ input_number:
 # --- Sensorer som styr automationen ---
 template:
   - binary_sensor:
+      # Steg 1: Är det för ljust inne för att tända taklamporna?
       - name: vardagsrum_lightlevel
         unique_id: vardagsrum_lightlevel
         device_class: light
@@ -38,6 +45,8 @@ template:
           minutes: 10
         state: >
           {{ states('sensor.vardagsrum_hue_motion_sensor_light_level') | float(0) > states('input_number.vardagsrum_light_level') | float(0) }}
+      
+      # Steg 2: Kontrollsensor som triggar automationen.
       - name: vardagsrum_presence_light_automation_control
         unique_id: vardagsrum_presence_light_automation_control
         state: >
