@@ -342,8 +342,8 @@ template:
 #        delay_off:
 #          minutes: 1
         state: >
-          {{ is_state('binary_sensor.heatpump_emhass', 'off')
-          or states('sensor.p_deferrable2') | float(0) > 0 }}
+          {{ is_state('binary_sensor.heatpump_emhass', 'off') }}
+#          or states('sensor.p_deferrable2') | float(0) > 0 }}
 #          or is_state('binary_sensor.heatpump_integral_block', 'on')
       - name: heatpump_integral_block
         unique_id: heatpump_integral_block
