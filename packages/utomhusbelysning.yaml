@@ -74,10 +74,8 @@ light:
       - light.stall_entre
       - light.carport_entre
       - light.kackorna_entre
-      - light.stall_entre
       - light.stolpe_gang
       - light.stolpe_grind
-#      - light.light_4
       - light.carport_belysning
 #
 input_number:
@@ -175,7 +173,6 @@ automation:
           - light.carport_entre
           - light.stolpe_gang
           - light.stolpe_grind
-          #- light.light_4
     #
     # Entré
   - alias: Entré belysning
@@ -237,8 +234,6 @@ automation:
         entity_id: binary_sensor.utomhusbelysning_film_automation_control
       - platform: homeassistant
         event: start
-      - platform: time_pattern
-        minutes: "/15"
     action:
       - service: >
           {% if is_state('binary_sensor.utomhusbelysning_film_automation_control', 'on') %}
