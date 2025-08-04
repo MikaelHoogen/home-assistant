@@ -8,7 +8,6 @@
 adaptive_lighting:
   - name: Allrum belysning filament
     lights:
-      - light.gastrum_hylla
       - light.allrum_huslampa
       - light.trappa
     transition: 45
@@ -76,7 +75,7 @@ template:
 automation:
   # Tänder/släcker den allmänna fönsterbelysningen.
   - alias: Allrum belysning fönster
-    id: Allrum belysning fönster
+    id: allrum_belysning_fonster
     triggers:
       - trigger: state
         entity_id: binary_sensor.allrum_belysning_filament_automation_control
@@ -86,12 +85,11 @@ automation:
       - action: "light.turn_{{ iif(states('binary_sensor.allrum_belysning_filament_automation_control') == 'on', 'on', 'off') }}"
         target:
           entity_id:
-            - light.gastrum_hylla
             - light.allrum_klotlampa
   
   # Tänder/släcker huslampan.
   - alias: Allrum huslampa
-    id: Allrum huslampa
+    id: allrum_huslampa
     triggers:
       - trigger: state
         entity_id: binary_sensor.allrum_huslampa_automation_control
