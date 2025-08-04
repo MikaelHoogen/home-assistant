@@ -173,13 +173,13 @@ automation:
   - alias: Kattkamera rörelse notifiering
     id: kattkamera_rorelse_notifiering
     trigger:
-      - platform: numeric_state
-        entity_id: sensor.192_168_88_62_motion
-        above: 19
+      - platform: state
+        entity_id: binary_sensor.tvattstuga_djur
+        to: 'on'
     action:
       - service: camera.snapshot
         target:
-          entity_id: camera.192_168_88_62
+          entity_id: camera.tvattstuga_hog_klarhet
         data:
           filename: /media/kattkamera_notify.jpg
       - delay: 1
@@ -261,9 +261,9 @@ automation:
     id: kattkamera_inspelning
     alias: Kattkamera inspelning
     trigger:
-      - platform: numeric_state
-        entity_id: sensor.192_168_88_62_motion
-        above: 19
+      - platform: state
+        entity_id: binary_sensor.tvattstuga_djur
+        to: 'on'
 #
     action:
       - service: camera.record
@@ -271,5 +271,5 @@ automation:
           filename: '/media/disk_f/recordings/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d") }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.mp4'
           duration: 60
         target:
-          entity_id: camera.192_168_88_62
+          entity_id: camera.tvattstuga_hog_klarhet
       - delay: 60
