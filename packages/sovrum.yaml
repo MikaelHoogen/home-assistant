@@ -3,14 +3,14 @@ adaptive_lighting:
   - name: Sovrum
     lights:
       - light.walk_in_closet
-      - light.sovrum_fonster
+#      - light.sovrum_fonster
       - light.sovrum_byra
       - light.sovrum_sang_mikael
       - light.sovrum_sang_lina
     transition: 30
     initial_transition: 1
     interval: 90
-    min_brightness: 10
+    min_brightness: 1
     max_brightness: 100
     min_color_temp: 2000
     max_color_temp: 4000
@@ -72,22 +72,35 @@ automation:
           light.turn_off
           {% endif %}
         entity_id:
-          - light.sovrum_fonster
+#          - light.sovrum_fonster
           - light.sovrum_byra
+          - light.sovrum_sang_lina
+          - light.sovrum_sang_mikael
   #
   - alias: Sovrum Säng Mikael Knapp
     id: Sovrum Säng Mikael Knapp
     trigger:
-      - platform: event
-        event_type: zha_event
-        event_data:
-          device_id: 2b619bd3a71fab5651a6bb9459f3558d
+      - platform: device
+        domain: mqtt
+        device_id: d804ff674d445d8a0704fc6dc3634837
+        type: action
+        subtype: single
+      - platform: device
+        domain: mqtt
+        device_id: d804ff674d445d8a0704fc6dc3634837
+        type: action
+        subtype: double
+      - platform: device
+        domain: mqtt
+        device_id: d804ff674d445d8a0704fc6dc3634837
+        type: action
+        subtype: hold
     action:
       - choose:
           # Short press
           - conditions:
               - condition: template
-                value_template: '{{ trigger.event.data.command == "single" }}'
+                value_template: '{{ trigger.payload == "single" }}'
             sequence:
               - service: input_boolean.toggle
                 target:
@@ -96,7 +109,7 @@ automation:
           # Double press
           - conditions:
               - condition: template
-                value_template: '{{ trigger.event.data.command == "double" }}'
+                value_template: '{{ trigger.payload == "double" }}'
             sequence:
               - service: light.toggle
                 target:
@@ -105,7 +118,7 @@ automation:
           # Long press
           - conditions:
               - condition: template
-                value_template: '{{ trigger.event.data.command == "hold" }}'
+                value_template: '{{ trigger.payload == "hold" }}'
             sequence:
               - service: light.turn_off
                 entity_id: light.sovrum
