@@ -1,0 +1,62 @@
+# =================================================================
+# LOGIK FÖR FILMLÄGE
+# =================================================================
+# All logik för att automatiskt hantera filmläget baserat på
+# medieuppspelning i allrummet.
+# -----------------------------------------------------------------
+
+# --- Hjälpare för att styra filmläget ---
+# Dessa booleans används för att hålla koll på de olika stegen i filmläget.
+input_boolean:
+  # Denna slås på manuellt (t.ex. via en knapp) för att aktivera filmläget.
+  film:
+    name: Filmläge
+    icon: mdi:filmstrip
+  # Denna slås på automatiskt när en film faktiskt spelas.
+  # Används för att styra belysning etc.
+  film_spelar:
+    name: Film spelar
+    icon: mdi:filmstrip
+
+# --- Automationer för filmläget ---
+automation:
+  # Denna automation känner av när en film börjar spelas.
+  - alias: Film play
+    id: Film play
+    triggers:
+      # Triggar när mediaspelaren har varit i 'playing'-läge i 10 sekunder.
+      - trigger: state
+        entity_id: media_player.allrum
+        to: 'playing'
+        for:
+          seconds: 10
+    condition:
+      # Körs bara om det övergripande filmläget är aktivt.
+      - condition: state
+        entity_id: input_boolean.film
+        state: 'on'
+    actions:
+      # Slår på 'film_spelar'-hjälparen.
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.film_spelar
+
+  # Denna automation känner av när en film pausas, stoppas eller när filmläget avaktiveras.
+  - alias: Film pause/off
+    id: Film pause/off
+    triggers:
+      # Triggar när mediaspelaren har varit pausad/stoppad i 5 sekunder.
+      - trigger: state
+        entity_id: media_player.allrum
+        from: 'playing'
+        for:
+          seconds: 5
+      # Triggar också direkt om det övergripande filmläget stängs av.
+      - trigger: state
+        entity_id: input_boolean.film
+        to: 'off'
+    actions:
+      # Slår av 'film_spelar'-hjälparen.
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.film_spelar

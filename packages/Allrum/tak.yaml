@@ -1,0 +1,119 @@
+# =================================================================
+# LOGIK FÖR TAKBELYSNING
+# =================================================================
+# All logik för att styra taklamporna och läslampan.
+# -----------------------------------------------------------------
+
+# --- Profil för adaptiv belysning ---
+adaptive_lighting:
+  - name: Allrum
+    lights:
+      - light.allrum_tak_1
+      - light.allrum_tak_2
+      - light.allrum_tak_3
+      - light.allrum_laslampa
+      - light.allrum_klotlampa
+    transition: 30
+    sleep_transition: 30
+    initial_transition: 1
+    interval: 90
+    min_brightness: 30
+    max_brightness: 100
+    min_color_temp: 2000
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_rgb_color: [255, 161, 40]
+    take_over_control: true
+    detect_non_ha_changes: true
+    adapt_only_on_bare_turn_on: true
+
+# --- Inställning för ljusnivå ---
+input_number:
+  allrum_light_level:
+    name: Ljusstyrka allrum för belysning
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
+
+# --- Sensorer som styr automationerna ---
+template:
+  - binary_sensor:
+      # Steg 1: Är det för ljust inne för att tända taklamporna?
+      - name: allrum_lightlevel
+        unique_id: allrum_lightlevel
+        device_class: light
+        state: >
+          {{ ( states('sensor.allrum_hue_motion_sensor_light_level') | float > states('input_number.allrum_light_level') | float
+            and is_state('light.allrum_tak_1', 'off') )
+            or ( is_state('binary_sensor.allrum_lightlevel', 'on')
+            and is_state('light.allrum_tak_1', 'on') ) }}
+      
+      # Steg 2: Kontrollsensor för taklampor 1 & 2.
+      - name: allrum_presence_light_automation_control
+        unique_id: allrum_presence_light_automation_control
+        state: >
+          {{ is_state('binary_sensor.allrum_presence', 'on')
+            and is_state('input_boolean.film_spelar', 'off')
+            and is_state('binary_sensor.allrum_lightlevel', 'off') }}
+      
+      # Steg 2: Kontrollsensor för taklampa 3 (hall-delen).
+      - name: allrum_belysning_hall_automation_control
+        unique_id: allrum_belysning_hall_automation_control
+        state: >
+          {{ ( is_state('binary_sensor.allrum_presence_hall', 'on')
+            or is_state('binary_sensor.mikaels_rum_narvaro', 'on') )
+            and is_state('input_boolean.film_spelar', 'off') }}
+      
+      # Steg 2: Kontrollsensor för läslampan.
+      - name: allrum_belysning_laslampa_automation_control
+        unique_id: allrum_belysning_laslampa_automation_control
+        state: >
+          {{ is_state('binary_sensor.allrum_presence_sensor_fp2', 'on') and is_state('input_boolean.film_spelar', 'off') }}
+
+# --- Automationer ---
+automation:
+  # Tänder/släcker taklampor 1 & 2.
+  - alias: Allrum belysning tak
+    id: Allrum belysning tak
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.allrum_presence_light_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.allrum_presence_light_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.allrum_tak_1
+            - light.allrum_tak_2
+  
+  # Tänder/släcker taklampa 3 (hall-delen).
+  - alias: Allrum belysning hall
+    id: Allrum belysning hall
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.allrum_belysning_hall_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.allrum_belysning_hall_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.allrum_tak_3
+  
+  # Tänder/släcker läslampan.
+  - alias: Allrum belysning läslampa
+    id: Allrum belysning läslampa
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.allrum_belysning_laslampa_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.allrum_belysning_laslampa_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.allrum_laslampa

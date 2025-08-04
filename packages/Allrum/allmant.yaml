@@ -1,0 +1,46 @@
+# =================================================================
+# ALLMÄNNA KONFIGURATIONER FÖR ALLRUMMET
+# =================================================================
+# Detta paket innehåller entiteter som används av flera olika
+# funktioner i allrummet.
+# -----------------------------------------------------------------
+
+# --- Ljusgrupp för hela allrummet ---
+light:
+  - platform: group
+    name: Allrum grupp
+    unique_id: allrum_grupp
+    entities:
+      - light.allrum_tak_1
+      - light.allrum_tak_2
+      - light.allrum_tak_3
+      - light.allrum_laslampa
+      - light.allrum_klotlampa
+      - light.allrum_huslampa
+      - light.trappa
+      # Ljusstakar
+      # - light.ac_000000a_1
+      # - light.ac0000001_4
+      # Tomte
+      # - light.ac_0000001_2
+      # Julgran
+      # - light.ac_0000002_4
+
+# --- Närvarosensorer för allrummet ---
+template:
+  - binary_sensor:
+      # Kombinerar FP2-sensorn och en traditionell rörelsesensor för robust närvaro.
+      - name: allrum_presence
+        unique_id: allrum_presence
+        delay_off:
+          seconds: 30
+        state: >
+          {{ is_state('binary_sensor.allrum_presence_sensor_fp2', 'on') or is_state('binary_sensor.allrum_rorelsesensor', 'on') }}
+
+      # En separat närvarosensor för hall-delen av allrummet.
+      - name: allrum_presence_hall
+        unique_id: allrum_presence_hall
+        delay_off:
+          seconds: 90
+        state: >
+          {{ is_state('binary_sensor.allrum_rorelsesensor', 'on') }}

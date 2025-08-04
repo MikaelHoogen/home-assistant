@@ -1,0 +1,75 @@
+# =================================================================
+# LOGIK FÖR FYSISKA KNAPPAR
+# =================================================================
+# All logik för att hantera tryck på fysiska knappar i allrummet.
+# -----------------------------------------------------------------
+
+# --- Sensor för knapptryck (läsning) ---
+# Skapar en sensor som blir 'on' i 60 sekunder när en specifik
+# knapphändelse (långtryck) inträffar.
+template:
+  - trigger:
+      - platform: event
+        event_type: deconz_event
+        event_data:
+          id: allrum_knapp
+          event: 1004
+    binary_sensor:
+      - name: Allrum läsning
+        unique_id: Allrum läsning
+        auto_off: 60
+        state: "true"
+
+# --- Automationer för knappar ---
+automation:
+  # Styr hela allrumsgruppen med knappen vid fåtöljen.
+  - alias: Allrum knapp vid fåtölj
+    id: Allrum knapp vid fåtölj
+    triggers:
+      - trigger: event
+        event_type: deconz_event
+        event_data:
+          id: allrum_knapp
+          event: 1002
+    actions:
+      - action: light.toggle
+        target:
+          entity_id: light.allrum_grupp
+  
+  # Styr media och filmläge med knappen vid TV:n.
+  - alias: Allrum knapp vid tv
+    id: Allrum knapp vid tv
+    triggers:
+      - trigger: event
+        event_type: zha_event
+        event_data:
+          device_id: e84dd272e4d32d07e2da4ac46681159a
+    actions:
+      - choose:
+          # Dubbeltryck: Starta filmläge.
+          - conditions:
+              - condition: template
+                value_template: '{{ trigger.event.data.command == "double" }}'
+              - condition: state
+                entity_id: input_boolean.film
+                state: "off"
+            sequence:
+              - action: input_boolean.turn_on
+                target:
+                  entity_id: input_boolean.film
+          # Enkeltryck: Spela/pausa media.
+          - conditions:
+              - condition: template
+                value_template: '{{ trigger.event.data.command == "single" }}'
+            sequence:
+              - action: "media_player.media_{{ 'pause' if is_state('media_player.allrum', 'playing') else 'play' }}"
+                target:
+                  entity_id: media_player.allrum
+          # Långtryck: Växla filmläge (spelar/pausad).
+          - conditions:
+              - condition: template
+                value_template: '{{ trigger.event.data.command == "hold" }}'
+            sequence:
+              - action: input_boolean.toggle
+                target:
+                  entity_id: input_boolean.film_spelar
