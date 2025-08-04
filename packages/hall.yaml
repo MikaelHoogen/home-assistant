@@ -1,11 +1,15 @@
-################# Circadian ##############################################
+# =================================================================
+# PAKET FÖR BELYSNING I HALLEN
+# =================================================================
+# All logik för att styra belysningen i hallen.
+# -----------------------------------------------------------------
+
+# --- Profil för adaptiv belysning ---
 adaptive_lighting:
   - name: Hall
     lights:
       - light.hall
       - light.hall_byra
-      - light.vardagsrum_tak
-      - light.vardagsrum_bord
     prefer_rgb_color: false
     transition: 30
     initial_transition: 2
@@ -19,9 +23,9 @@ adaptive_lighting:
     sleep_rgb_color: [255, 161, 40]
     take_over_control: true
     detect_non_ha_changes: true
-#
+
+# --- Inställning för ljusnivå ---
 input_number:
-#
   hall_light_level:
     name: Ljusstyrka hall för belysning
     min: 0
@@ -29,21 +33,23 @@ input_number:
     step: 1
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
-#
+
+# --- Sensorer som styr automationen ---
 template:
+  # Skapar en kort "närvaro"-puls när ytterdörren öppnas.
   - trigger:
       - platform: state
+        entity_id: binary_sensor.entre_dorrbrytare
         to: 'on'
         from: 'off'
-        entity_id: binary_sensor.entre_dorrbrytare
     binary_sensor:
       - name: Hall dörrtrigger
         unique_id: Hall dörrtrigger
         auto_off: 30
         state: "true"
-#
-  -  binary_sensor:
-      ### Närvaro
+
+  - binary_sensor:
+      # Kombinerar rörelsesensor och dörrtrigger till en närvarosensor.
       - name: hall_presence
         unique_id: hall_presence
         device_class: motion
@@ -52,8 +58,19 @@ template:
         state: >
           {{ is_state('binary_sensor.hall_hue_motion_sensor_motion', 'on')
             or is_state('binary_sensor.hall_dorrtrigger', 'on') }}
-      #
-      ### Närvarostyrd belysning
+
+      # Kollar om det är tillräckligt mörkt inne för att tända.
+      - name: hall_lightlevel
+        unique_id: hall_lightlevel
+        device_class: light
+        availability: "{{ is_number(states('sensor.hall_hue_motion_sensor_light_level')) and is_number(states('input_number.hall_light_level')) }}"
+        state: >
+          {{ ( states('sensor.hall_hue_motion_sensor_light_level') | float(0.0) > states('input_number.hall_light_level') | float(0.0)
+            and is_state('light.hall', 'off') )
+            or ( is_state('binary_sensor.hall_lightlevel', 'on')
+            and is_state('light.hall', 'on') ) }}
+
+      # Den slutgiltiga kontrollsensorn som triggar automationen.
       - name: hall_presence_light_automation_control
         unique_id: hall_presence_light_automation_control
         state: >
@@ -62,34 +79,18 @@ template:
             or is_state('binary_sensor.hall_presence', 'on') )
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('binary_sensor.hall_lightlevel', 'off') }}
-#
-      - name: hall_lightlevel
-        unique_id: hall_lightlevel
-        device_class: light
-        availability: "{{ is_number(states('sensor.hall_hue_motion_sensor_light_level')) and is_number(states('input_number.hall_light_level')) }}"
-        state: >
-          {{ ( states('sensor.hall_hue_motion_sensor_light_level') | float(0.0) > states('input_number.hall_light_level') | float(0.0)
-            and is_state('light.hall', 'off') ) 
-            or ( is_state('binary_sensor.hall_lightlevel', 'on')
-            and is_state('light.hall', 'on') ) }}
-#
+
+# --- Automationen som tänder/släcker ---
 automation:
-  #
   - alias: Hall takbelysning
     id: Hall takbelysning
-    trigger:
-      - platform: state
+    triggers:
+      - trigger: state
         entity_id: binary_sensor.hall_presence_light_automation_control
-      - platform: homeassistant
+      - trigger: homeassistant
         event: start
-    action:
-      - service: >
-          {% if is_state('binary_sensor.hall_presence_light_automation_control', 'on') %}
-          light.turn_on
-          {% elif is_state('binary_sensor.hall_presence_light_automation_control', 'off') %}
-          light.turn_off
-          {% endif %}
-        entity_id:
-          - light.hall
-  #
-#
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.hall_presence_light_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.hall
