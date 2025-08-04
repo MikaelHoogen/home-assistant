@@ -1,0 +1,33 @@
+# =================================================================
+# LOGIK FÖR VÄRMEGOLV
+# =================================================================
+# All logik för att styra värmegolvet i gästrummet.
+# -----------------------------------------------------------------
+
+# --- Termostat för värmegolvet ---
+climate:
+  - platform: generic_thermostat
+    name: Gästrum värmegolv
+    unique_id: gastrum_varmegolv
+    cold_tolerance: 0.0
+    hot_tolerance: 0.2
+    precision: 0.1
+    heater: switch.gastrum_varmegolv
+    target_sensor: sensor.gastrum_temperature
+    min_temp: 7
+
+# --- Automationen som styr termostaten ---
+automation:
+  - alias: Gästrum värme
+    id: gastrum_varme
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.varmegolv_block
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: climate.set_hvac_mode
+        target:
+          entity_id: climate.gastrum_varmegolv
+        data:
+          hvac_mode: "{{ iif(states('binary_sensor.varmegolv_block') == 'on', 'off', 'heat') }}"

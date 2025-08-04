@@ -1,0 +1,27 @@
+# =================================================================
+# ALLMÄNNA KONFIGURATIONER FÖR GÄSTRUMMET
+# =================================================================
+# Detta paket innehåller entiteter som används av flera olika
+# funktioner i gästrummet.
+# -----------------------------------------------------------------
+
+# --- Ljusgrupp för hela gästrummet ---
+light:
+  - platform: group
+    name: Gästrum grupp
+    unique_id: gastrum_grupp
+    entities:
+    - light.linas_skrivbord
+#    - light.gastrum_fonster_1
+    - light.gastrum_fonster_2
+    - light.gastrum_hylla
+    - light.gastrum_byra
+    # Julstjärna
+#    - light.gastrum_fonster
+    # Ljusstake
+#    - light.gastrum_ljusstake
+
+# --- Hjälpare för att indikera om gäster är hemma ---
+input_boolean:
+  gaster:
+    name: Gäster

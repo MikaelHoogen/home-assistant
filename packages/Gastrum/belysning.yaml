@@ -1,0 +1,100 @@
+# =================================================================
+# LOGIK FÖR BELYSNING
+# =================================================================
+# All logik för att styra belysningen i gästrummet.
+# -----------------------------------------------------------------
+
+# --- Profil för adaptiv belysning ---
+adaptive_lighting:
+  - name: Gästrum
+    lights:
+      - light.linas_skrivbord
+#      - light.gastrum_fonster_1
+      - light.gastrum_byra
+      - light.gastrum_fonster_2
+      # Julstjärna
+      #  - light.gastrum_fonster
+    prefer_rgb_color: false
+    transition: 30
+    initial_transition: 5
+    interval: 90
+    min_brightness: 20
+    max_brightness: 100
+    min_color_temp: 2000
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_rgb_color: [255, 161, 40]
+    take_over_control: true
+    detect_non_ha_changes: true
+
+# --- Inställning för ljusnivå ---
+input_number:
+  gastrum_light_level:
+    name: Ljusstyrka utomhus för belysning gästrum
+    min: 0
+    max: 1000
+    step: 50
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
+
+# --- Sensorer som styr automationen ---
+template:
+  - binary_sensor:
+      # Steg 1: Är det mörkt nog ute för att tända?
+      - name: gastrum_belysning_lightlevel
+        unique_id: gastrum_belysning_lightlevel
+        delay_off:
+          minutes: 5
+        state: >
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.gastrum_light_level') | float(0) }}
+      
+      # Steg 2: Den slutgiltiga kontrollsensorn som triggar automationen.
+      - name: gastrum_belysning_automation_control
+        unique_id: gastrum_belysning_automation_control
+        state: >
+          {{ ( is_state('binary_sensor.gastrum_belysning_lightlevel', 'on')
+            and is_state('input_boolean.sovdags_gastrum', 'off')
+            and is_state('input_boolean.sovdags', 'off') )
+            or ( is_state('input_boolean.sovdags_gastrum', 'off') 
+            and is_state('input_boolean.gaster', 'on') 
+            and is_state('binary_sensor.gastrum_belysning_lightlevel', 'on') ) }}
+
+# --- Automationen som tänder/släcker ---
+automation:
+  - alias: Gästrum belysning
+    id: Gästrum belysning
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.gastrum_belysning_automation_control
+      - trigger: state
+        entity_id: input_boolean.sovdags_gastrum
+      - trigger: homeassistant
+        event: start
+    actions:
+      # Steg 1: Styr fönsterlamporna baserat på kontrollsensorn.
+      - action: "light.turn_{{ iif(states('binary_sensor.gastrum_belysning_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+#           - light.gastrum_fonster_1
+            - light.gastrum_fonster_2
+            - light.gastrum_byra
+            # Julstjärna
+            # - light.gastrum_fonster
+      
+      # Steg 2: Kort fördröjning för att säkerställa att allt hinner med.
+      - delay:
+          seconds: 5
+      
+      # Steg 3: Styr den adaptiva belysningen baserat på om gästen sover.
+      - action: "switch.turn_{{ iif(is_state('input_boolean.sovdags_gastrum', 'on'), 'off', 'on') }}"
+        target:
+          entity_id: switch.adaptive_lighting_gastrum
+      
+      # Steg 4: Om gästen INTE sover, släck skrivbordslampan.
+      - condition: state
+        entity_id: input_boolean.sovdags_gastrum
+        state: 'off'
+      - action: light.turn_off
+        target:
+          entity_id: light.linas_skrivbord
