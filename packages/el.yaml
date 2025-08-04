@@ -5,10 +5,6 @@ utility_meter:
     unique_id: accumulated_consumption_day_sannesholma_2181
     source: sensor.accumulated_consumption_sannesholma_2181
     cycle: daily
-  accumulated_consumption_week_sannesholma_2181:
-    unique_id: accumulated_consumption_week_sannesholma_2181
-    source: sensor.accumulated_consumption_sannesholma_2181
-    cycle: weekly
   accumulated_consumption_month_sannesholma_2181:
     unique_id: accumulated_consumption_month_sannesholma_2181
     source: sensor.accumulated_consumption_sannesholma_2181
@@ -162,25 +158,6 @@ utility_meter:
 # 
 #
 template:
-#  - trigger:
-#      - platform: state
-#        entity_id: sensor.fronius_total_energy
-#      - platform: state
-#        entity_id: sensor.last_meter_production_sannesholma_2181
-#      ### Självförbrukad energi från solceller
-#    sensor:
-#      - name: solar_energy_self_usage
-#        unique_id: solar_energy_self_usage
-#        unit_of_measurement: kWh
-#        state_class: measurement
-#        availability: >
-#          {{ is_number(states('sensor.fronius_total_energy')) and is_number(states('sensor.last_meter_production_sannesholma_2181')) }}
-#        state: >
-#          {% if states('sensor.solar_energy_self_usage') | float(0) < ( states('sensor.fronius_total_energy') | float(0) - states('sensor.last_meter_production_sannesholma_2181') | float(0) ) %}
-#          {{ ( states('sensor.fronius_total_energy') | float('not_a_number') - states('sensor.last_meter_production_sannesholma_2181') | float('not_a_number') ) | round(3)}}
-#          {% else %}
-#          {{ states('sensor.solar_energy_self_usage') | float('not_a_number') | round(3)}}
-#          {% endif %}
     #
     # El tas från elnät
   - binary_sensor:
@@ -219,11 +196,11 @@ template:
         unit_of_measurement: W
         state_class: measurement
         availability: >
-          {{ is_number(states('sensor.power_production_sannesholma_2181')) and is_number(states('sensor.solar_power_photovoltaics')) and is_number(states('sensor.solar_battery_charging')) }}
+          {{ is_number(states('sensor.solar_power_photovoltaics')) and is_number(states('sensor.solar_battery_charging')) }}
         state: >
           {{ max(0, ( states('sensor.solar_power_photovoltaics') | float('not_a_number')
           - states('sensor.solar_battery_charging') | float('not_a_number')
-          - states('sensor.power_production_sannesholma_2181') | float('not_a_number') ) | round(0) ) }}
+          - states('sensor.power_production_sannesholma_2181') | float(0) ) | round(0) ) }}
       #
       ### Total avkastning
       - name: solar_accumulated_total_return_day
@@ -385,13 +362,6 @@ template:
         state: "{{ ( states('sensor.accumulated_total_cost_month') | float('naan') / states('sensor.monthly_net_consumption_sannesholma_2181') | float('naan') ) | round(2) }}"
       #
         #
-  ####### Avfuktare ##########################################################################
-      - name: avfuktare_average_price
-        unique_id: avfuktare_average_price
-        unit_of_measurement: "SEK/kWh"
-        state_class: measurement
-        availability: "{{ is_number(states('sensor.avfuktare_manad_kostnad')) and states('sensor.avfuktare_manad_from_grid') | float(0.0) > 0 }}"
-        state: "{{ ( states('sensor.avfuktare_manad_kostnad') | float(0.0) / states('sensor.avfuktare_manad_from_grid') | float(0.0) ) | round(2) }}"
         #
         # Snickarboa värmare ##########################################################################
       - name: snickarboa_heater_average_price
@@ -402,13 +372,3 @@ template:
         state: "{{ ( states('sensor.snickarboa_heater_manad_kostnad') | float(0.0) / states('sensor.snickarboa_heater_manad_from_grid') | float(0.0) ) | round(2) }}"
         #
         #
-
-homeassistant:
-  customize:
-    sensor.accumulated_consumption_sannesholma_2181:
-      state_class: total_increasing
-    sensor.electricity_price_sannesholma_2181:
-      state_class: measurement
-    sensor.elpris:
-      state_class: measurement
-    #
