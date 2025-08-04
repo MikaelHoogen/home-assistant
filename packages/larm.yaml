@@ -1,44 +1,6 @@
 ##################### Brandvarnare #####################################
-automation:
-- alias: Kontroll av brandvarnare
-  trigger:
-  - platform: event
-    event_type: rfxtrx_event
-    event_data:
-      packet_type: 32
-      sub_type: 3
-      id_string: "b38d00:32"
-      values:
-        Sensor Status: "Panic"
-#
-  action:
-  - service: notify.mobile_app_mikael_iphone
-    data_template:
-      message: "Brandvarnare aktiv"
-      title: "Rök detekterad"
-  - service: notify.mobile_app_lina_iphone
-    data_template:
-      message: "Brandvarnare aktiv"
-      title: "Rök detekterad"
-  - service: persistent_notification.create
-    data_template:
-      message: "Brandvarnare aktiv"
-      title: "Rök detekterad"
       #
 template:
-  - trigger:
-    - platform: event
-      event_type: rfxtrx_event
-      event_data:
-        packet_type: 32
-        sub_type: 3
-        id_string: "b38d00:32"
-        values:
-          Sensor Status: "Panic"
-    binary_sensor:
-      - name: Brandvarnare
-        auto_off: 300
-        state: "true"
 #
   - binary_sensor:
       # 
@@ -52,24 +14,6 @@ input_boolean:
     name: Larmtest
 #
 alert:
-  fire:
-    name: Brandvarnare utlöst, risk för brand!
-    done_message: Brandvarnare är återställd
-    entity_id: binary_sensor.brandvarnare
-    state: 'on'
-    repeat: 5
-    can_acknowledge: true
-    skip_first: false
-    notifiers:
-      - mobile_app_mikael_iphone
-      - mobile_app_lina_iphone
-      - persistent_notification
-    data:
-      push:
-        sound:
-          name: "default"
-          critical: 1
-          volume: 1.0
 #
   barnrum_brandvarnare_smoke:
     name: Brandvarnare utlöst hos Kimi, risk för brand!
@@ -93,7 +37,7 @@ alert:
   allrum_randvarnare_rok:
     name: Brandvarnare utlöst i allrum, risk för brand!
     done_message: Brandvarnare hos allrum är återställd
-    entity_id: binary_sensor.allrum_brandvarnare_rok
+    entity_id: binary_sensor.allrum_brandvarnare_smoke
     state: 'on'
     repeat: 1
     can_acknowledge: true
@@ -112,7 +56,45 @@ alert:
   allrum_hall_brandvarnare_rok:
     name: Brandvarnare utlöst i allrum, risk för brand!
     done_message: Brandvarnare hos allrum är återställd
-    entity_id: binary_sensor.allrum_hall_brandvarnare_rok
+    entity_id: binary_sensor.allrum_hall_brandvarnare_smoke
+    state: 'on'
+    repeat: 1
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - mobile_app_mikael_iphone
+      - mobile_app_lina_iphone
+      - persistent_notification
+    data:
+      push:
+        sound:
+          name: "default"
+          critical: 1
+          volume: 1.0
+#
+  tvattstuga_brandvarnare_rok:
+    name: Brandvarnare utlöst i tvättstuga, risk för brand!
+    done_message: Brandvarnare hos tvättstuga är återställd
+    entity_id: binary_sensor.tvattstuga_brandvarnare_smoke
+    state: 'on'
+    repeat: 1
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - mobile_app_mikael_iphone
+      - mobile_app_lina_iphone
+      - persistent_notification
+    data:
+      push:
+        sound:
+          name: "default"
+          critical: 1
+          volume: 1.0
+#
+  snickarboa_brandvarnare_rok:
+    name: Brandvarnare utlöst i snickarboa, risk för brand!
+    done_message: Brandvarnare hos snickarboa är återställd
+    entity_id: binary_sensor.snickarboa_brandvarnare_smoke
     state: 'on'
     repeat: 1
     can_acknowledge: true
