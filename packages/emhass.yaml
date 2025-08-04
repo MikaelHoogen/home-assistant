@@ -662,23 +662,7 @@ template:
             ) | round(0) ) }}
 #
 #
-      - name: power_sannesholma_2181_no_var_loads_ev
-        unique_id: power_sannesholma_2181_no_var_loads_ev
-        availability: >
-          {{ is_number(states('sensor.power_usage'))
-          and is_number(states('sensor.heatpump_power'))
-          }}
-        unit_of_measurement: "W"
-        state_class: measurement
-        device_class: power
-        state: >
-          {{ max(0,( states('sensor.power_usage') | float('naan')
-            - states('sensor.heatpump_power') | float('naan')
-            - states('sensor.shellyplug_s_c8c9a3a4f80a_power') | float(0)
-            ) | round(0) ) }}
 #
-#
-# 
 #
       - name: power_sannesholma_2181_no_var_loads_filtered
         unique_id: power_sannesholma_2181_no_var_loads_filtered
@@ -691,10 +675,11 @@ template:
         device_class: power
         state: >
           {{ max(0,( states('sensor.power_usage_filtered') | float('naan')
-            - states('sensor.heatpump_power') | float('naan')
+            - states('sensor.heatpump_power') | float(0)
             - states('sensor.ehl75l9h_power_watt') | float(0)
             - states('sensor.shellyplug_s_c8c9a3a4f80a_power') | float(0)
             - states('sensor.heatpump_addheat1_power') | float(0)
+            - states('sensor.ac_effekt') | float(0)
             ) | round(0) ) }}
 #
 #
