@@ -1,0 +1,188 @@
+# =================================================================
+# ELPRISER & MEDELVÄRDEN
+# =================================================================
+# All logik för att definiera avgifter, beräkna totalpriser,
+# hämta priser för imorgon och kalkylera medelvärden.
+# -----------------------------------------------------------------
+
+# =================================================================
+# SENSORER FÖR MEDELPRIS
+# =================================================================
+# Dessa sensorer använder "average"-plattformen för att beräkna
+# medelpriser över den innevarande månaden.
+# -----------------------------------------------------------------
+sensor:
+  - platform: average
+    name: elpris_totalt_medel
+    unique_id: elpris_totalt_medel
+    start: "{{ now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) }}"
+    end: "{{ now() }}"
+    entities:
+      - sensor.elpris_totalt_sek
+  - platform: average
+    name: elpris_tibber_medel
+    unique_id: elpris_tibber_medel
+    start: "{{ now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) }}"
+    end: "{{ now() }}"
+    entities:
+      - sensor.electricity_price_sannesholma_2181
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Dessa sensorer utför beräkningar och skapar ny data baserat
+# på andra sensorer.
+# -----------------------------------------------------------------
+template:
+  - sensor:
+      # --- Fasta avgifter ---
+      # Hårdkodade värden för elnätsavgift och energiskatt.
+      - name: avgift_elnat
+        unique_id: avgift_elnat
+        unit_of_measurement: "Öre/kWh"
+        state_class: measurement
+        state: "{{ 30.7 }}"
+      - name: avgift_energiskatt
+        unique_id: avgift_energiskatt
+        unit_of_measurement: "Öre/kWh"
+        state_class: measurement
+        state: "{{ 53.5 }}"
+
+      # --- Totalpriser (inkl. alla avgifter) ---
+      # Beräknar det totala priset per kWh som du betalar.
+      - name: elpris_totalt
+        unique_id: elpris_totalt
+        unit_of_measurement: "Öre/kWh"
+        state_class: measurement
+        availability: "{{ is_number(states('sensor.electricity_price_sannesholma_2181')) }}"
+        state: "{{ ( states('sensor.avgift_elnat') | float('naan') + states('sensor.avgift_energiskatt') | float('naan') + states('sensor.electricity_price_sannesholma_2181') | float('naan') * 100 ) | round(2) }}"
+      - name: elpris_totalt_sek
+        unique_id: elpris_totalt_sek
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        availability: "{{ is_number(states('sensor.electricity_price_sannesholma_2181')) }}"
+        state: "{{ ( states('sensor.avgift_elnat') | float('naan') / 100 + states('sensor.avgift_energiskatt') | float('naan') / 100 + states('sensor.electricity_price_sannesholma_2181') | float('naan') ) | round(3) }}"
+      - name: elpris_grid
+        unique_id: elpris_grid
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        availability: >
+          {{ is_number(states('sensor.avgift_elnat'))
+            and is_number(states('sensor.avgift_energiskatt')) }}
+        state: >
+          {{ ( states('sensor.avgift_elnat') | float('naan') / 100
+          + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3) }}
+
+      # --- Produktionspriser (inkl. nätnytta etc.) ---
+      # Beräknar det totala värdet per kWh som du tjänar när du säljer el.
+      - name: elpris_produktion
+        unique_id: elpris_produktion
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        availability: "{{ is_number(states('sensor.elpris')) and is_number(states('sensor.elpris_natnytta'))}}"
+        state: >
+          {{ ( states('sensor.elpris') | float('naan')
+          + 0.6
+          + states('sensor.elpris_natnytta') | float('naan') ) | round(3) }}
+      - name: elpris_natnytta
+        unique_id: elpris_natnytta
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        state: "{{ 0.07 }}"
+
+      # --- Elpris - Statistik för imorgon ---
+      # Hämtar och beräknar statistik för morgondagens elpriser.
+      - name: elpris_imorgon_medel
+        unique_id: elpris_imorgon_medel
+        unit_of_measurement: SEK
+        state_class: measurement
+        availability: "{{ is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None }}"
+        state: "{{ ( state_attr('sensor.elpris', 'tomorrow') | sum / 24 ) | round(3)}}"
+      - name: elpris_imorgon_max
+        unique_id: elpris_imorgon_max
+        unit_of_measurement: SEK
+        state_class: measurement
+        availability: "{{ is_state_attr('sensor.elpris', 'tomorrow_valid', True) and state_attr('sensor.elpris', 'tomorrow')[0] != None }}"
+        state: "{{ (state_attr('sensor.elpris', 'tomorrow') | sort(reverse=true))[0] }}"
+
+      # --- Medelpriser (beräknade) ---
+      # Beräknar olika typer av effektiva medelpriser (SEK/kWh).
+      - name: solar_battery_total_return_average_price_month
+        unique_id: solar_battery_total_return_average_price_month
+        unit_of_measurement: "SEK/kWh"
+        state_class: total
+        availability: >
+          {{ is_number(states('sensor.accumulated_total_cost_month')) and states('sensor.solar_battery_discharged_month') | float(0) > 0 }}
+        state: >
+          {{ (states('sensor.solar_battery_total_return_month') | float('nan') /
+              states('sensor.solar_battery_discharged_month') | float('nan')) | round(2) }}
+      - name: average_price_last_month
+        unique_id: average_price_last_month
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        availability: >
+          {{ state_attr('sensor.accumulated_consumption_month_sannesholma_2181', 'last_period') | float(0) > 0 }}
+        state: >
+          {{ (state_attr('sensor.accumulated_cost_month_sannesholma_2181', 'last_period') | float('nan') /
+              state_attr('sensor.accumulated_consumption_month_sannesholma_2181', 'last_period') | float('nan')) | round(2) }}
+      - name: average_price_consumption_tibber
+        unique_id: average_price_consumption_tibber
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        availability: >
+          {{ is_number(states('sensor.monthly_cost_sannesholma_2181')) and
+            is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) and
+            states('sensor.monthly_net_consumption_sannesholma_2181') | float(0) > 0 }}
+        state: >
+          {{ (states('sensor.monthly_cost_sannesholma_2181') | float('nan') /
+              states('sensor.monthly_net_consumption_sannesholma_2181') | float('nan')) | round(2) }}
+      - name: average_total_price_new
+        unique_id: average_total_price_new
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        availability: >
+          {{ is_number(states('sensor.accumulated_total_cost_month')) and
+            is_number(states('sensor.monthly_net_consumption_sannesholma_2181')) and
+            states('sensor.monthly_net_consumption_sannesholma_2181') | float(0) > 0 }}
+        state: >
+          {{ (states('sensor.accumulated_total_cost_month') | float('nan') /
+              states('sensor.monthly_net_consumption_sannesholma_2181') | float('nan')) | round(2) }}
+      - name: snickarboa_heater_average_price
+        unique_id: snickarboa_heater_average_price
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        availability: >
+          {{ is_number(states('sensor.snickarboa_heater_manad_kostnad')) and
+            states('sensor.snickarboa_heater_manad_from_grid') | float(0) > 0 }}
+        state: >
+          {{ (states('sensor.snickarboa_heater_manad_kostnad') | float('nan') /
+              states('sensor.snickarboa_heater_manad_from_grid') | float('nan')) | round(2) }}
+
+  - binary_sensor:
+      # --- Prisjämförelser ---
+      # Dessa sensorer är flaggor som indikerar om det nuvarande priset är högt.
+      - name: electricity_price_sannesholma_2181_max
+        unique_id: electricity_price_sannesholma_2181_max
+        delay_on:
+          minutes: 1
+        state: >
+          {{ states('sensor.electricity_price_sannesholma_2181') | float(0) == state_attr('sensor.electricity_price_sannesholma_2181', 'max_price') | float(0.1) }}
+
+      # Indikerar om det nuvarande elpriset är en av dagens fyra dyraste timmar.
+      - name: electricity_price_sannesholma_2181_max_4
+        unique_id: electricity_price_sannesholma_2181_max_4
+        delay_on:
+          seconds: 5
+        state: >
+          {% set prices = state_attr('sensor.elpris', 'today') | sort(reverse=true) %}
+          {% set current_price = states('sensor.elpris') | float(0) %}
+          {{ current_price in prices[:4] }}
+
+      # Indikerar om det nuvarande elpriset är över dagsgenomsnittet.
+      - name: electricity_price_sannesholma_2181_above_avg_price
+        unique_id: electricity_price_sannesholma_2181_above_avg_price
+        availability: "{{ is_number(states('sensor.elpris')) }}"
+        delay_on:
+          seconds: 5
+        state: >
+          {{ states('sensor.elpris') | float(0) > state_attr('sensor.elpris', 'average') }}
