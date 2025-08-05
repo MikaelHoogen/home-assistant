@@ -1,0 +1,83 @@
+# =================================================================
+# KONFIGURATION FÖR DISKMASKIN
+# =================================================================
+# All logik för att spåra diskmaskinens förbrukning och status,
+# samt skicka notiser när den är klar.
+# -----------------------------------------------------------------
+
+# =================================================================
+# UTILITY METERS
+# =================================================================
+# Dessa entiteter spårar diskmaskinens elförbrukning över olika
+# tidsperioder (timme, dag, månad, år).
+# -----------------------------------------------------------------
+utility_meter:
+  diskmaskin_timme:
+    unique_id: diskmaskin_timme
+    source: sensor.diskmaskin_consumption
+    periodically_resetting: false
+    cycle: hourly
+  diskmaskin_dag:
+    unique_id: diskmaskin_dag
+    source: sensor.diskmaskin_consumption
+    periodically_resetting: false
+    cycle: daily
+  diskmaskin_manad:
+    unique_id: diskmaskin_manad
+    source: sensor.diskmaskin_consumption
+    periodically_resetting: false
+    cycle: monthly
+  diskmaskin_ar:
+    unique_id: diskmaskin_ar
+    source: sensor.diskmaskin_consumption
+    periodically_resetting: false
+    cycle: yearly
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Denna sensor utgör grunden för automationen.
+# -----------------------------------------------------------------
+template:
+  - binary_sensor:
+      # En sensor som blir 'on' när diskmaskinen drar mer än 3W.
+      # Detta indikerar att ett program är igång.
+      - name: diskmaskin
+        unique_id: diskmaskin
+        delay_off:
+          minutes: 5
+        delay_on:
+          seconds: 30
+        state: >
+          {{ states('sensor.diskmaskin_power') | float(0.0) > 3 }}
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# Skickar en notis när diskmaskinen är klar.
+# -----------------------------------------------------------------
+automation:
+  - alias: Diskmaskin klar
+    id: diskmaskin_klar
+    triggers:
+      # Triggar när diskmaskin-sensorn går från 'on' (körs) till 'off' (klar).
+      - trigger: state
+        entity_id: binary_sensor.diskmaskin
+        from: "on"
+        to: "off"
+    actions:
+      # Skickar en persistent notis i Home Assistant.
+      - action: notify.persistent_notification
+        data:
+          message: "Diskmaskin"
+          title: "Diskmaskinen är klar"
+      # Skickar en notis till Mikaels iPhone.
+      - action: notify.mobile_app_mikaels_iphone
+        data:
+          message: "Diskmaskin klar"
+          title: "Diskmaskinen är klar"
+      # Skickar en notis till Linas iPhone.
+      - action: notify.mobile_app_lina_iphone
+        data:
+          message: "Diskmaskin klar"
+          title: "Diskmaskinen är klar"
