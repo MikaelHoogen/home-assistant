@@ -1,0 +1,55 @@
+utility_meter:
+  #
+  ###################
+  ### Förbrukning ###
+  ###################
+  tvattmaskin_dag:
+    unique_id: tvattmaskin_dag
+    source: sensor.tvattmaskin_consumption
+    periodically_resetting: false
+    cycle: daily
+  tvattmaskin_manad:
+    unique_id: vattmaskin_manad
+    source: sensor.tvattmaskin_consumption
+    periodically_resetting: false
+    cycle: monthly
+#  tvattmaskin_ar:
+#    source: sensor.tvattmaskin_consumption
+#    cycle: yearly
+#
+template:
+  - binary_sensor:
+      - name: tvattmaskin
+        unique_id: tvattmaskin
+        delay_on:
+          seconds: 10
+        delay_off:
+          minutes: 2
+        state: "{{ states('sensor.tvattmaskin_effekt') | float(0.0) > 5 }}"
+#
+#
+automation:
+############## Tvättmaskin ######################################################
+  #
+  #
+  - alias: Tvättmaskin klar
+    id: Tvättmaskin klar
+    trigger:
+      platform: state
+      entity_id: binary_sensor.tvattmaskin
+      from: "on"
+      to: "off"
+    action:
+      - service: persistent_notification.create
+        data_template:
+          message: "Tvättmaskin"
+          title: "Tvätten är klar"
+      - service: notify.mobile_app_mikael_iphone
+        data_template:
+          message: "Tvättmaskin klar"
+          title: "Tvätten är klar"
+      - service: notify.mobile_app_lina_iphone
+        data_template:
+          message: "Tvättmaskin klar"
+          title: "Tvätten är klar"
+#
