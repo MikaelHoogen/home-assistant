@@ -72,7 +72,7 @@ automation:
           message: "Diskmaskin"
           title: "Diskmaskinen är klar"
       # Skickar en notis till Mikaels iPhone.
-      - action: notify.mobile_app_mikaels_iphone
+      - action: notify.mobile_app_mikael_iphone
         data:
           message: "Diskmaskin klar"
           title: "Diskmaskinen är klar"

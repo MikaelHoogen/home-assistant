@@ -1,0 +1,43 @@
+# =================================================================
+# ALLMÄNNA KONFIGURATIONER FÖR KÖKET
+# =================================================================
+# Detta paket innehåller entiteter som används av flera olika
+# funktioner i köket.
+# -----------------------------------------------------------------
+
+# --- Ljusgrupp för hela köket ---
+light:
+  - platform: group
+    name: Kök grupp
+    unique_id: kok_grupp
+    entities:
+      - light.kok
+      - light.kok_fonsterbelysning
+      # Ljusstake
+#      - light.ac_0000001_3
+
+# --- Sensorer som styr automationen ---
+template:
+  # Skapar en kort "närvaro"-puls när köksentrédörren öppnas.
+  - trigger:
+      - platform: state
+        to: 'on'
+        from: 'off'
+        entity_id: binary_sensor.koksentre_dorrbrytare
+    binary_sensor:
+      - name: Köksentré dörrtrigger
+        unique_id: Köksentré dörrtrigger
+        auto_off: 5
+        state: "true"
+
+  - binary_sensor:
+      # --- Närvarosensor ---
+      # Kombinerar rörelsesensor och dörrtrigger till en närvarosensor.
+      - name: kok_presence
+        unique_id: kok_presence
+        device_class: motion
+        delay_off:
+          minutes: 20
+        state: >
+          {{ is_state('binary_sensor.kok_hue_motion_sensor_motion', 'on')
+            or is_state('binary_sensor.koksentre_dorrtrigger', 'on') }}

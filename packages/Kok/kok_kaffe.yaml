@@ -1,0 +1,43 @@
+# =================================================================
+# KONFIGURATION FÖR KAFFEBRYGGARE, ESPRESSOMASKIN OCH VATTENKOKARE
+# =================================================================
+# All logik för att spåra förbrukning och automatiskt stänga av
+# kaffebryggare, espressomaskin och vattenkokare.
+# -----------------------------------------------------------------
+
+# =================================================================
+# UTILITY METER (HJÄLPARE)
+# =================================================================
+# Denna entitet är konfigurerad via användargränssnittet (UI) för
+# att den ska bli korrekt kopplad till den fysiska enheten.
+#
+# Sökväg: Inställningar > Enheter & Tjänster > Enheter >
+#         (Din Nous A1Z-enhet) > Lägg till hjälpare
+#
+# Entitet som skapas:
+#   - utility_meter.kok_kaffe_vattenkokare_energi_dag
+#
+# -----------------------------------------------------------------
+
+# =================================================================
+# AUTOMATION
+# =================================================================
+# Ställer in den inbyggda timern i den smarta kontakten för att
+# stänga av sig själv efter en timme.
+# -----------------------------------------------------------------
+automation:
+  - alias: Kaffebryggare/Vattenkokare auto-avstängning
+    id: kok_kaffe_vattenkokare_auto_avstangning
+    triggers:
+      # Triggar när enheten slås PÅ.
+      - trigger: state
+        entity_id: switch.kok_kaffe_vattenkokare
+        to: 'on'
+    actions:
+      # Talar om för kontakten att starta sin inbyggda nedräknare.
+      - action: number.set_value
+        target:
+          entity_id: number.kok_kaffe_vattenkokare_countdown
+        data:
+          # Värdet anges i sekunder (1 timme = 3600 sekunder).
+          value: 3600

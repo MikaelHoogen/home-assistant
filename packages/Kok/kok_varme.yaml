@@ -1,0 +1,31 @@
+# =================================================================
+# LOGIK FÖR VÄRMEGOLV
+# =================================================================
+# All logik för att styra värmegolvet i köket.
+# -----------------------------------------------------------------
+
+# --- Termostat för värmegolvet ---
+climate:
+  - platform: generic_thermostat
+    name: Kök värmegolv
+    unique_id: Kök värmegolv
+    cold_tolerance: 0.0
+    hot_tolerance: 0.2
+    precision: 0.1
+    heater: switch.kok_varmegolv
+    target_sensor: sensor.kok_temperature
+    min_temp: 7
+
+# --- Automationen som styr termostaten ---
+automation:
+  - alias: Kök värme
+    id: kok_varme
+    triggers:
+      - trigger: time_pattern
+        minutes: "/30"
+    actions:
+      - action: climate.set_hvac_mode
+        target:
+          entity_id: climate.kok_varmegolv
+        data:
+          hvac_mode: "{{ iif(states('binary_sensor.varmegolv_block') == 'on', 'off', 'heat') }}"

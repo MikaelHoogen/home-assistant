@@ -1,0 +1,32 @@
+# =================================================================
+# LOGIK FÖR BÄNKBELYSNING
+# =================================================================
+# All logik för att styra bänkbelysningen i köket.
+# -----------------------------------------------------------------
+
+# --- Sensor som styr automationen ---
+template:
+  - binary_sensor:
+      - name: kok_bank_presence_light_automation_control
+        unique_id: kok_bank_presence_light_automation_control
+        state: >
+          {{ is_state('binary_sensor.kok_presence', 'on')
+            and ( state_attr('switch.adaptive_lighting_kok', 'color_temp_kelvin') >= 2200 | float )
+            and is_state('binary_sensor.kok_lightlevel', 'off')
+            or ( is_state('binary_sensor.kok_presence', 'on')
+            and is_state('light.kok_bankbelysning', 'on') ) }}
+
+# --- Automationen som tänder/släcker ---
+automation:
+  - alias: Kök bänkbelysning
+    id: kok_bankbelysning
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.kok_bank_presence_light_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.kok_bank_presence_light_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.kok_bankbelysning
