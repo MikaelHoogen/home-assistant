@@ -1,0 +1,115 @@
+# =================================================================
+# LOGIK FÖR BELYSNING
+# =================================================================
+# All logik för att styra belysningen i barnrummet.
+# -----------------------------------------------------------------
+
+# --- Profil för adaptiv belysning ---
+adaptive_lighting:
+  - name: Barnrum
+    lights:
+    - light.barnrum_skank
+    - light.barnrum_fonster_1
+    - light.barnrum_fonster_2
+    - light.barnrum_tak
+    # Julstjärna
+    # - light.barnrum_fonster
+    prefer_rgb_color: false
+    transition: 30
+    initial_transition: 5
+    interval: 90
+    min_brightness: 20
+    max_brightness: 100
+    min_color_temp: 2000
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_rgb_color: [255, 161, 40]
+    take_over_control: true
+    detect_non_ha_changes: true
+    adapt_only_on_bare_turn_on: true
+
+# --- Inställningar för ljusnivåer ---
+input_number:
+  barnrum_light_level:
+    name: Ljusstyrka utomhus för belysning barnrum
+    min: 0
+    max: 1000
+    step: 50
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
+  barnrum_fonster_light_level:
+    name: Ljusstyrka utomhus för belysning i fönster barnrum
+    min: 0
+    max: 1000
+    step: 10
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
+
+# --- Sensorer som styr automationerna ---
+template:
+  - binary_sensor:
+      # Steg 1: Är det mörkt nog ute för den allmänna belysningen?
+      - name: barnrum_belysning_lightlevel
+        unique_id: barnrum_belysning_lightlevel
+        delay_off:
+          minutes: 15
+        state: >
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.barnrum_light_level') | float(0) }}
+      
+      # Steg 1: Är det mörkt nog ute för fönsterbelysningen?
+      - name: barnrum_belysning_fonster_lightlevel
+        unique_id: barnrum_belysning_fonster_lightlevel
+        delay_off:
+          minutes: 10
+        state: >
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.barnrum_fonster_light_level') | float(0) }}
+      
+      # Steg 2: Kontrollsensor för den allmänna belysningen.
+      - name: barnrum_belysning_automation_control
+        unique_id: barnrum_belysning_automation_control
+        state: >
+          {{ ( is_state('binary_sensor.barnrum_belysning_lightlevel', 'on')
+          and is_state('input_boolean.sovdags', 'off') )
+          or ( is_state('binary_sensor.barnrum_belysning_lightlevel', 'on')
+          and is_state('input_boolean.barnrum_gaster', 'on') ) }}
+      
+      # Steg 2: Kontrollsensor för fönsterbelysningen.
+      - name: barnrum_belysning_fonster_automation_control
+        unique_id: barnrum_belysning_fonster_automation_control
+        state: >
+          {{ ( is_state('binary_sensor.barnrum_belysning_fonster_lightlevel', 'on')
+          and is_state('input_boolean.sovdags', 'off') )
+          or ( is_state('binary_sensor.barnrum_belysning_fonster_lightlevel', 'on')
+          and is_state('input_boolean.barnrum_gaster', 'on') ) }}
+
+# --- Automationer ---
+automation:
+  - alias: Barnrum belysning
+    id: barnrum_belysning
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.barnrum_belysning_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.barnrum_belysning_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.barnrum_skank
+  
+  - alias: Barnrum belysning fönster
+    id: barnrum_belysning_fonster
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.barnrum_belysning_fonster_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.barnrum_belysning_fonster_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.barnrum_fonster_1
+            - light.barnrum_fonster_2
+            # - light.barnrum_fonster
+            # - light.barnrum_ljusstake

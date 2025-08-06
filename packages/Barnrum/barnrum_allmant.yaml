@@ -1,0 +1,26 @@
+# =================================================================
+# ALLMÄNNA KONFIGURATIONER FÖR BARNRUMMET
+# =================================================================
+# Detta paket innehåller entiteter som används av flera olika
+# funktioner i barnrummet.
+# -----------------------------------------------------------------
+
+# --- Ljusgrupp för hela barnrummet ---
+light:
+  - platform: group
+    name: barnrum_grupp
+    unique_id: barnrum_grupp
+    entities:
+      - light.barnrum_skank
+      - light.barnrum_fonster_1
+      - light.barnrum_fonster_2
+      - light.barnrum_tak
+      # Julstjärna
+      # - light.barnrum_fonster
+      # Ljusstake
+      # - light.barnrum_ljusstake
+
+# --- Hjälpare för att indikera om gäster är i rummet ---
+input_boolean:
+  barnrum_gaster:
+    name: Gäster barnrum
