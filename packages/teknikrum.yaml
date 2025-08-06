@@ -1,0 +1,19 @@
+# --- Profil för adaptiv belysning ---
+adaptive_lighting:
+  - name: Teknikrum
+    lights:
+      - light.teknikrum_tak
+    transition: 30
+    sleep_transition: 30
+    initial_transition: 1
+    interval: 90
+    min_brightness: 30
+    max_brightness: 100
+    min_color_temp: 2000
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_rgb_color: [255, 161, 40]
+    take_over_control: true
+    detect_non_ha_changes: false
+    adapt_only_on_bare_turn_on: true
