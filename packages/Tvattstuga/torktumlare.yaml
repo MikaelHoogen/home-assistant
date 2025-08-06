@@ -1,7 +1,17 @@
+# =================================================================
+# KONFIGURATION FÖR TORKTUMLARE
+# =================================================================
+# All logik för att spåra torktumlarens förbrukning och status,
+# samt skicka notiser när den är klar.
+# -----------------------------------------------------------------
+
+# =================================================================
+# UTILITY METERS
+# =================================================================
+# Dessa entiteter spårar torktumlarens elförbrukning över olika
+# tidsperioder (dag, månad, år).
+# -----------------------------------------------------------------
 utility_meter:
-  ###################
-  ### Förbrukning ###
-  ###################
   torktumlare_dag:
     unique_id: torktumlare_dag
     source: sensor.torktumlare_consumption
@@ -17,40 +27,52 @@ utility_meter:
     source: sensor.torktumlare_consumption
     periodically_resetting: false
     cycle: yearly
-  #
-#
-#
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Denna sensor utgör grunden för automationen.
+# -----------------------------------------------------------------
 template:
   - binary_sensor:
-# Torktumlare
-    - name: torktumlare
-      unique_id: torktumlare
-      delay_on:
-        seconds: 10
-      delay_off:
-        minutes: 2
-      state: >
-        {{ states('sensor.torktumlare_power') | float(0.0) > 1 }}
-#
+      # En sensor som blir 'on' när torktumlaren drar mer än 1W.
+      # Detta indikerar att ett program är igång.
+      - name: torktumlare
+        unique_id: torktumlare
+        delay_on:
+          seconds: 10
+        delay_off:
+          minutes: 2
+        state: >
+          {{ states('sensor.torktumlare_power') | float(0.0) > 1 }}
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# Skickar en notis när torktumlaren är klar.
+# -----------------------------------------------------------------
 automation:
   - alias: Torktumlare klar
-    id: Torktumlare klar
-    trigger:
-      platform: state
-      entity_id: binary_sensor.torktumlare
-      from: "on"
-      to: "off"
-    action:
-      - service: persistent_notification.create
-        data_template:
+    id: torktumlare_klar
+    triggers:
+      # Triggar när torktumlar-sensorn går från 'on' (körs) till 'off' (klar).
+      - trigger: state
+        entity_id: binary_sensor.torktumlare
+        from: "on"
+        to: "off"
+    actions:
+      # Skickar en persistent notis i Home Assistant.
+      - action: notify.persistent_notification
+        data:
           message: "Torktumlare"
           title: "Torktumlaren är klar"
-      - service: notify.mobile_app_mikael_iphone
-        data_template:
+      # Skickar en notis till Mikaels iPhone.
+      - action: notify.mobile_app_mikael_iphone
+        data:
           message: "Torktumlare klar"
           title: "Torktumlaren är klar"
-      - service: notify.mobile_app_lina_iphone
-        data_template:
+      # Skickar en notis till Linas iPhone.
+      - action: notify.mobile_app_lina_iphone
+        data:
           message: "Torktumlare"
           title: "Torktumlaren är klar"
-#
