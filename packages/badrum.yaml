@@ -1,4 +1,15 @@
-################# Circadian ##############################################
+# =================================================================
+# KONFIGURATION FÖR BADRUMMET
+# =================================================================
+# All logik för att styra enheter och automationer i badrummet.
+# -----------------------------------------------------------------
+
+# =================================================================
+# ADAPTIVE LIGHTING-PROFIL
+# =================================================================
+# Justerar automatiskt färgtemperatur och ljusstyrka på lampan
+# baserat på solens position.
+# -----------------------------------------------------------------
 adaptive_lighting:
   - name: Badrum
     lights:
@@ -17,7 +28,14 @@ adaptive_lighting:
     sleep_rgb_color: [255, 161, 40]
     take_over_control: true
     detect_non_ha_changes: true
-#
+    adapt_only_on_bare_turn_on: true
+
+# =================================================================
+# INPUT NUMBERS (HJÄLPARE)
+# =================================================================
+# Ett justerbart tröskelvärde för när det ska anses vara
+# "mörkt nog" för att tända belysningen.
+# -----------------------------------------------------------------
 input_number:
   badrum_light_level:
     name: Ljusstyrka badrum för belysning
@@ -26,10 +44,16 @@ input_number:
     step: 10
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
-#
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Dessa sensorer utgör grunden för automationen.
+# -----------------------------------------------------------------
 template:
   - binary_sensor:
-      ### Light level
+      # Steg 1: Är det för ljust inne för att tända belysningen?
+      # Har en "spärr" för att inte släckas direkt om lampan själv höjer ljusnivån.
       - name: badrum_lightlevel
         unique_id: badrum_lightlevel
         device_class: light
@@ -40,7 +64,8 @@ template:
             and is_state('light.badrum', 'off') )
             or ( is_state('binary_sensor.badrum_lightlevel', 'on')
             and is_state('light.badrum', 'on') ) }}
-      ### Närvaro
+      
+      # En grundläggande närvarosensor med 7 minuters fördröjning.
       - name: badrum_presence
         unique_id: badrum_presence
         device_class: motion
@@ -48,27 +73,29 @@ template:
           minutes: 7
         state: >
           {{ is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'on') }}
-      ### Närvarostyrd belysning
+      
+      # Steg 2: Den slutgiltiga kontrollsensorn som triggar automationen.
       - name: badrum_presence_light_automation_control
+        unique_id: badrum_presence_light_automation_control
         state: >
           {{ is_state('binary_sensor.badrum_presence', 'on')
               and is_state('binary_sensor.badrum_lightlevel', 'off') }}
-#
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# Tänder och släcker belysningen baserat på närvaro och ljusnivå.
+# -----------------------------------------------------------------
 automation:
-#
   - alias: Badrum belysning
-    id: Badrum belysning
-    trigger:
-    - platform: state
-      entity_id: binary_sensor.badrum_presence_light_automation_control
-    - platform: homeassistant
-      event: start
-    action:
-    - service: >
-        {% if is_state('binary_sensor.badrum_presence_light_automation_control', 'on') %}
-        light.turn_on
-        {% elif is_state('binary_sensor.badrum_presence_light_automation_control', 'off') %}
-        light.turn_off
-        {% endif %}
-      entity_id:
-      - light.badrum
+    id: badrum_belysning
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.badrum_presence_light_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.badrum_presence_light_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.badrum
