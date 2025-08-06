@@ -1,5 +1,17 @@
-################# Circadian ##############################################
+# =================================================================
+# KONFIGURATION FÖR MIKAELS RUM
+# =================================================================
+# All logik för att styra enheter och automationer i Mikaels rum.
+# -----------------------------------------------------------------
+
+# =================================================================
+# ADAPTIVE LIGHTING-PROFILER
+# =================================================================
+# Justerar automatiskt färgtemperatur och ljusstyrka på lamporna
+# baserat på solens position.
+# -----------------------------------------------------------------
 adaptive_lighting:
+  # --- Profil för den primära belysningen ---
   - name: Mikaels rum
     lights:
       - light.mikaels_rum_hue_play_1
@@ -18,11 +30,12 @@ adaptive_lighting:
     max_color_temp: 4500
     sleep_brightness: 1
     sleep_color_temp: 2000
-    max_sunrise_time: "07:00:00"  # override the sunrise time
-    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+    max_sunrise_time: "07:00:00"
     take_over_control: true
     detect_non_ha_changes: true
+    adapt_only_on_bare_turn_on: true
 
+  # --- Separat profil för ljusslingan ---
   - name: Mikaels rum ljusslinga
     lights:
       - light.mikaels_rum_ljusslinga
@@ -36,14 +49,17 @@ adaptive_lighting:
     max_color_temp: 4500
     sleep_brightness: 1
     sleep_color_temp: 2000
-    max_sunrise_time: 07:00:00
-    # If another source calls light.turn_on while the lights are on and being adapted, disable Adaptive Lighting.
+    max_sunrise_time: "07:00:00"
     take_over_control: true
     detect_non_ha_changes: true
-#
-#
+
+# =================================================================
+# INPUT NUMBERS (HJÄLPARE)
+# =================================================================
+# Ett justerbart tröskelvärde för när det ska anses vara
+# "mörkt nog" för att tända fönsterbelysningen.
+# -----------------------------------------------------------------
 input_number:
-  #
   mikaels_rum_fonster_light_level:
     name: Ljusstyrka utomhus för belysning i fönster mikaels rum
     min: 0
@@ -51,68 +67,84 @@ input_number:
     step: 10
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
-#
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Dessa sensorer utgör grunden för automationerna.
+# -----------------------------------------------------------------
 template:
-#
   - binary_sensor:
-  #
+      # --- Sensorer för fönsterbelysning ---
+      # Steg 1: Är det mörkt nog ute för att tända?
       - name: mikaels_rum_belysning_lightlevel
         unique_id: mikaels_rum_belysning_lightlevel
         delay_off:
           minutes: 5
         state: >
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float < states('input_number.mikaels_rum_fonster_light_level') | float }}
-      #
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.mikaels_rum_fonster_light_level') | float(0) }}
+      
+      # Steg 2: Den slutgiltiga kontrollsensorn som triggar automationen.
       - name: mikaels_rum_belysning_automation_control
         unique_id: mikaels_rum_belysning_automation_control
         state: >
           {{ is_state('binary_sensor.mikaels_rum_belysning_lightlevel', 'on') }}
-      #
-      - name: mikaels_rum_närvaro
-        unique_id: mikaels_rum_närvaro
+
+      # --- Närvarosensorer ---
+      # En grundläggande närvarosensor med 10 minuters fördröjning.
+      - name: mikaels_rum_narvaro
+        unique_id: mikaels_rum_narvaro
         delay_off:
           minutes: 10
         state: >
           {{ is_state('binary_sensor.mikaels_rum_rorelsesensor', 'on') }}
-      #
+      
+      # En separat sensor som används för att trigga avstängning efter en längre tid.
+      # Denna startar sin 60-minuters nedräkning samtidigt som rörelse upptäcks.
       - name: mikaels_rum_belysning_av
         unique_id: mikaels_rum_belysning_av
         delay_off:
           minutes: 60
         state: >
           {{ is_state('binary_sensor.mikaels_rum_rorelsesensor', 'on') }}
-#
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# Styr händelser och logik i Mikaels rum.
+# -----------------------------------------------------------------
 automation:
-  #
+  # --- Automation för fönsterbelysning ---
+  # Tänder och släcker fönsterlampan baserat på ljusnivån utomhus.
   - alias: Mikaels rum belysning fönster
-    id: Mikaels rum belysning fönster
-    trigger:
-      - platform: state
+    id: mikaels_rum_belysning_fonster
+    triggers:
+      - trigger: state
         entity_id: binary_sensor.mikaels_rum_belysning_automation_control
-      - platform: homeassistant
+      - trigger: homeassistant
         event: start
-    action:
-      - service: >
-          {% if is_state('binary_sensor.mikaels_rum_belysning_automation_control', 'on') %}
-          light.turn_on
-          {% elif is_state('binary_sensor.mikaels_rum_belysning_automation_control', 'off') %}
-          light.turn_off
-          {% endif %}
-        entity_id:
-          - light.mikaels_rum_fonster
-#
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.mikaels_rum_belysning_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.mikaels_rum_fonster
+
+  # --- Automation för att släcka belysning vid frånvaro ---
+  # Släcker den primära belysningen när ingen har varit i rummet på en timme.
   - alias: Mikaels rum belysning av
-    id: Mikaels rum belysning av
-    trigger:
-      - platform: state
+    id: mikaels_rum_belysning_av
+    triggers:
+      # Triggar när sensorn med 60 minuters fördröjning slår av.
+      - trigger: state
         entity_id: binary_sensor.mikaels_rum_belysning_av
         to: 'off'
-    action:
-      - service: light.turn_off
-        entity_id:
-          - light.mikaels_rum_hue_play_1
-          - light.mikaels_rum_hue_play_2
-          - light.mikaels_rum_hue_play_3
-          - light.mikaels_rum_skrivbord
-          - light.mikaels_rum_ljusslinga
-          - light.mikaels_rum_tak
+    actions:
+      - action: light.turn_off
+        target:
+          entity_id:
+            - light.mikaels_rum_hue_play_1
+            - light.mikaels_rum_hue_play_2
+            - light.mikaels_rum_hue_play_3
+            - light.mikaels_rum_skrivbord
+            - light.mikaels_rum_ljusslinga
+            - light.mikaels_rum_tak
