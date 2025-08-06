@@ -35,6 +35,7 @@ adaptive_lighting:
     sleep_color_temp: 2200
     take_over_control: true
     detect_non_ha_changes: false
+    adapt_only_on_bare_turn_on: true
   #
   - name: Utomhusbelysning filament
     lights:
@@ -51,12 +52,11 @@ adaptive_lighting:
     interval: 90
     min_brightness: 40
     max_brightness: 100
-    min_color_temp: 2100
-    max_color_temp: 4000
     sleep_brightness: 1
     sleep_color_temp: 2200
-    take_over_control: false
+    take_over_control: true
     detect_non_ha_changes: false
+    adapt_only_on_bare_turn_on: true
     #
 light:
   - platform: group
