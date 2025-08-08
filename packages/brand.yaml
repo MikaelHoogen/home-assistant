@@ -1,14 +1,30 @@
-#
+# =================================================================
+# KONFIGURATION FÖR BRANDVARNARE
+# =================================================================
+# All logik för att länka samman brandvarnare och hantera larm.
+# -----------------------------------------------------------------
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# Dessa automationer ser till att när en brandvarnare larmar,
+# så larmar även de andra i huset.
+# -----------------------------------------------------------------
 automation:
-#
+  # --- Larm från Barnrummet ---
   - alias: Barnrum brandvarnare
     id: barnrum_brandvarnare
     triggers:
+      # Triggar först efter att sensorn varit 'on' i 5 sekunder för att undvika falsklarm.
       - trigger: state
         entity_id: binary_sensor.barnrum_brandvarnare_smoke
-        to:
-          - 'on'
-          - 'off'
+        to: 'on'
+        for:
+          seconds: 5
+      # Triggar direkt när larmet återställs.
+      - trigger: state
+        entity_id: binary_sensor.barnrum_brandvarnare_smoke
+        to: 'off'
     actions:
       - action: "siren.turn_{{ trigger.to_state.state }}"
         target:
@@ -17,56 +33,83 @@ automation:
             - siren.allrum_hall_brandvarnare_alarm
             - siren.snickarboa_brandvarnare_alarm
             - siren.tvattstuga_brandvarnare_alarm
-#
+
+  # --- Larm från Allrummet ---
   - alias: Allrum brandvarnare
     id: allrum_brandvarnare
-    # Toppnivå-nyckeln är nu 'triggers' (plural).
     triggers:
-      # Nyckeln för typ av trigger är nu 'trigger' (singular).
       - trigger: state
         entity_id: binary_sensor.allrum_brandvarnare_smoke
-        to:
-          - 'on'
-          - 'off'
-    # Toppnivå-nyckeln för handlingar är nu 'actions' (plural).
+        to: 'on'
+        for:
+          seconds: 5
+      - trigger: state
+        entity_id: binary_sensor.allrum_brandvarnare_smoke
+        to: 'off'
     actions:
-      # Detta är den nya syntaxen för HA 2024.10+
       - action: "siren.turn_{{ trigger.to_state.state }}"
         target:
           entity_id:
             - siren.allrum_hall_brandvarnare_alarm
             - siren.snickarboa_brandvarnare_alarm
             - siren.tvattstuga_brandvarnare_alarm
-#
+
+  # --- Larm från Hallen i Allrummet ---
   - alias: Allrum hall brandvarnare
     id: allrum_hall_brandvarnare
-    trigger:
-      - platform: state
+    triggers:
+      - trigger: state
         entity_id: binary_sensor.allrum_hall_brandvarnare_smoke
-        to:
-          - 'on'
-          - 'off'
-    action:
+        to: 'on'
+        for:
+          seconds: 5
+      - trigger: state
+        entity_id: binary_sensor.allrum_hall_brandvarnare_smoke
+        to: 'off'
+    actions:
       - action: "siren.turn_{{ trigger.to_state.state }}"
         target:
           entity_id:
             - siren.allrum_brandvarnare_alarm
             - siren.snickarboa_brandvarnare_alarm
             - siren.tvattstuga_brandvarnare_alarm
-#
+
+  # --- Larm från Snickarboden ---
   - alias: Snickarboa brandvarnare
     id: snickarboa_brandvarnare
-    trigger:
-      - platform: state
+    triggers:
+      - trigger: state
         entity_id: binary_sensor.snickarboa_brandvarnare_smoke
-        to:
-          - 'on'
-          - 'off'
-    action:
+        to: 'on'
+        for:
+          seconds: 5
+      - trigger: state
+        entity_id: binary_sensor.snickarboa_brandvarnare_smoke
+        to: 'off'
+    actions:
       - action: "siren.turn_{{ trigger.to_state.state }}"
         target:
           entity_id:
             - siren.allrum_brandvarnare_alarm
             - siren.allrum_hall_brandvarnare_alarm
             - siren.tvattstuga_brandvarnare_alarm
-#
+
+  # --- Larm från Tvättstugan ---
+  - alias: Tvättstuga brandvarnare
+    id: tvattstuga_brandvarnare
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.tvattstuga_brandvarnare_smoke
+        to: 'on'
+        for:
+          seconds: 5
+      - trigger: state
+        entity_id: binary_sensor.tvattstuga_brandvarnare_smoke
+        to: 'off'
+    actions:
+      - action: "siren.turn_{{ trigger.to_state.state }}"
+        target:
+          entity_id:
+            - siren.allrum_brandvarnare_alarm
+            - siren.allrum_hall_brandvarnare_alarm
+            - siren.snickarboa_brandvarnare_alarm
