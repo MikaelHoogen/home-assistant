@@ -1,0 +1,32 @@
+# =================================================================
+# SENSORER FÖR KAMEROR
+# =================================================================
+# Dessa sensorer skapar en fördröjning på kamerornas rörelsedetektion
+# för att undvika multipla notiser för samma händelse.
+# -----------------------------------------------------------------
+template:
+  - binary_sensor:
+      # --- Närvarosensorer för kameror ---
+      - name: carport_presence
+        unique_id: carport_presence
+        device_class: motion
+        delay_off:
+          minutes: 5
+        state: >
+          {{ is_state('binary_sensor.carport_person', 'on') }}
+
+      - name: entre_presence_animal
+        unique_id: entre_presence_animal
+        device_class: motion
+        delay_off:
+          minutes: 5
+        state: >
+          {{ is_state('binary_sensor.entre_reolink_animal', 'on') }}
+
+      - name: entre_presence_person
+        unique_id: entre_presence_person
+        device_class: motion
+        delay_off:
+          minutes: 5
+        state: >
+          {{ is_state('binary_sensor.entre_reolink_person', 'on') }}

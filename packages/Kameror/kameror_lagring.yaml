@@ -1,0 +1,76 @@
+# =================================================================
+# AUTOMATIONER FÖR LAGRING
+# =================================================================
+# Dessa automationer hanterar lagring av bilder (snapshots)
+# och videoinspelningar från kamerorna.
+# -----------------------------------------------------------------
+automation:
+  # --- Snapshot vid rörelse i carporten ---
+  - alias: Carport snapshot
+    id: carport_snapshot
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.carport_vehicle
+        to: 'on'
+      - trigger: state
+        entity_id: binary_sensor.carport_person
+        to: 'on'
+    actions:
+      - action: camera.snapshot
+        target:
+          entity_id: camera.carport_main
+        data:
+          filename: '/media/disk_f/snapshots/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d") }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.jpg'
+
+  # --- Snapshot vid rörelse vid entrén ---
+  - alias: Entré snapshot
+    id: entre_snapshot
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.entre_reolink_person
+        to: 'on'
+    actions:
+      - action: camera.snapshot
+        target:
+          entity_id: camera.entre_reolink_clear
+        data:
+          filename: '/media/disk_f/snapshots/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d") }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.jpg'
+
+  # --- Inspelning vid rörelse i carporten ---
+  - alias: Carport inspelning
+    id: carport_inspelning
+    mode: single
+    max_exceeded: silent
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.carport_vehicle
+        to: 'on'
+      - trigger: state
+        entity_id: binary_sensor.carport_person
+        to: 'on'
+    actions:
+      - action: camera.record
+        data:
+          filename: '/media/disk_f/recordings/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d") }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.mp4'
+          duration: 180
+        target:
+          entity_id: camera.carport_main
+      - delay: 180
+
+  # --- Inspelning vid rörelse vid kattkamera ---
+  - alias: Kattkamera inspelning
+    id: kattkamera_inspelning
+    mode: single
+    max_exceeded: silent
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.tvattstuga_djur
+        to: 'on'
+    actions:
+      - action: camera.record
+        data:
+          filename: '/media/disk_f/recordings/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d") }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.mp4'
+          duration: 60
+        target:
+          entity_id: camera.tvattstuga_hog_klarhet
+      - delay: 60

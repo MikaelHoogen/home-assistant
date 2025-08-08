@@ -1,0 +1,173 @@
+# =================================================================
+# AUTOMATIONER FÖR NOTISER
+# =================================================================
+# Dessa automationer skickar notiser med bilder när kamerorna
+# upptäcker rörelse av olika typer.
+# -----------------------------------------------------------------
+automation:
+  # --- Allmän rörelse i carporten ---
+  - alias: Carport rörelse
+    id: carport_rorelse
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.carport_motion
+        to: 'on'
+    actions:
+      - action: camera.snapshot
+        target:
+          entity_id: camera.carport_main
+        data:
+          filename: '/media/disk_f/snapshots/Carport_rörelse_{{ now().strftime("%Y-%m-%d_%H:%M") }}.jpg'
+      - action: notify.mobile_app_mikael_iphone
+        data:
+          message: Något rör sig
+          title: Rörelse
+          data:
+            image: /api/camera_proxy/camera.carport_main # Visar en live-bild
+
+  # --- Person i carporten ---
+  - alias: Carport rörelse person notifiering
+    id: carport_rorelse_person_notifiering
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.carport_presence
+        to: 'on'
+    actions:
+      - action: camera.snapshot
+        target:
+          entity_id: camera.carport_main
+        data:
+          filename: /media/notify.jpg
+      - delay: 1
+      - action: notify.mobile_app_mikael_iphone
+        data:
+          message: Någon rör sig
+          title: Rörelse person
+          data:
+            image: /media/local/notify.jpg
+            url: /lovelace/cam
+      - action: notify.mobile_app_lina_iphone
+        data:
+          message: Någon rör sig
+          title: Rörelse person
+          data:
+            image: /media/local/notify.jpg
+
+  # --- Person vid entrén ---
+  - alias: Entré rörelse person notifiering
+    id: entre_rorelse_person_notifiering
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.entre_presence_person
+        to: 'on'
+    actions:
+      - action: camera.snapshot
+        target:
+          entity_id: camera.entre_reolink_clear
+        data:
+          filename: /media/entre_notify.jpg
+      - delay: 1
+      - action: notify.mobile_app_mikael_iphone
+        data:
+          message: Någon rör sig vid entrén
+          title: Rörelse person
+          data:
+            image: /media/local/entre_notify.jpg
+            url: /lovelace/cam
+      - action: notify.mobile_app_lina_iphone
+        data:
+          message: Någon rör sig vid entrén
+          title: Rörelse person
+          data:
+            image: /media/local/entre_notify.jpg
+
+  # --- Djur vid entrén ---
+  - alias: Entré rörelse djur notifiering
+    id: entre_rorelse_djur_notifiering
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.entre_presence_animal
+        to: 'on'
+    actions:
+      - action: camera.snapshot
+        target:
+          entity_id: camera.entre_reolink_clear
+        data:
+          filename: /media/entre_notify_animal.jpg
+      - delay: 1
+      - action: notify.mobile_app_mikael_iphone
+        data:
+          message: Djur rör sig vid entrén
+          title: Rörelse djur
+          data:
+            image: /media/local/entre_notify_animal.jpg
+            url: /lovelace/cam
+      - action: notify.mobile_app_lina_iphone
+        data:
+          message: Djur rör sig vid entrén
+          title: Rörelse djur
+          data:
+            image: /media/local/entre_notify_animal.jpg
+            url: /lovelace/cam
+
+  # --- Bil i carporten ---
+  - alias: Carport rörelse bil notifiering
+    id: carport_rorelse_bil_notifiering
+    mode: single
+    max_exceeded: silent
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.carport_vehicle
+        to: 'on'
+    actions:
+      - action: camera.snapshot
+        target:
+          entity_id: camera.carport_main
+        data:
+          filename: /media/notify_car.jpg
+      - delay: 1
+      - action: notify.mobile_app_mikael_iphone
+        data:
+          message: Bil upptäckt
+          title: Rörelse bil
+          data:
+            image: /media/local/notify_car.jpg
+            url: /lovelace/cam
+      - delay: 5
+      - action: notify.mobile_app_lina_iphone
+        data:
+          message: Bil upptäckt
+          title: Rörelse bil
+          data:
+            image: /media/local/notify_car.jpg
+      - delay:
+          minutes: 5
+
+  # --- Rörelse vid kattkamera ---
+  - alias: Kattkamera rörelse notifiering
+    id: kattkamera_rorelse_notifiering
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.tvattstuga_djur
+        to: 'on'
+    actions:
+      - action: camera.snapshot
+        target:
+          entity_id: camera.tvattstuga_hog_klarhet
+        data:
+          filename: /media/kattkamera_notify.jpg
+      - delay: 1
+      - action: notify.mobile_app_mikael_iphone
+        data:
+          message: Rörelse i tvättstugan
+          title: Katt?
+          data:
+            image: /media/local/kattkamera_notify.jpg
+            url: /lovelace/foder
+      - action: notify.mobile_app_lina_iphone
+        data:
+          message: Rörelse i tvättstugan
+          title: Katt?
+          data:
+            image: /media/local/kattkamera_notify.jpg
+            url: /lovelace/foder
