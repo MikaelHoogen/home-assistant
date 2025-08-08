@@ -7,10 +7,3 @@ input_number:
     unit_of_measurement: lx
     icon: mdi:lightbulb-on
 #
-  fonsterbelysning_kelvin:
-    name: Belysning fönster kelvin
-    min: 2000
-    max: 4000
-    step: 100
-    unit_of_measurement: kelvin
-    icon: mdi:lightbulb-on
