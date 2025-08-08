@@ -1,114 +1,142 @@
+# =================================================================
+# KONFIGURATION FÖR "LEVANDE LJUS"-LÄGE
+# =================================================================
+# All logik för att skapa en stämningsbelysning med levande ljus-
+# effekt i olika delar av huset.
+# -----------------------------------------------------------------
+
+# =================================================================
+# INPUT BOOLEANS (HJÄLPARE)
+# =================================================================
+# Dessa hjälpare används för att manuellt aktivera/avaktivera de
+# olika "levande ljus"-scenerna.
+# -----------------------------------------------------------------
 input_boolean:
   candle:
     name: Levande ljus
     icon: mdi:candle
   badrum_candle:
-    name: Levande ljus
+    name: Levande ljus Badrum
     icon: mdi:candle
-#
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# Styr de olika "levande ljus"-scenerna.
+# -----------------------------------------------------------------
 automation:
-########## Levande ljus ######################
+  # --- Huvudscen för levande ljus ---
   - alias: Candle
-    id: Candle
-    trigger:
-    - platform: state
-      entity_id: input_boolean.candle
-  #    to: 'on'
-    action:
+    id: candle
+    triggers:
+      # Triggar när huvudknappen för levande ljus ändrar status.
+      - trigger: state
+        entity_id: input_boolean.candle
+    actions:
       - choose:
-        #
-        - conditions:
-          - condition: state
-            state: 'on'
-            entity_id: input_boolean.candle
-          sequence:
-            - service: switch.turn_off
-              entity_id:
-              - switch.adaptive_lighting_kok
-              - switch.adaptive_lighting_kok_fonster
-              - switch.adaptive_lighting_hall
-              - switch.adaptive_lighting_badrum
-              - switch.adaptive_lighting_vardagsrum_belysning_filament
-            - delay:
-                seconds: 5
-            - service: light.turn_on
-              data:
-                brightness_pct: 2
-                entity_id:
-                - light.kok_fonsterbelysning
-                - light.vardagsrum_fonster_hangande
-                - light.vardagsrum_fonster_fotogen
-                - light.vardagsrum_fonster_piano
-                - light.vardagsrum_fonster_trappa
-                
-            - service: light.turn_on
-              data:
-                entity_id:
-                - light.kok_koksbord
-                - light.kok_tak
-                - light.kok_kokso
-                - light.hall
-                - light.badrum
-                - light.vardagsrum_tak
-                - light.vardagsrum_bord
-                - light.hall_byra
-                profile: 'candle'
-            - service: light.turn_off
-              data:
-                entity_id:
-                - light.kok_bankbelysning
-        #
-        - conditions:
-          - condition: state
-            state: 'off'
-            entity_id: input_boolean.candle
-          sequence:
-            - service: automation.trigger
-              entity_id:
-              - automation.vardagsrum_belysning
-              - automation.kok_belysning_litet_fonster
-              - automation.kok_belysning_stora_fonster
-            - service: switch.turn_on
-              entity_id:
-              - switch.adaptive_lighting_kok
-              - switch.adaptive_lighting_kok_fonster
-              - switch.adaptive_lighting_hall
-              - switch.adaptive_lighting_badrum
-              - switch.adaptive_lighting_vardagsrum_belysning_filament
-  #
-  ########## Levande ljus badrum ######################
-  #
-  - alias: Badrum Candle
-    id: Badrum Candle
-    trigger:
-    - platform: state
-      entity_id: input_boolean.badrum_candle
-  #    to: 'on'
-    action:
-      - choose:
-        #
+          # --- SEKVENS NÄR LÄGET AKTIVERAS (ON) ---
           - conditions:
               - condition: state
+                entity_id: input_boolean.candle
                 state: 'on'
-                entity_id: input_boolean.badrum_candle
             sequence:
-              - service: switch.turn_off
-                entity_id:
-                - switch.adaptive_lighting_badrum
+              # Steg 1: Stäng av adaptiv belysning i berörda rum.
+              - action: switch.turn_off
+                target:
+                  entity_id:
+                    - switch.adaptive_lighting_kok
+                    - switch.adaptive_lighting_kok_fonster
+                    - switch.adaptive_lighting_hall
+                    - switch.adaptive_lighting_badrum
+                    - switch.adaptive_lighting_vardagsrum_belysning_filament
               - delay:
                   seconds: 5
-              - service: light.turn_on
-                data:
+              # Steg 2: Sätt en väldigt låg, fast ljusstyrka på vissa lampor.
+              - action: light.turn_on
+                target:
                   entity_id:
-                  - light.badrum
+                    - light.kok_fonsterbelysning
+                    - light.vardagsrum_fonster_hangande
+                    - light.vardagsrum_fonster_fotogen
+                    - light.vardagsrum_fonster_piano
+                    - light.vardagsrum_fonster_trappa
+                data:
+                  brightness_pct: 2
+              # Steg 3: Aktivera "candle"-profilen på huvudbelysningen.
+              - action: light.turn_on
+                target:
+                  entity_id:
+                    - light.kok_koksbord
+                    - light.kok_tak
+                    - light.kok_kokso
+                    - light.hall
+                    - light.badrum
+                    - light.vardagsrum_tak
+                    - light.vardagsrum_bord
+                    - light.hall_byra
+                data:
                   profile: 'candle'
-          #
+              # Steg 4: Släck belysning som inte ska vara tänd.
+              - action: light.turn_off
+                target:
+                  entity_id:
+                    - light.kok_bankbelysning
+
+          # --- SEKVENS NÄR LÄGET AVAKTIVERAS (OFF) ---
           - conditions:
               - condition: state
+                entity_id: input_boolean.candle
                 state: 'off'
-                entity_id: input_boolean.badrum_candle
             sequence:
-              - service: switch.turn_on
-                entity_id:
-                - switch.adaptive_lighting_badrum
-                  #
+              # Steg 1: Återaktivera de vanliga belysningsautomationerna.
+              - action: automation.trigger
+                target:
+                  entity_id:
+                    - automation.vardagsrum_belysning
+                    - automation.kok_belysning_litet_fonster
+                    - automation.kok_belysning_stora_fonster
+              # Steg 2: Återaktivera adaptiv belysning i berörda rum.
+              - action: switch.turn_on
+                target:
+                  entity_id:
+                    - switch.adaptive_lighting_kok
+                    - switch.adaptive_lighting_kok_fonster
+                    - switch.adaptive_lighting_hall
+                    - switch.adaptive_lighting_badrum
+                    - switch.adaptive_lighting_vardagsrum_belysning_filament
+
+  # --- Scen för levande ljus i badrummet ---
+  - alias: Badrum Candle
+    id: badrum_candle
+    triggers:
+      # Triggar när knappen för levande ljus i badrummet ändrar status.
+      - trigger: state
+        entity_id: input_boolean.badrum_candle
+    actions:
+      - choose:
+          # --- SEKVENS NÄR LÄGET AKTIVERAS (ON) ---
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.badrum_candle
+                state: 'on'
+            sequence:
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.adaptive_lighting_badrum
+              - delay:
+                  seconds: 5
+              - action: light.turn_on
+                target:
+                  entity_id: light.badrum
+                data:
+                  profile: 'candle'
+
+          # --- SEKVENS NÄR LÄGET AVAKTIVERAS (OFF) ---
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.badrum_candle
+                state: 'off'
+            sequence:
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.adaptive_lighting_badrum
