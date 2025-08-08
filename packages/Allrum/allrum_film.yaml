@@ -18,11 +18,11 @@ input_boolean:
     name: Film spelar
     icon: mdi:filmstrip
 
-# --- Automationer för filmläget ---
+# --- Automation för att hantera filmläget ---
+# Denna automation hanterar både när en film startar och stoppas.
 automation:
-  # Denna automation känner av när en film börjar spelas.
-  - alias: Film play
-    id: Film play
+  - alias: Filmläge hantering
+    id: filmlage_hantering
     triggers:
       # Triggar när mediaspelaren har varit i 'playing'-läge i 10 sekunder.
       - trigger: state
@@ -30,33 +30,47 @@ automation:
         to: 'playing'
         for:
           seconds: 10
-    condition:
-      # Körs bara om det övergripande filmläget är aktivt.
-      - condition: state
-        entity_id: input_boolean.film
-        state: 'on'
-    actions:
-      # Slår på 'film_spelar'-hjälparen.
-      - action: input_boolean.turn_on
-        target:
-          entity_id: input_boolean.film_spelar
+        id: film_startar
 
-  # Denna automation känner av när en film pausas, stoppas eller när filmläget avaktiveras.
-  - alias: Film pause/off
-    id: Film pause/off
-    triggers:
       # Triggar när mediaspelaren har varit pausad/stoppad i 5 sekunder.
       - trigger: state
         entity_id: media_player.allrum
         from: 'playing'
         for:
           seconds: 5
+        id: film_stoppar
+
       # Triggar också direkt om det övergripande filmläget stängs av.
       - trigger: state
         entity_id: input_boolean.film
         to: 'off'
+        id: filmlage_av
     actions:
-      # Slår av 'film_spelar'-hjälparen.
-      - action: input_boolean.turn_off
-        target:
-          entity_id: input_boolean.film_spelar
+      - choose:
+          # --- SEKVENS NÄR EN FILM STARTAR ---
+          - conditions:
+              # Villkor 1: Automationen måste ha triggats av att filmen startade.
+              - condition: trigger
+                id: film_startar
+              # Villkor 2: Det övergripande filmläget måste vara aktivt.
+              - condition: state
+                entity_id: input_boolean.film
+                state: 'on'
+            sequence:
+              # Slår på 'film_spelar'-hjälparen.
+              - action: input_boolean.turn_on
+                target:
+                  entity_id: input_boolean.film_spelar
+
+          # --- SEKVENS NÄR EN FILM STOPPAR ELLER FILMLÄGET STÄNGS AV ---
+          - conditions:
+              # Körs om någon av de andra två triggers har aktiverats.
+              - condition: trigger
+                id:
+                  - film_stoppar
+                  - filmlage_av
+            sequence:
+              # Slår av 'film_spelar'-hjälparen.
+              - action: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.film_spelar
