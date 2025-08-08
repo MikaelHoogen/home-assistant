@@ -1,66 +1,106 @@
+# =================================================================
+# KONFIGURATION FÖR SEMESTERSTYRNING
+# =================================================================
+# All logik för att simulera närvaro och skicka larm när ingen
+# ska vara hemma.
+# -----------------------------------------------------------------
+
+# =================================================================
+# INPUT BOOLEAN (HJÄLPARE)
+# =================================================================
+# Denna hjälpare används för att manuellt aktivera/avaktivera
+# semesterläget.
+# -----------------------------------------------------------------
 input_boolean:
   semester:
     name: Semester
-#
-#
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Denna sensor utgör grunden för rörelselarmet.
+# -----------------------------------------------------------------
 template:
   - binary_sensor:
-    - name: semester_rorelse
-      unique_id: semester_rorelse
-      device_class: presence
-      delay_off:
-        minutes: 1
-      state: >
-        {{ is_state('input_boolean.semester', 'on')
-          and ( is_state('binary_sensor.allrum_rorelsesensor', 'on')
-          or is_state('binary_sensor.mikaels_rum_rorelsesensor', 'on')
-          or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
-          or is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'on')
-          or is_state('binary_sensor.hall_hue_motion_sensor_motion', 'on')
-          or is_state('binary_sensor.kok_hue_motion_sensor_motion', 'on')
-          or is_state('binary_sensor.vardagsrum_hue_motion_sensor_motion', 'on') ) }}
-            
-#
+      # Denna sensor blir 'on' om någon rörelse detekteras i huset
+      # SAMTIDIGT som semesterläget är aktivt.
+      - name: semester_rorelse
+        unique_id: semester_rorelse
+        device_class: presence
+        delay_off:
+          minutes: 1
+        state: >
+          {{ is_state('input_boolean.semester', 'on')
+            and ( is_state('binary_sensor.allrum_rorelsesensor', 'on')
+            or is_state('binary_sensor.mikaels_rum_rorelsesensor', 'on')
+            or is_state('binary_sensor.allrum_hue_motion_sensor_motion', 'on')
+            or is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'on')
+            or is_state('binary_sensor.hall_hue_motion_sensor_motion', 'on')
+            or is_state('binary_sensor.kok_hue_motion_sensor_motion', 'on')
+            or is_state('binary_sensor.vardagsrum_hue_motion_sensor_motion', 'on') ) }}
+
+# =================================================================
+# ALERTS (LARM)
+# =================================================================
+# Denna sektion definierar det upprepade larmet som skickas
+# vid rörelse under semesterläget.
+# -----------------------------------------------------------------
 alert:
   semester_rorelse:
     name: Rörelse detekterad i huset
     done_message: Ingen rörelse detekterad i huset
     entity_id: binary_sensor.semester_rorelse
     state: 'on'
-    repeat: 30
+    repeat: 30 # Upprepas var 30:e minut tills det kvitteras.
     can_acknowledge: true
     skip_first: false
     notifiers:
       - mobile_app_mikael_iphone
       - persistent_notification
-#      - mobile_app_sm_g998b
-#
-#
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# Denna automation simulerar närvaro genom att slå på och av
+# "Godnatt"-läget vid slumpmässiga tider.
+# -----------------------------------------------------------------
 automation:
-- alias: Semester sovdags
-  id: semester_sovdags
-  trigger:
-  - platform: time
-    at: '21:00:00'
-  condition:
-  - condition: state
-    entity_id: input_boolean.semester
-    state: 'on'
-  action:
-  - delay: '{{ (range(0, 1)|random|int) }}:{{ (range(1, 59)|random|int) }}:00'
-  - service: input_boolean.turn_on
-    entity_id: input_boolean.sovdags
-#
-- alias: Semester vakna
-  id: semester_vakna
-  trigger:
-  - platform: time
-    at: '07:30:00'
-  condition:
-  - condition: state
-    entity_id: input_boolean.semester
-    state: 'on'
-  action:
-#  - delay: '{{ (range(0, 1)|random|int) }}:{{ (range(1, 59)|random|int) }}:00'
-  - service: input_boolean.turn_off
-    entity_id: input_boolean.sovdags
+  - alias: Semester sovdags
+    id: semester_sovdags
+    triggers:
+      # Trigger för "Godnatt".
+      - trigger: time
+        at: '21:00:00'
+        id: sovdags_tid
+      # Trigger för "Vakna".
+      - trigger: time
+        at: '07:30:00'
+        id: vakna_tid
+    conditions:
+      # Körs bara om semesterläget är aktivt.
+      - condition: state
+        entity_id: input_boolean.semester
+        state: 'on'
+    actions:
+      - choose:
+          # --- SEKVENS FÖR "SOVDAGS" ---
+          - conditions:
+              - condition: trigger
+                id: sovdags_tid
+            sequence:
+              # Väntar en slumpmässig tid mellan 1 minut och 1 timme och 59 minuter.
+              - delay: '{{ (range(0, 1)|random|int) }}:{{ (range(1, 59)|random|int) }}:00'
+              # Aktiverar "Godnatt"-läget.
+              - action: input_boolean.turn_on
+                target:
+                  entity_id: input_boolean.sovdags
+
+          # --- SEKVENS FÖR "VAKNA" ---
+          - conditions:
+              - condition: trigger
+                id: vakna_tid
+            sequence:
+              # Avaktiverar "Godnatt"-läget.
+              - action: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.sovdags
