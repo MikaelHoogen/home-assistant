@@ -1,0 +1,97 @@
+# =================================================================
+# KONFIGURATION FÖR BELYSNING I SNICKARBOA
+# =================================================================
+# All logik för att styra belysningen i snickarboden.
+# -----------------------------------------------------------------
+
+# =================================================================
+# ADAPTIVE LIGHTING-PROFIL
+# =================================================================
+adaptive_lighting:
+  - name: Snickarboa
+    lights:
+      - light.snickarboa_arbetsbank
+      - light.snickarboa_spotlights
+    transition: 45
+    initial_transition: 5
+    interval: 90
+    min_brightness: 1
+    max_brightness: 100
+    min_color_temp: 2200
+    max_color_temp: 4000
+    sleep_brightness: 1
+    take_over_control: true
+    separate_turn_on_commands: true
+
+# =================================================================
+# INPUT NUMBERS (HJÄLPARE)
+# =================================================================
+input_number:
+  snickarboa_light_level:
+    name: Ljusstyrka snickarboa för belysning
+    min: 0
+    max: 1000
+    step: 10
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+template:
+  # Skapar en kort "närvaro"-puls när dörren öppnas.
+  - trigger:
+      - platform: state
+        to: "on"
+        from: "off"
+        entity_id: binary_sensor.snickarboa_dorrbrytare
+    binary_sensor:
+      - name: Snickarboa dörrtrigger
+        unique_id: Snickarboa dörrtrigger
+        auto_off: 30
+        state: "true"
+
+  - binary_sensor:
+      # Kombinerar rörelsesensor och dörrtrigger till en närvarosensor.
+      - name: snickarboa_presence
+        unique_id: snickarboa_presence
+        device_class: motion
+        delay_off:
+          minutes: 5
+        state: >
+          {{ is_state('binary_sensor.snickarboa_hue_motion_sensor_motion', 'on')
+          or is_state('binary_sensor.snickarboa_dorrtrigger', 'on') }}
+
+      # Kollar om det är för ljust inne för att tända belysningen.
+      - name: snickarboa_lightlevel
+        unique_id: snickarboa_lightlevel
+        device_class: light
+        delay_on:
+          minutes: 10
+        state: >
+          {{ states('sensor.snickarboa_hue_motion_sensor_light_level') | float(0) > states('input_number.snickarboa_light_level') | float(0)}}
+
+      # Den slutgiltiga kontrollsensorn som triggar automationen.
+      - name: snickarboa_presence_light_automation_control
+        unique_id: snickarboa_presence_light_automation_control
+        state: >
+          {{ is_state('binary_sensor.snickarboa_presence', 'on')
+            and is_state('binary_sensor.snickarboa_lightlevel', 'off') }}
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+automation:
+  - alias: Snickarboa belysning
+    id: snickarboa_belysning
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.snickarboa_presence_light_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.snickarboa_presence_light_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.snickarboa_arbetsbank
+            - light.snickarboa_spotlights

@@ -1,0 +1,59 @@
+# =================================================================
+# KONFIGURATION FÖR AVFUKTARE I SNICKARBOA
+# =================================================================
+# All logik för att styra avfuktaren och spåra dess förbrukning.
+# -----------------------------------------------------------------
+
+# =================================================================
+# HYGROSTAT
+# =================================================================
+# Skapar en hygrostat-entitet för avfuktaren (Custom Integration).
+# -----------------------------------------------------------------
+humidifier:
+  - platform: generic_hygrostat
+    name: snickarboa_avfuktare
+    humidifier: switch.snickarboa_avfuktare
+    target_sensor: sensor.snickarboa_humidity
+    device_class: dehumidifier
+    max_humidity: 85
+
+# =================================================================
+# UTILITY METERS
+# =================================================================
+# Spårar avfuktarens energiförbrukning över olika tidsperioder.
+# -----------------------------------------------------------------
+utility_meter:
+  avfuktare_timme:
+    unique_id: avfuktare_timme
+    source: sensor.avfuktare_consumption
+    cycle: hourly
+  avfuktare_dag:
+    unique_id: avfuktare_dag
+    source: sensor.avfuktare_consumption
+    cycle: daily
+  avfuktare_manad:
+    unique_id: avfuktare_manad
+    source: sensor.avfuktare_consumption
+    cycle: monthly
+  avfuktare_ar:
+    unique_id: avfuktare_ar
+    source: sensor.avfuktare_consumption
+    cycle: yearly
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# Styr avfuktaren baserat på externa villkor.
+# -----------------------------------------------------------------
+automation:
+  - alias: Snickarboa avfuktare
+    id: snickarboa_avfuktare
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.heatpump_emhass
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "humidifier.turn_{{ iif(states('binary_sensor.heatpump_emhass') == 'on', 'on', 'off') }}"
+        target:
+          entity_id: humidifier.snickarboa_avfuktare

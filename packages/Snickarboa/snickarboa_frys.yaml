@@ -1,0 +1,94 @@
+# =================================================================
+# KONFIGURATION FÖR FRYSEN I SNICKARBOA
+# =================================================================
+# All logik för att övervaka frysens temperatur, energiförbrukning
+# och skapa relaterade larm.
+# -----------------------------------------------------------------
+
+# =================================================================
+# SENSORER FÖR BERÄKNING
+# =================================================================
+# Dessa sensorer utgör grunden för att kunna beräkna frysens
+# energiförbrukning och larmstatus.
+# -----------------------------------------------------------------
+# --- Trend-sensor som indikerar när kompressorn går ---
+binary_sensor:
+  - platform: trend
+    sensors:
+      snickarboa_frys:
+        invert: true # Blir 'on' när temperaturen stiger (d.v.s. kompressorn går).
+        friendly_name: Snickarboa frys
+        entity_id: sensor.snickarboa_frys_temperature
+
+# --- Historik-sensor som mäter hur länge kompressorn har varit igång ---
+sensor:
+  - platform: history_stats
+    unique_id: snickarboa_frys_time_today
+    name: snickarboa_frys_time_today
+    entity_id: binary_sensor.snickarboa_frys
+    state: "on"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+    end: "{{ now().replace(microsecond=0) }}"
+
+# =================================================================
+# UTILITY METERS
+# =================================================================
+# Spårar frysens beräknade energiförbrukning över tid.
+# -----------------------------------------------------------------
+utility_meter:
+  snickarboa_frys_timme:
+    unique_id: snickarboa_frys_timme
+    source: sensor.snickarboa_frys_dag
+    cycle: hourly
+  snickarboa_frys_manad:
+    unique_id: snickarboa_frys_manad
+    source: sensor.snickarboa_frys_dag
+    cycle: monthly
+  snickarboa_frys_ar:
+    unique_id: snickarboa_frys_ar
+    source: sensor.snickarboa_frys_dag
+    cycle: yearly
+
+# =================================================================
+# INPUT NUMBERS (HJÄLPARE)
+# =================================================================
+# Justerbart tröskelvärde för temperaturlarmet.
+# -----------------------------------------------------------------
+input_number:
+  snickarboa_frys_temperature_low:
+    name: Snickarboa frys låg temperatur
+    min: -20
+    max: -14
+    step: 1
+    unit_of_measurement: °C
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Dessa sensorer utför beräkningar och skapar larmstatus.
+# -----------------------------------------------------------------
+template:
+  - binary_sensor:
+      # --- Sensor för temperaturlarm ---
+      # Blir 'on' om temperaturen i frysen blir för hög.
+      - name: snickarboa_frys_temperature_low
+        unique_id: snickarboa_frys_tempterature_low # Bevarat original-ID
+        delay_on:
+          minutes: 1
+        delay_off:
+          minutes: 10
+        state: >
+          {{ states('sensor.snickarboa_frys_temperature') | float(0) > states('input_number.snickarboa_frys_temperature_low') | float(0) }}
+
+  - sensor:
+      # --- Beräknad energiförbrukning ---
+      # Beräknar förbrukningen i kWh baserat på hur länge kompressorn varit igång.
+      - name: snickarboa_frys_dag
+        unique_id: snickarboa_frys_dag
+        unit_of_measurement: "kWh"
+        state_class: total_increasing
+        device_class: energy
+        availability: "{{ is_number(states('sensor.snickarboa_frys_time_today')) }}"
+        state: >
+          {{ ( 75.0 * states('sensor.snickarboa_frys_time_today') | float('nan') / 1000.0 ) | round(3) }}

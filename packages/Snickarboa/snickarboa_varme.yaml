@@ -1,0 +1,126 @@
+# =================================================================
+# KONFIGURATION FÖR VÄRME I SNICKARBOA
+# =================================================================
+# All logik för att styra värmeelementet, spåra dess förbrukning
+# och beräkna kostnader.
+# -----------------------------------------------------------------
+
+# =================================================================
+# TERMOSTAT
+# =================================================================
+# Skapar en termostat-entitet för värmeelementet.
+# -----------------------------------------------------------------
+climate:
+  - platform: generic_thermostat
+    name: Snickarboa
+    unique_id: Snickarboa
+    cold_tolerance: 0.2
+    hot_tolerance: 2
+    precision: 0.1
+    heater: switch.snickarboa_heater
+    target_sensor: sensor.snickarboa_temperature
+    min_temp: 0
+    activity_temp: 7
+
+# =================================================================
+# UTILITY METERS
+# =================================================================
+# Spårar värmeelementets förbrukning och kostnader över tid.
+# -----------------------------------------------------------------
+utility_meter:
+  # --- Förbrukning ---
+  snickarboa_heater_timme:
+    unique_id: snickarboa_heater_timme
+    source: sensor.snickarboa_heater_energy
+    cycle: hourly
+    periodically_resetting: false
+  snickarboa_heater_dag:
+    unique_id: snickarboa_heater_dag
+    source: sensor.snickarboa_heater_energy
+    cycle: daily
+    periodically_resetting: false
+  snickarboa_heater_manad:
+    unique_id: snickarboa_heater_manad
+    source: sensor.snickarboa_heater_energy
+    cycle: monthly
+    periodically_resetting: false
+  snickarboa_heater_ar:
+    unique_id: snickarboa_heater_ar
+    source: sensor.snickarboa_heater_energy
+    cycle: yearly
+    periodically_resetting: false
+
+  # --- Kostnad ---
+  snickarboa_heater_dag_kostnad:
+    unique_id: snickarboa_heater_dag_kostnad
+    source: sensor.snickarboa_heater_timme_kostnad
+    cycle: daily
+  snickarboa_heater_manad_kostnad:
+    unique_id: snickarboa_heater_manad_kostnad
+    source: sensor.snickarboa_heater_timme_kostnad
+    cycle: monthly
+  snickarboa_heater_ar_kostnad:
+    unique_id: snickarboa_heater_ar_kostnad
+    source: sensor.snickarboa_heater_timme_kostnad
+    cycle: yearly
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Dessa sensorer utgör grunden för automationen och beräkningarna.
+# -----------------------------------------------------------------
+template:
+  - binary_sensor:
+      # Sensor som styr om värmaren ska vara tillåten att köra.
+      - name: snickarboa_heater
+        unique_id: snickarboa_heater
+        delay_on:
+          minutes: 1
+        availability: >
+          {{ is_number(states('sensor.p_deferrable1')) }}
+        state: >
+          {{ states('sensor.p_deferrable1') | float('nan') > 0}}
+
+  - sensor:
+      # Sensorer som läser av effekt och energi från värmeelementets smart plug.
+      - name: snickarboa_heater_power
+        unique_id: snickarboa_heater_power
+        unit_of_measurement: "W"
+        state_class: measurement
+        device_class: power
+        availability: "{{ is_number(states('sensor.shellyplug_s_c8c9a3a4f80a_power')) }}"
+        state: >
+          {{ states('sensor.shellyplug_s_c8c9a3a4f80a_power') | float('nan') }}
+      - name: snickarboa_heater_energy
+        unique_id: snickarboa_heater_energy
+        unit_of_measurement: kWh
+        availability: "{{ is_number(states('sensor.shellyplug_s_c8c9a3a4f80a_energy')) }}"
+        state: >
+          {{ states('sensor.shellyplug_s_c8c9a3a4f80a_energy') | float('nan') }}
+      
+      # Beräknar den löpande kostnaden för värmeelementet per timme.
+      - name: snickarboa_heater_timme_kostnad
+        unique_id: snickarboa_heater_timme_kostnad
+        unit_of_measurement: "SEK"
+        availability: "{{ is_number(states('sensor.snickarboa_heater_timme')) and is_number(states('sensor.elpris_totalt_sek')) }}"
+        state: "{{ ( states('sensor.snickarboa_heater_timme') | float(0.0) * states('sensor.elpris_totalt_sek') | float(0.0) ) | round(3) }}"
+
+# =================================================================
+# AUTOMATION
+# =================================================================
+# Styr värmeelementet baserat på externa villkor.
+# -----------------------------------------------------------------
+automation:
+  - alias: Snickarboa värmare
+    id: snickarboa_varmare
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.snickarboa_heater
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: climate.set_hvac_mode
+        target:
+          entity_id: climate.snickarboa
+        data:
+          hvac_mode: "{{ iif(states('binary_sensor.snickarboa_heater') == 'on', 'heat', 'off') }}"

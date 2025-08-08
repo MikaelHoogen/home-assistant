@@ -1,0 +1,36 @@
+# =================================================================
+# KONFIGURATION FÖR LARM I SNICKARBOA
+# =================================================================
+# All logik för att övervaka temperaturer och skapa larm.
+# -----------------------------------------------------------------
+
+# =================================================================
+# INPUT NUMBERS (HJÄLPARE)
+# =================================================================
+# Justerbara tröskelvärden för temperaturlarmen.
+# -----------------------------------------------------------------
+input_number:
+  # Larmgräns för låg temperatur i rummet.
+  snickarboa_temperature_low:
+    name: Snickarboa låg temperatur
+    min: 0
+    max: 7
+    step: 1
+    unit_of_measurement: °C
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Dessa sensorer triggar de faktiska larmen (som definieras i larm.yaml).
+# -----------------------------------------------------------------
+template:
+  - binary_sensor:
+      # --- Sensor för temperaturlarm ---
+      - name: snickarboa_temperature_low
+        unique_id: snickarboa_tempterature_low # Bevarat original-ID
+        delay_on:
+          minutes: 1
+        delay_off:
+          minutes: 10
+        state: >
+          {{ states('sensor.snickarboa_temperature') | float(0) < states('input_number.snickarboa_temperature_low') | float(0) }}
