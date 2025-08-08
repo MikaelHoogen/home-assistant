@@ -1,4 +1,15 @@
-# --- Profil för adaptiv belysning ---
+# =================================================================
+# KONFIGURATION FÖR TEKNIKRUMMET
+# =================================================================
+# All logik för att styra enheter och automationer i teknikrummet.
+# -----------------------------------------------------------------
+
+# =================================================================
+# ADAPTIVE LIGHTING-PROFIL
+# =================================================================
+# Justerar automatiskt färgtemperatur och ljusstyrka på lampan
+# baserat på solens position.
+# -----------------------------------------------------------------
 adaptive_lighting:
   - name: Teknikrum
     lights:
@@ -12,8 +23,28 @@ adaptive_lighting:
     min_color_temp: 2000
     max_color_temp: 4000
     sleep_brightness: 1
-    sleep_rgb_or_color_temp: rgb_color
-    sleep_rgb_color: [255, 161, 40]
+    sleep_color_temp: 2000
     take_over_control: true
     detect_non_ha_changes: false
     adapt_only_on_bare_turn_on: true
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# Styr händelser och logik i teknikrummet.
+# -----------------------------------------------------------------
+automation:
+  - alias: Teknikrum knapp
+    id: teknikrum_knapp
+    triggers:
+      # Triggar vid ett enkelt tryck på den fysiska knappen.
+      - platform: device
+        domain: mqtt
+        device_id: 8f98424ec0a69a4e044ea99d3117134b
+        type: action
+        subtype: single
+    actions:
+      # Växlar (tänder/släcker) taklampan.
+      - action: light.toggle
+        target:
+          entity_id: light.teknikrum_tak
