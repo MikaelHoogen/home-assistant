@@ -2,7 +2,8 @@
 # KONFIGURATION FÖR KAFFEBRYGGARE, ESPRESSOMASKIN OCH VATTENKOKARE
 # =================================================================
 # All logik för att spåra förbrukning och automatiskt stänga av
-# kaffebryggare, espressomaskin och vattenkokare.
+# den smarta kontakt som styr kaffebryggare, espressomaskin och
+# vattenkokare.
 # -----------------------------------------------------------------
 
 # =================================================================
@@ -11,30 +12,52 @@
 # Denna entitet är konfigurerad via användargränssnittet (UI) för
 # att den ska bli korrekt kopplad till den fysiska enheten.
 #
-# Sökväg: Inställningar > Enheter & Tjänster > Enheter >
-#         (Din Nous A1Z-enhet) > Lägg till hjälpare
-#
 # Entitet som skapas:
 #   - utility_meter.kok_kaffe_vattenkokare_energi_dag
+#
+# Källsensor (Source):
+#   - sensor.kok_kaffe_vattenkokare_energy
 #
 # -----------------------------------------------------------------
 
 # =================================================================
+# TEMPLATE-SENSOR
+# =================================================================
+# Denna sensor känner av när någon av apparaterna är aktivt i bruk
+# (brygger, kokar, etc.), vilket indikeras av en hög effektförbrukning.
+# -----------------------------------------------------------------
+template:
+  - binary_sensor:
+      - name: kok_kaffe_vattenkokare_aktiv_anvandning
+        unique_id: kok_kaffe_vattenkokare_aktiv_anvandning
+        # Blir 'on' när effektförbrukningen går över 100W,
+        # vilket indikerar att en ny bryggning/kokning har startat.
+        state: "{{ states('sensor.kok_kaffe_vattenkokare_power') | float(0) > 100 }}"
+
+# =================================================================
 # AUTOMATION
 # =================================================================
-# Ställer in den inbyggda timern i den smarta kontakten för att
-# stänga av sig själv efter en timme.
+# Startar/återstartar den inbyggda timern i den smarta kontakten
+# varje gång enheten slås på ELLER en ny bryggning/kokning startar.
 # -----------------------------------------------------------------
 automation:
-  - alias: Kaffebryggare/Vattenkokare auto-avstängning
+  - alias: Kaffebryggare/Espresso/Vattenkokare auto-avstängning
     id: kok_kaffe_vattenkokare_auto_avstangning
+    # 'restart' säkerställer att om en ny bryggning startar medan
+    # timern redan räknar ner, så börjar den om från början.
+    mode: restart
     triggers:
-      # Triggar när enheten slås PÅ.
+      # Triggar när kontakten slås PÅ. Detta startar den initiala säkerhetstimern.
       - trigger: state
         entity_id: switch.kok_kaffe_vattenkokare
         to: 'on'
+      # Triggar också när någon av apparaterna blir aktiv (effekt > 100W).
+      # Detta återstartar timern för att ge en full timme från senaste aktivitet.
+      - trigger: state
+        entity_id: binary_sensor.kok_kaffe_vattenkokare_aktiv_anvandning
+        to: 'on'
     actions:
-      # Talar om för kontakten att starta sin inbyggda nedräknare.
+      # Talar om för kontakten att starta/återstarta sin inbyggda nedräknare.
       - action: number.set_value
         target:
           entity_id: number.kok_kaffe_vattenkokare_countdown
