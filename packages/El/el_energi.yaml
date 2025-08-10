@@ -151,6 +151,26 @@ utility_meter:
     cycle: monthly
 
 # =================================================================
+# INTEGRATION-SENSORER
+# =================================================================
+# Dessa sensorer konverterar effekt (W) till energi (kWh) över tid.
+# -----------------------------------------------------------------
+sensor:
+    # --- Solcellsproduktion & Självförbrukning ---
+    - platform: integration
+      source: sensor.solar_power_photovoltaics
+      name: solar_photovoltaics_total_energy
+      unique_id: solar_photovoltaics_total_energy
+      unit_prefix: k
+      method: left
+    - platform: integration
+      source: sensor.solar_power_self_usage
+      name: solar_energy_self_usage
+      unique_id: solar_energy_self_usage
+      unit_prefix: k
+      method: left
+
+# =================================================================
 # TEMPLATE-SENSORER
 # =================================================================
 # Dessa sensorer utför beräkningar och skapar ny data baserat
