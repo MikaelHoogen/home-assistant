@@ -1,54 +1,78 @@
-#waste_collection_schedule:
-#  sources:
-#    - name: ssam_se
-#      args:
-#        street_address: Sännesholma 2181, Hallaryd
+# =================================================================
+# KONFIGURATION FÖR SOPHÄMTNING
+# =================================================================
+# All logik för att hantera sensorer och skicka notiser för
+# sophämtning.
+# -----------------------------------------------------------------
 
+# =================================================================
+# WASTE COLLECTION SCHEDULE (AVSTÄNGD)
+# =================================================================
+# Denna integration hämtar schemat för sophämtning.
+# Den är för närvarande avstängd men kan aktiveras genom att
+# ta bort kommentarstecknen (#).
+# -----------------------------------------------------------------
+# waste_collection_schedule:
+#   sources:
+#     - name: ssam_se
+#       args:
+#         street_address: Sännesholma 2181, Hallaryd
 
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# Denna automation skickar en påminnelse dagen innan sophämtning.
+# -----------------------------------------------------------------
 automation:
-############## Sopor ######################################################
-  #
-  #
-#
-  - alias: ssam_sophatmning_fni1
-    id: ssam_sophatmning_fni1
-    trigger:
-      platform: state
-      entity_id: sensor.ssam_sophatmning_fni1
-      attribute: days_from_today
-      to: 1
-    action:
-      - service: persistent_notification.create
-        data_template:
-          message: "Sophämtning"
-          title: "Imorgon tömts kärl 1"
-      - service: notify.mobile_app_mikael_iphone
-        data_template:
-          message: "Sophämtning"
-          title: "Imorgon tömts kärl 1"
-      - service: notify.mobile_app_lina_iphone
-        data_template:
-          message: "Sophämtning"
-          title: "Imorgon tömts kärl 1"
-#
-#
-  - alias: ssam_sophatmning_fni2
-    id: ssam_sophatmning_fni2
-    trigger:
-      platform: state
-      entity_id: sensor.ssam_sophatmning_fni2
-      attribute: days_from_today
-      to: 1
-    action:
-      - service: persistent_notification.create
-        data_template:
-          message: "Sophämtning"
-          title: "Imorgon tömts kärl 2"
-      - service: notify.mobile_app_mikael_iphone
-        data_template:
-          message: "Sophämtning"
-          title: "Imorgon tömts kärl 2"
-      - service: notify.mobile_app_lina_iphone
-        data_template:
-          message: "Sophämtning"
-          title: "Imorgon tömts kärl 2"
+  - alias: Sophämtning notifiering
+    id: sophamtning_notifiering
+    triggers:
+      # Triggar när det är 1 dag kvar till tömning av Kärl 1.
+      - trigger: state
+        entity_id: sensor.ssam_sophatmning_fni1
+        attribute: days_to
+        to: 1
+        id: karl_1
+      # Triggar när det är 1 dag kvar till tömning av Kärl 2.
+      - trigger: state
+        entity_id: sensor.ssam_sophatmning_fni2
+        attribute: days_to
+        to: 1
+        id: karl_2
+    actions:
+      - choose:
+          # --- SEKVENS FÖR KÄRL 1 ---
+          - conditions:
+              - condition: trigger
+                id: karl_1
+            sequence:
+              - action: notify.persistent_notification
+                data:
+                  message: "Sophämtning"
+                  title: "Imorgon töms kärl 1"
+              - action: notify.mobile_app_mikael_iphone
+                data:
+                  message: "Sophämtning"
+                  title: "Imorgon töms kärl 1"
+              - action: notify.mobile_app_lina_iphone
+                data:
+                  message: "Sophämtning"
+                  title: "Imorgon töms kärl 1"
+
+          # --- SEKVENS FÖR KÄRL 2 ---
+          - conditions:
+              - condition: trigger
+                id: karl_2
+            sequence:
+              - action: notify.persistent_notification
+                data:
+                  message: "Sophämtning"
+                  title: "Imorgon töms kärl 2"
+              - action: notify.mobile_app_mikael_iphone
+                data:
+                  message: "Sophämtning"
+                  title: "Imorgon töms kärl 2"
+              - action: notify.mobile_app_lina_iphone
+                data:
+                  message: "Sophämtning"
+                  title: "Imorgon töms kärl 2"
