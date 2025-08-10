@@ -9,8 +9,6 @@
 # WASTE COLLECTION SCHEDULE (AVSTÄNGD)
 # =================================================================
 # Denna integration hämtar schemat för sophämtning.
-# Den är för närvarande avstängd men kan aktiveras genom att
-# ta bort kommentarstecknen (#).
 # -----------------------------------------------------------------
 # waste_collection_schedule:
 #   sources:
@@ -30,13 +28,13 @@ automation:
       # Triggar när det är 1 dag kvar till tömning av Kärl 1.
       - trigger: state
         entity_id: sensor.ssam_sophatmning_fni1
-        attribute: days_to
+        attribute: days_from_today # <-- ÅTERSTÄLLD
         to: 1
         id: karl_1
       # Triggar när det är 1 dag kvar till tömning av Kärl 2.
       - trigger: state
         entity_id: sensor.ssam_sophatmning_fni2
-        attribute: days_to
+        attribute: days_from_today # <-- ÅTERSTÄLLD
         to: 1
         id: karl_2
     actions:
