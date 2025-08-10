@@ -316,6 +316,6 @@ template:
       - name: solar_battery_charged_from_solar_hour_cost_only_elpris
         unique_id: solar_battery_charged_from_solar_hour_cost_only_elpris
         unit_of_measurement: "SEK"
-        state_class: total_increasing
+        state_class: total
         availability: "{{ is_number(states('sensor.solar_battery_charged_from_solar_hour')) and is_number(states('sensor.elpris')) }}"
         state: "{{ ( states('sensor.solar_battery_charged_from_solar_hour') | float('naan') * states('sensor.elpris') | float('naan') ) | round(3) }}"
