@@ -1,0 +1,54 @@
+# =================================================================
+# FÖRTJÄNSTBERÄKNING FÖR SÅLD SOLENERGI
+# =================================================================
+# All logik för att korrekt beräkna den faktiska vinsten som
+# genereras genom att sälja överskottsel från solcellerna.
+# -----------------------------------------------------------------
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Dessa sensorer utför de grundläggande beräkningarna.
+# -----------------------------------------------------------------
+template:
+  - sensor:
+      # --- Effekt såld från solen (Realtid) ---
+      # Denna sensor beräknar hur mycket effekt som just nu säljs
+      # från solcellerna, genom att ta den totala exporten och
+      # subtrahera den del som vi vet kommer från batteriet.
+      - name: solar_power_sold_from_sun
+        unique_id: solar_power_sold_from_sun
+        unit_of_measurement: W
+        state_class: measurement
+        device_class: power
+        availability: "{{ is_number(states('sensor.power_production_sannesholma_2181')) and is_number(states('sensor.solar_battery_power_sold')) }}"
+        state: >
+          {% set total_export = states('sensor.power_production_sannesholma_2181') | float(0) %}
+          {% set battery_export = states('sensor.solar_battery_power_sold') | float(0) %}
+          {{ max(0, total_export - battery_export) | round(0) }}
+
+# =================================================================
+# INTEGRATION-SENSORER
+# =================================================================
+# Denna sensor konverterar effekten som säljs från solen (W)
+# till energi (kWh) över tid.
+# -----------------------------------------------------------------
+sensor:
+  - platform: integration
+    source: sensor.solar_power_sold_from_sun
+    name: solar_energy_sold_from_sun
+    unique_id: solar_energy_sold_from_sun
+    unit_prefix: k
+    method: left
+
+# =================================================================
+# UTILITY METERS
+# =================================================================
+# Denna entitet spårar den sålda solenergin per dag.
+# -----------------------------------------------------------------
+utility_meter:
+  solar_energy_sold_from_sun_day:
+    unique_id: solar_energy_sold_from_sun_day
+    source: sensor.solar_energy_sold_from_sun
+    periodically_resetting: false
+    cycle: daily
