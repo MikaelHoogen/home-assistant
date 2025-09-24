@@ -1,20 +1,33 @@
-#
+# =================================================================
+# SENSORER FÖR SOLCELLSBATTERI
+# =================================================================
+# Denna fil innehåller alla sensorer som används för att mäta och
+# beräkna data specifikt för batteriet.
+# -----------------------------------------------------------------
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Dessa sensorer skapar ny data baserat på andra sensorer.
+# -----------------------------------------------------------------
 template:
   - sensor:
+      # --- Batteristatus (Laddning/Urladdning) ---
+      # Beräknar den nuvarande laddningseffekten (alltid positiv).
       - name: solar_battery_charging
         unique_id: solar_battery_charging
         unit_of_measurement: W
         device_class: power
         state: >
           {{ max(0, 0 - states('sensor.solar_effekt_batteri') | float(0)) }}
-      #
+      # Beräknar den nuvarande urladdningseffekten (alltid positiv).
       - name: solar_battery_discharging
         unique_id: solar_battery_discharging
         unit_of_measurement: W
         device_class: power
         state: >
           {{ max(0, states('sensor.solar_effekt_batteri') | float(0)) }}
-#
+      # Beräknar hur mycket av laddningen som kommer från solcellerna.
       - name: solar_battery_charging_from_solar
         unique_id: solar_battery_charging_from_solar
         unit_of_measurement: W
@@ -27,7 +40,7 @@ template:
           {% else %}
           {{ states('sensor.solar_power_photovoltaics') | float(0) }}
           {% endif %}
-#
+      # Beräknar hur mycket av laddningen som kommer från elnätet.
       - name: solar_battery_charging_from_grid
         unique_id: solar_battery_charging_from_grid
         unit_of_measurement: W
@@ -36,8 +49,10 @@ template:
           {{ is_number(states('sensor.solar_power_photovoltaics')) }}
         state: >
           {{ max(0, states('sensor.solar_battery_charging') | float(0) - states('sensor.solar_power_photovoltaics') | float(0) ) }}
-#
-### Battery mode ###
+
+      # --- Batteriets Driftläge ---
+      # En smart sensor som bestämmer vilket driftläge batteriet ska ha
+      # baserat på prognoser från EMHASS (Energy Management for Home Assistant).
       - name: solar_battery_mode
         unique_id: solar_battery_mode
         state: >
@@ -51,7 +66,7 @@ template:
           {% elif states('sensor.p_batt_forecast') | float(0) < 0
             and states('sensor.soc_batt_forecast') | float(0) > states('sensor.solar_battery_soc') | float(0) %}
           charge
-          {% elif states('sensor.p_batt_forecast') | float(0) > 0
+                    {% elif states('sensor.p_batt_forecast') | float(0) > 0
             and states('sensor.p_grid_forecast') | float(0) < -100
             and not is_state('sensor.ehl75l9h_status', 'charging') %}
           discharge_min_limit
@@ -66,263 +81,35 @@ template:
           idle
           {% endif %}
 #
-          # Lägg till Manual discharge
-#          {% if states('sensor.p_batt_forecast') | float(0) < 0
-#            and states('sensor.soc_batt_forecast') | int(0) > states('sensor.solar_battery_soc') | int(0) %}
-#
+#            and not is_state('sensor.ehl75l9h_status', 'charging') %}
+# =================================================================
+# INTEGRATION-SENSORER
+# =================================================================
+# Dessa sensorer konverterar effekt (W) till energi (kWh) över tid.
+# -----------------------------------------------------------------
 sensor:
+    # --- Batteri - Total Laddning/Urladdning ---
     - platform: integration
       source: sensor.solar_battery_charging
       name: solar_battery_total_charged
       unique_id: solar_battery_total_charged
       unit_prefix: k
       method: left
-    #
     - platform: integration
       source: sensor.solar_battery_charging_from_solar
       name: solar_battery_total_charged_from_solar
       unique_id: solar_battery_total_charged_from_solar
       unit_prefix: k
       method: left
-    #
-    #
     - platform: integration
       source: sensor.solar_battery_charging_from_grid
       name: solar_battery_total_charged_from_grid
       unique_id: solar_battery_total_charged_from_grid
       unit_prefix: k
       method: left
-    #
     - platform: integration
       source: sensor.solar_battery_discharging
       name: solar_battery_total_discharged
       unique_id: solar_battery_total_discharged
       unit_prefix: k
       method: left
-#
-### Skript för att styra batteri ####
-script:
-  solar_battery_mode:
-    #
-    sequence:
-      - service: modbus.write_register
-        data:
-          slave: 1
-          # MinRsvPct
-          address: 40350
-          value: "{{ MinRsvPct }}"
-          hub: gen24
-      - service: modbus.write_register
-        data:
-          slave: 1
-          # InWRte
-          address: 40356
-          value: "{{ InWRte }}"
-          hub: gen24
-      - service: modbus.write_register
-        data:
-          slave: 1
-          # OutWRte
-          address: 40355
-          value: "{{ OutWRte }}"
-          hub: gen24
-      - service: modbus.write_register
-        data:
-          slave: 1
-          # StorCTLMod
-          address: 40348
-          value: "{{ StorCTLMod }}"
-          hub: gen24
-#
-  solar_battery_charge:
-    sequence:
-      - service: script.solar_battery_mode
-        # Charge from solar
-        data:
-          # Only permit energy storage charging
-          StorCTLMod: 2
-          MinRsvPct: 1000
-          # Set discharge limit of WchaMax to 0%
-          OutWRte: 0
-          #
-          InWRte: 10000
-#
-  solar_battery_charge_fixed:
-    sequence:
-      - service: script.solar_battery_mode
-        # Charge fixed
-        data:
-          StorCTLMod: 3
-          MinRsvPct: 1000
-          OutWRte: "{{ 65536 - (states('input_number.solar_battery_charge') | int(0) / 10240 * 10000) | int(0) }}"
-          #
-          InWRte: "{{ (states('input_number.solar_battery_charge') | int(0) / 10240 * 10000) | int(0) }}"
-#
-  solar_battery_discharge:
-    sequence:
-      - service: script.solar_battery_mode
-        # Discharge
-        data:
-          # Only permit energy storage discharging
-          StorCTLMod: 1
-          #MinRsvPct: "{{ states('sensor.soc_batt_forecast') | float(0) * 100 }}"
-          MinRsvPct: 1000
-          #
-          OutWRte: 10000
-          # Set charge limit of WchaMax to 0%
-          InWRte: 0
-#
-  solar_battery_block:
-    sequence:
-      - service: script.solar_battery_mode
-        # Do not permit charging or discharging
-        data:
-          # Activate both limit values
-          StorCTLMod: 3
-          MinRsvPct: 1000
-          OutWRte: 0
-          InWRte: 0
-#
-automation:
-#
-  - alias: solar_battery_mode
-    id: solar_battery_mode
-    trigger:
-      - platform: state
-        entity_id: sensor.solar_battery_mode
-      - platform: state
-        entity_id: sensor.p_batt_forecast
-    action:
-      - delay:
-          seconds: 30
-      - choose:
-          #
-          ### Charge##
-          - conditions:
-              - condition: state
-                entity_id: sensor.solar_battery_mode
-                state: "charge"
-            sequence:
-              - service: script.solar_battery_mode
-                # Charge, InWRte positiv
-                data:
-                  StorCTLMod: 3
-                  MinRsvPct: 1000
-                  OutWRte: "{{ 65536 - (0 - states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
-                  InWRte: "{{ (0 - states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
-          #
-          ### Charge##
-          - conditions:
-              - condition: state
-                entity_id: sensor.solar_battery_mode
-                state: "charge_max"
-            sequence:
-              - service: script.solar_battery_mode
-                # Charge, InWRte positiv
-                data:
-                  StorCTLMod: 3
-                  MinRsvPct: 1000
-                  OutWRte: "{{ 65536 - (0 - -5000 | int(0) / 10240 * 10000) | int(0) }}"
-                  InWRte: "{{ (0 - -5000 | int(0) / 10240 * 10000) | int(0) }}"
-          #
-          ### Charge from solar ##
-          - conditions:
-              - condition: state
-                entity_id: sensor.solar_battery_mode
-                state: "charge_from_solar"
-            sequence:
-              - service: script.solar_battery_mode
-                # Charge from solar
-                data:
-                  # Only permit energy storage charging
-                  StorCTLMod: 2
-                  MinRsvPct: 1000
-                  # Set discharge limit of WchaMax to 0%
-                  OutWRte: 0
-                  #
-                  InWRte: 10000
-          #
-          ### Discharge ###
-          - conditions:
-              - condition: state
-                entity_id: sensor.solar_battery_mode
-                state: "discharge"
-            sequence:
-              - service: script.solar_battery_mode
-                # Discharge
-                data:
-                  # Only permit energy storage discharging
-                  StorCTLMod: 1
-                  #MinRsvPct: "{{ states('sensor.soc_batt_forecast') | float(0) * 100 }}"
-                  MinRsvPct: 1000
-                  #
-                  OutWRte: 10000
-                  # Set charge limit of WchaMax to 0%
-                  InWRte: 0
-          #
-          ### Discharge fixed ###
-          - conditions:
-              - condition: state
-                entity_id: sensor.solar_battery_mode
-                state: "discharge_fixed"
-            sequence:
-              - service: script.solar_battery_mode
-                # Discharge fixed
-                data:
-                  #
-                  StorCTLMod: 3
-                  #
-                  MinRsvPct: 1000
-                  #
-                  OutWRte: "{{ (states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
-                  #
-                  InWRte: "{{ 65536 - (states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
-          #
-          ### Discharge min limit ###
-          - conditions:
-              - condition: state
-                entity_id: sensor.solar_battery_mode
-                state: "discharge_min_limit"
-            sequence:
-              - service: script.solar_battery_mode
-                # Discharge min limit
-                data:
-                  #
-                  StorCTLMod: 1
-                  #
-                  MinRsvPct: 1000
-                  #
-                  OutWRte: 10000
-                  #
-                  InWRte: "{{ 65536 - (states('sensor.p_batt_forecast') | int(0) / 10240 * 10000) | int(0) }}"
-          #
-          ### Block ###
-          - conditions:
-              - condition: state
-                entity_id: sensor.solar_battery_mode
-                state: "blocked"
-            sequence:
-              - service: script.solar_battery_mode
-                # Do not permit charging or discharging
-                data:
-                  # Activate both limit values
-                  StorCTLMod: 3
-                  MinRsvPct: 1000
-                  OutWRte: 0
-                  InWRte: 0
-#
-          ### Idle ###
-          - conditions:
-              - condition: state
-                entity_id: sensor.solar_battery_mode
-                state: "idle"
-            sequence:
-              - service: script.solar_battery_mode
-                # Do not permit charging or discharging
-                data:
-                  # Activate both limit values
-                  StorCTLMod: 3
-                  MinRsvPct: 1000
-                  OutWRte: 0
-                  InWRte: 0
-#
