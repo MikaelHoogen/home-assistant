@@ -1,0 +1,32 @@
+# packages/emhass/EMHASS_pv_forecast.yaml
+#
+# PV-prognos (Solcast) i 15-min upplösning.
+# - Läser detailedForecast (30-min) för idag + imorgon
+# - Duplicerar varje 30-minvärde -> 15-minserie
+# - Skär ut från aktuell tid (i0) och längd H = sensor.emhass_horizon_steps
+
+template:
+  - sensor:
+      - name: emhass_pv_forecast
+        unique_id: emhass_pv_forecast
+        state: "ok"
+        attributes:
+          # PV i Watt, 15-min, från nu och H steg framåt
+          pv_w_15min: >
+            {% set step_min = 15 %}
+            {% set i0 = ((now().hour*60 + now().minute) // step_min) %}
+            {% set H  = states('sensor.emhass_horizon_steps')|int(192) %}
+
+            {% set d1 = state_attr('sensor.solcast_pv_forecast_forecast_today','detailedForecast') or [] %}
+            {% set d2 = state_attr('sensor.solcast_pv_forecast_forecast_tomorrow','detailedForecast') or [] %}
+            {% set det = d1 + d2 %}
+
+            {% set ns = namespace(x=[]) %}
+            {% for p in det %}
+              {% if p is mapping and ('pv_estimate' in p) %}
+                {% set w = (p['pv_estimate'] | float(0) * 1000) %}
+                {% set ns.x = ns.x + [ w, w ] %}
+              {% endif %}
+            {% endfor %}
+
+            {{ ns.x[i0:][:H] }}
