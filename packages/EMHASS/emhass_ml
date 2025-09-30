@@ -1,0 +1,36 @@
+# packages/emhass/EMHASS_ml.yaml
+#
+# EMHASS – maskininlärning (shell + din automation)
+
+shell_command:
+  emhass_machine_learn: >
+    curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
+      "days_to_retrieve": 59,
+      "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered",
+      "num_lags":96,
+      "split_date_delta":"48h",
+      "perform_backtest":"False"}' http://localhost:5000/action/forecast-model-fit
+
+  emhass_machine_tune: >
+    curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
+      "days_to_retrieve": 59,
+      "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered",
+      "num_lags":96}' http://localhost:5000/action/forecast-model-tune
+
+  emhass_machine_learn_predict: >
+    curl -i -H "Content-Type:application/json" -X POST -d '{"model_type": "load_forecast",
+      "days_to_retrieve": 59,
+      "var_model": "sensor.power_sannesholma_2181_no_var_loads_filtered",
+      "model_predict_publish": "True"}' http://localhost:5000/action/forecast-model-predict
+
+automation:
+  - alias: EMHASS_machine_learn
+    id: EMHASS_machine_learn
+    triggers:
+      - trigger: time
+        at: "12:00:10"
+    actions:
+      - action: shell_command.emhass_machine_learn
+      - delay:
+          seconds: 1
+      - action: shell_command.emhass_machine_tune
