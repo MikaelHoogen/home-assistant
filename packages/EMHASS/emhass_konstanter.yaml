@@ -1,0 +1,83 @@
+# packages/emhass/EMHASS_konstanter.yaml
+#
+# Syfte:
+# - EN plats för alla tidsparametrar som resten av EMHASS-flödet använder.
+# - All beräkning av "steg" (index, längder, horisonter) härleds härifrån.
+# - Inga UI-reglage (input_number) — ändras *endast* i YAML för att undvika misstag.
+
+template:
+  - sensor:
+      ########################################################################
+      # 1) KONSTANTER (det är i praktiken bara dessa två rader du ändrar)
+      ########################################################################
+
+      # FAST KONSTANT – Steglängd för hela kedjan.
+      #  - 30 = halvtimme (nuvarande drift)
+      #  - 15 = kvart (när du växlar till kvartspriser)
+      - name: emhass_step_minutes_const
+        unique_id: emhass_step_minutes_const
+        unit_of_measurement: "min"
+        state: 30
+        # Byte till kvarts:
+        #  - ändra state: 30 -> 15 (allt annat anpassar sig automatiskt)
+
+      # FAST KONSTANT – **Horisont i timmar** som vi optimerar/slice:ar över.
+      #  - Du har 48h i din nuvarande lösning → behåll 48 här.
+      #  - Effekten av detta:
+      #     30-min steg → 48h * 2 = 96 steg
+      #     15-min steg → 48h * 4 = 192 steg
+      - name: emhass_horizon_hours_const
+        unique_id: emhass_horizon_hours_const
+        unit_of_measurement: "h"
+        state: 48
+
+      ########################################################################
+      # 2) HÄRLEDDA STORHETER (följer av konstanterna ovan)
+      ########################################################################
+
+      # Sekunder per steg (30 min → 1800 s, 15 min → 900 s)
+      - name: emhass_step_seconds
+        unique_id: emhass_step_seconds
+        unit_of_measurement: "s"
+        state: "{{ states('sensor.emhass_step_minutes_const')|int * 60 }}"
+
+      # Steg per timme (30 min → 2, 15 min → 4)
+      - name: emhass_steps_per_hour
+        unique_id: emhass_steps_per_hour
+        state: "{{ (60 / (states('sensor.emhass_step_minutes_const')|int))|int }}"
+
+      # Horisont i *steg* (ex. 48h & 30-min → 96 steg; 48h & 15-min → 192 steg)
+      - name: emhass_horizon_steps
+        unique_id: emhass_horizon_steps
+        state: >-
+          {{ states('sensor.emhass_horizon_hours_const')|int
+             * states('sensor.emhass_steps_per_hour')|int }}
+
+      # Steg per dygn (bra för wrap-logik över midnatt, diagnostik m.m.)
+      #  - 24h * steg/timme → 30-min: 48, 15-min: 96
+      - name: emhass_day_steps
+        unique_id: emhass_day_steps
+        state: "{{ 24 * states('sensor.emhass_steps_per_hour')|int }}"
+
+      # Nuvarande stegindex i dygnet (0-index från 00:00).
+      #  - (timme*60 + minut) / step_minutes
+      - name: emhass_now_step_index
+        unique_id: emhass_now_step_index
+        state: >-
+          {{ ((now().hour*60 + now().minute)
+              / (states('sensor.emhass_step_minutes_const')|int)) | int }}
+
+      ########################################################################
+      # 3) DIAGNOS/HJÄLP (valfritt men bra när du byter upplösning)
+      ########################################################################
+
+      # Tidsstämpel "snappad" till närmaste steggräns (t.ex. 13:30 vid 30-min).
+      - name: emhass_now_step_label
+        unique_id: emhass_now_step_label
+        state: >-
+          {% set m = states('sensor.emhass_step_minutes_const')|int %}
+          {% set total = now().hour*60 + now().minute %}
+          {% set snapped = (total // m) * m %}
+          {% set hh = (snapped // 60) %}
+          {% set mm = (snapped % 60) %}
+          {{ "%02d:%02d" | format(hh, mm) }}
