@@ -1,75 +1,45 @@
 # packages/emhass/EMHASS_inndata.yaml
 #
-# Syfte:
-#  - Samla och förbereda all indata som MPC-anropet behöver.
-#  - Hämta/prune/slice från våra pris- och PV-sensorer i 15-min upplösning.
-#  - Spegla exakt de fält du använder i din shell payload, men UTAN att köra shell här.
+# Samlar all indata till MPC i en enda sensor.
+# - Prognoser (priser/PV) tas direkt från sina respektive sensorer, utan skivning.
+# - Alla MPC-parametrar och deferrables ingår.
+# - Klar att POST:a direkt som JSON i MPC-anropet.
 
 template:
   - sensor:
       - name: emhass_mpc_inputs
         unique_id: emhass_mpc_inputs
         state: "ok"
-        availability: >
-          {{
-            (state_attr('sensor.emhass_prices','sälj') is not none)
-            and (state_attr('sensor.emhass_prices','köp')  is not none)
-            and (state_attr('sensor.emhass_pv_forecast','pv_w_15min') is not none)
-            and (state_attr('sensor.emhass_prices','sälj')|list|length > 0)
-            and (state_attr('sensor.emhass_prices','köp') |list|length > 0)
-            and (state_attr('sensor.emhass_pv_forecast','pv_w_15min')|list|length > 0)
-          }}
+
         attributes:
-          # --------------------------------------------------------
-          # Indexering och horisont (15-min)
-          # --------------------------------------------------------
-          step_minutes: "{{ states('sensor.emhass_step_minutes_const')|int(15) }}"
+          ####################################################################
+          # Index-info (mest för diagnos)
+          ####################################################################
+          step_minutes: 15
           i0: >
-            {% set m = states('sensor.emhass_step_minutes_const')|int(15) %}
-            {{ ((now().hour*60 + now().minute) // m) }}
-          horizon_steps: "{{ states('sensor.emhass_horizon_steps')|int(192) }}"
+            {{ ((now().hour*60 + now().minute) // 15) }}
 
-          # --------------------------------------------------------
-          # 1) Priser i 15-min fönster från NU (samma som emhass_prices fast already-sliced)
-          # --------------------------------------------------------
-          load_cost_forecast: >
-            {% set i0 = ((now().hour*60 + now().minute) // (states('sensor.emhass_step_minutes_const')|int(15))) %}
-            {% set H  = states('sensor.emhass_horizon_steps')|int(192) %}
-            {{ (state_attr('sensor.emhass_prices','köp') | list)[i0:][:H] }}
+          ####################################################################
+          # Prognoser (hela listorna från sensorerna)
+          ####################################################################
+          prod_price_forecast: "{{ state_attr('sensor.emhass_prices', 'sälj') | list }}"
+          load_cost_forecast:  "{{ state_attr('sensor.emhass_prices', 'köp')  | list }}"
+          pv_power_forecast:   "{{ state_attr('sensor.emhass_pv_forecast', 'pv_w_15min') | list }}"
 
-          prod_price_forecast: >
-            {% set i0 = ((now().hour*60 + now().minute) // (states('sensor.emhass_step_minutes_const')|int(15))) %}
-            {% set H  = states('sensor.emhass_horizon_steps')|int(192) %}
-            {{ (state_attr('sensor.emhass_prices','sälj') | list)[i0:][:H] }}
-
-          # --------------------------------------------------------
-          # 2) PV-prognos i W, 15-min fönster från NU
-          #    - Vi håller oss till W (som i din nuvarande pv_w_15min)
-          # --------------------------------------------------------
-          pv_power_forecast: >
-            {% set i0 = ((now().hour*60 + now().minute) // (states('sensor.emhass_step_minutes_const')|int(15))) %}
-            {% set H  = states('sensor.emhass_horizon_steps')|int(192) %}
-            {{ (state_attr('sensor.emhass_pv_forecast','pv_w_15min') | list)[i0:][:H] }}
-
-          # --------------------------------------------------------
-          # 3) Övriga MPC-parametrar – speglar din shell payload
-          # --------------------------------------------------------
-          prediction_horizon: >
-            {{ states('sensor.emhass_horizon_steps')|int(192) }}
-
+          ####################################################################
+          # MPC-parametrar (direkt från helpers / hårdkod)
+          ####################################################################
           alpha: >
-            {{ (1.0 - (states('input_number.emhass_beta')|float(0))) | round(1) }}
-
-          beta: >
-            {{ states('input_number.emhass_beta')|float(0) }}
-
+            {{ (1.0 - states('input_number.emhass_beta') | float(0)) | round(1) }}
+          beta: "{{ states('input_number.emhass_beta') | float(0) }}"
           num_def_loads: 3
+          num_lags: 192
+          soc_init: >
+            {{ min(1.0, (max(0.15, states('sensor.solar_battery_soc') | float(0) / 100))) }}
+          treat_def_as_semi_cont: >
+            {{ [true, true, true] | tojson }}
 
-          # Sätt num_lags = horisontsteg (din tidigare 96 blir 192 på 15-min/48h)
-          num_lags: >
-            {{ states('sensor.emhass_horizon_steps')|int(192) }}
-
-          # Nominell effekt för deferrable loads
+          # Nominell effekt för deferrable loads (W)
           P_deferrable_nom: >
             [
               {{ states('input_number.emhass_p_deferrable0_nom') | float(2000) }},
@@ -77,21 +47,7 @@ template:
               2000
             ]
 
-          treat_def_as_semi_cont: "[true, true, true]"
-
-          # Total tillåten tid (steg) för varje deferrable (dina existerande sensorer)
-          def_total_hours: >
-            [
-              {{ states('sensor.emhass_def_total_hours_vp')|int(0) }},
-              {{ states('sensor.emhass_def_total_hours_sbv')|int(0) }},
-              {{ states('sensor.emhass_def_total_hours_vp_24')|int(0) }}
-            ]
-
-          # SOC init (0..1) – samma formel som i din shell
-          soc_init: >
-            {{ [1.0, [0.15, (states('sensor.solar_battery_soc')|float(0) / 100)]|max]|min }}
-
-          # set_def_constant – exakt som din shell-logik för def_0
+          # set_def_constant – din logik för def_0, nu i 15-min (*4)
           set_def_constant: >
             [
               {{
@@ -103,7 +59,16 @@ template:
               false
             ]
 
-          # Start/Slut-steg (respekterar dina befintliga sensorer)
+          ####################################################################
+          # Deferrables: timmar + start/slut i 15-min steg
+          ####################################################################
+          def_total_hours: >
+            [
+              {{ states('sensor.emhass_def_total_hours_vp')    | float(0) }},
+              {{ states('sensor.emhass_def_total_hours_sbv')   | float(0) }},
+              {{ states('sensor.emhass_def_total_hours_vp_24') | float(0) }}
+            ]
+
           def_start_timestep: >
             [
               {{ states('sensor.emhass_def_0_start_timestep')|int(0) }},
