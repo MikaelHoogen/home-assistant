@@ -1,0 +1,31 @@
+# packages/emhass/EMHASS_mpc.yaml
+#
+# Rent MPC-anrop: allt kommer från sensor.emhass_mpc_inputs
+
+rest_command:
+  emhass_mpc_run:
+    url: "http://localhost:5000/action/naive-mpc-optim"
+    method: post
+    content_type: "application/json"
+    payload: >
+      {
+        "prediction_horizon": {{ state_attr('sensor.emhass_mpc_inputs','prediction_horizon')|int(0) }},
+        "step_minutes": {{ state_attr('sensor.emhass_mpc_inputs','step_minutes')|int(15) }},
+
+        "load_cost_forecast": {{ state_attr('sensor.emhass_mpc_inputs','load_cost_forecast') | tojson }},
+        "prod_price_forecast": {{ state_attr('sensor.emhass_mpc_inputs','prod_price_forecast') | tojson }},
+        "pv_power_forecast":   {{ state_attr('sensor.emhass_mpc_inputs','pv_power_forecast')   | tojson }},
+
+        "alpha": {{ state_attr('sensor.emhass_mpc_inputs','alpha') }},
+        "beta":  {{ state_attr('sensor.emhass_mpc_inputs','beta') }},
+        "num_def_loads": {{ state_attr('sensor.emhass_mpc_inputs','num_def_loads') }},
+        "num_lags": {{ state_attr('sensor.emhass_mpc_inputs','num_lags') }},
+        "soc_init": {{ state_attr('sensor.emhass_mpc_inputs','soc_init') }},
+        "treat_def_as_semi_cont": {{ state_attr('sensor.emhass_mpc_inputs','treat_def_as_semi_cont') | tojson }},
+
+        "P_deferrable_nom": {{ state_attr('sensor.emhass_mpc_inputs','P_deferrable_nom') | tojson }},
+        "set_def_constant": {{ state_attr('sensor.emhass_mpc_inputs','set_def_constant') }},
+        "def_total_hours":  {{ state_attr('sensor.emhass_mpc_inputs','def_total_hours')  | tojson }},
+        "def_start_timestep": {{ state_attr('sensor.emhass_mpc_inputs','def_start_timestep') | tojson }},
+        "def_end_timestep":   {{ state_attr('sensor.emhass_mpc_inputs','def_end_timestep')   | tojson }}
+      }
