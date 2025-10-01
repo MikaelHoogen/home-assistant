@@ -1,0 +1,235 @@
+# packages/emhass/EMHASS_defloads_params.yaml
+#
+# Samlade parametrar för deferrable loads (körfönster/timesteps och total hours)
+# Anpassad för 15-min raster (kvartspriser). Timestep-beräkning använder "floor"
+# så att snäppning ligger i linje med EMHASS method_ts_round: first.
+#
+# Beroenden:
+# - SMHI hourly -> sensor.smhi_sannesholma_hourly (se EMHASS_smhi.yaml)
+# - Input helpers: input_datetime/input_boolean för respektive last
+# - p_deferrable* för fallback-beräkning av timmar
+#
+# Not: def_total_hours returnerar timmar (float), inte steg. I MPC-indata multipliceras
+# timmar med 4 för att få kvartssteg (se EMHASS_indata.yaml).  [oai_citation:1‡emhass_indata.yaml](file-service://file-TwkKpSS8ybhYEn5fEeqWtD)
+
+template:
+  - sensor:
+
+      # -----------------------------
+      # Operating hours baserat på SMHI
+      # -----------------------------
+
+      # SBV – medeltemp nästa 8h -> timmar (0–6)
+      - name: emhass_operating_hours_sbv
+        unique_id: emhass_operating_hours_sbv
+        state: >
+          {% set temp = state_attr('sensor.smhi_sannesholma_hourly','forecast')[:8]
+                        | map(attribute='temperature') | average | round(1) %}
+          {% if temp < -20 %} 6
+          {% elif -20 <= temp < -15 %} 5
+          {% elif -15 <= temp < -10 %} 4
+          {% elif -10 <= temp < -5 %} 3
+          {% elif -5 <= temp < -3 %} 2
+          {% elif -3 <= temp < 2 %} 1.5
+          {% elif 2 <= temp < 4 %} 0.5
+          {% elif 4 <= temp < 10 %} 0
+          {% else %} 0
+          {% endif %}
+        # Källa.  [oai_citation:2‡emhass (1).yaml](file-service://file-2hYvY8vtV12ABcowzSovy8)
+
+      # VP_12 – medeltemp nästa 24h -> timmar (6–12)
+      - name: emhass_operating_hours_vp_12
+        unique_id: emhass_operating_hours_vp_12
+        state: >
+          {% set temp = state_attr('sensor.smhi_sannesholma_hourly','forecast')[:24]
+                        | map(attribute='temperature') | average | round(1) %}
+          {% if temp < -20 %} 12
+          {% elif -20 <= temp < -15 %} 12
+          {% elif -15 <= temp < -10 %} 11
+          {% elif -10 <= temp < -4 %} 10
+          {% elif -4 <= temp < 0 %} 9.5
+          {% elif 0 <= temp < 2 %} 8.5
+          {% elif 2 <= temp < 5 %} 7.5
+          {% elif 5 <= temp < 10 %} 6.5
+          {% elif temp >= 10 %} 6
+          {% else %} 8
+          {% endif %}
+        # Källa. 
+
+      # VP_24 – medeltemp nästa 12h -> timmar (0.5–4)
+      - name: emhass_operating_hours_vp_24
+        unique_id: emhass_operating_hours_vp_24
+        state: >
+          {% set temp = state_attr('sensor.smhi_sannesholma_hourly','forecast')[:12]
+                        | map(attribute='temperature') | average | round(1) %}
+          {% if temp < -20 %} 4
+          {% elif -20 <= temp < -15 %} 2
+          {% elif -15 <= temp < -10 %} 1
+          {% elif -10 <= temp < -5 %} 0.5
+          {% elif -5 <= temp < 0 %} 0.5
+          {% elif 0 <= temp < 5 %} 0.5
+          {% elif 5 <= temp < 10 %} 0.5
+          {% else %} 0.5
+          {% endif %}
+        # Källa. 
+
+
+      # ---------------------------------
+      # def_total_hours för respektive last (timme, ej steg)
+      # ---------------------------------
+
+      # Snickarboa: uppdatera vid tre fasta tider, annars räkna från schema
+      - name: emhass_def_total_hours_sbv
+        unique_id: emhass_def_total_hours_sbv
+        state: >
+          {% if (now().hour == 4 and now().minute < 30)
+            or (now().hour == 12 and now().minute < 30)
+            or (now().hour == 20 and now().minute < 30) %}
+            {{ states('sensor.emhass_operating_hours_sbv') }}
+          {% else %}
+            {{ state_attr('sensor.p_deferrable1','deferrables_schedule')
+              | map(attribute='p_deferrable1')
+              | select('search','[1-9]') | list | count / 2 }}
+          {% endif %}
+        # Källa.  [oai_citation:3‡emhass_defloads_params.txt](file-service://file-JLEeHiqVtmNrJGymnwYkL3)
+
+      # VP (12h-logik): om fönster + prislista finns, annars fallback från schema
+      - name: emhass_def_total_hours_vp
+        unique_id: emhass_def_total_hours_vp
+        state: >
+          {% if states('sensor.emhass_def_0_start_timestep')|float(0) > 0
+            and min(96, [state_attr('sensor.elpris_sb','sälj_ny')|list|length,
+                          state_attr('sensor.elpris_sb','köp_ny') |list|length] | min )
+                > states('sensor.emhass_def_0_end_timestep')|int(0) %}
+            {{ states('sensor.emhass_operating_hours_vp_12') }}
+          {% else %}
+            {{ state_attr('sensor.p_deferrable0','deferrables_schedule')
+              | map(attribute='p_deferrable0')
+              | select('search','[1-9]') | list | count / 2 }}
+          {% endif %}
+        # 48->96 för kvartssteg. Byt elpris_sb till din 15-min sensor när den är klar.  [oai_citation:4‡emhass_defloads_params.txt](file-service://file-JLEeHiqVtmNrJGymnwYkL3)
+
+      # VP_24: bool off -> 0, annars samma princip men mot vp_24
+      - name: emhass_def_total_hours_vp_24
+        unique_id: emhass_def_total_hours_vp_24
+        state: >
+          {% if is_state('input_boolean.emhass_p_deferrable2','off') %}
+            0
+          {% elif states('sensor.emhass_def_2_start_timestep')|float(0) > 0
+            and min(96, [state_attr('sensor.elpris_sb','sälj_ny')|list|length,
+                          state_attr('sensor.elpris_sb','köp_ny') |list|length] | min )
+                > states('sensor.emhass_def_2_end_timestep')|int(0) %}
+            {{ states('sensor.emhass_operating_hours_vp_24') }}
+          {% else %}
+            {{ state_attr('sensor.p_deferrable2','deferrables_schedule')
+              | map(attribute='p_deferrable2')
+              | select('search','[1-9]') | list | count / 2 }}
+          {% endif %}
+        # 48->96 för kvartssteg. Byt elpris_sb till din 15-min sensor när den är klar.  [oai_citation:5‡emhass_defloads_params.txt](file-service://file-JLEeHiqVtmNrJGymnwYkL3)
+
+
+      # -----------------------------
+      # Timestepfönster (15-min, floor)
+      # -----------------------------
+
+      # Last 0 (VP) – start/slut (hanterar fönster över midnatt)
+      - name: emhass_def_0_start_timestep
+        unique_id: emhass_def_0_start_timestep
+        state: >
+          {% set delta = ( today_at(states('input_datetime.emhass_p_deferrable0_start_time')) | as_timestamp )
+                        - ( now() | as_timestamp ) %}
+          {% set ts = (delta // 900) | int(0) %}
+          {% if states('input_datetime.emhass_p_deferrable0_start_time')
+                > states('input_datetime.emhass_p_deferrable0_end_time') %}
+            {% if now() < today_at(states('input_datetime.emhass_p_deferrable0_end_time')) %}
+              {% set ts = ts - 96 %}
+            {% endif %}
+          {% endif %}
+          {{ ts * is_state('input_boolean.emhass_p_deferrable0_timestep','on') }}
+        # 30m->15m + floor.  [oai_citation:6‡emhass_defloads_params.txt](file-service://file-JLEeHiqVtmNrJGymnwYkL3)
+
+      - name: emhass_def_0_end_timestep
+        unique_id: emhass_def_0_end_timestep
+        state: >
+          {% set delta = ( today_at(states('input_datetime.emhass_p_deferrable0_end_time')) | as_timestamp )
+                        - ( now() | as_timestamp ) %}
+          {% set ts = (delta // 900) | int(0) %}
+          {% if states('input_datetime.emhass_p_deferrable0_start_time')
+                > states('input_datetime.emhass_p_deferrable0_end_time') %}
+            {% if now() > today_at(states('input_datetime.emhass_p_deferrable0_end_time')) %}
+              {% set ts = ts + 96 %}
+            {% endif %}
+          {% endif %}
+          {{ ts * is_state('input_boolean.emhass_p_deferrable0_timestep','on') }}
+        # 30m->15m + floor.  [oai_citation:7‡emhass_defloads_params.txt](file-service://file-JLEeHiqVtmNrJGymnwYkL3)
+
+      # Last 1 – ”klockhjul” (END only), omskrivet till 15-min formel
+      # Mönster: 4h-block (16 kvartar) som räknar ned; varannan blockhalva 1–16 resp. 17–32.
+      - name: emhass_def_1_end_timestep
+        unique_id: emhass_def_1_end_timestep
+        state: >
+          {% set q = ((now().hour*60 + now().minute) // 15) % 96 %}  {# kvartindex i dygnet 0..95 #}
+          {% set idx = q % 16 %}                                    {# position 0..15 i aktuellt 4h-block #}
+          {% set upper = ((now().hour // 4) % 2) == 1 %}            {# varannan 4h-block är "övre" #}
+          {% if upper %}
+            {{ 32 - idx }}
+          {% else %}
+            {{ 16 - idx }}
+          {% endif %}
+        # Reproducerar ditt 30-min schema i 15-min raster. 
+
+      # Last 2 (VP_24) – start/slut relaterat till last 0:s helpers (samma logik som i din fil)
+      - name: emhass_def_2_start_timestep
+        unique_id: emhass_def_2_start_timestep
+        state: >
+          {% set delta = ( today_at(states('input_datetime.emhass_p_deferrable0_end_time')) | as_timestamp )
+                        - ( now() | as_timestamp ) %}
+          {% set ts = (delta // 900) | int(0) %}
+          {% if states('input_datetime.emhass_p_deferrable0_end_time')
+                < states('input_datetime.emhass_p_deferrable0_start_time') %}
+            {% if now() > today_at(states('input_datetime.emhass_p_deferrable0_start_time')) %}
+              {% set ts = ts + 96 %}
+            {% endif %}
+          {% endif %}
+          {{ ts * is_state('input_boolean.emhass_p_deferrable0_timestep','on') }}
+        # 30m->15m + floor.  [oai_citation:8‡emhass_defloads_params.txt](file-service://file-JLEeHiqVtmNrJGymnwYkL3)
+
+      - name: emhass_def_2_end_timestep
+        unique_id: emhass_def_2_end_timestep
+        state: >
+          {% set delta = ( today_at(states('input_datetime.emhass_p_deferrable0_start_time')) | as_timestamp )
+                        - ( now() | as_timestamp ) %}
+          {% set ts = (delta // 900) | int(0) %}
+          {% if now() > today_at(states('input_datetime.emhass_p_deferrable0_start_time')) %}
+            {% set ts = ts + 96 %}
+          {% endif %}
+          {{ ts * is_state('input_boolean.emhass_p_deferrable0_timestep','on') }}
+        # 30m->15m + floor.  [oai_citation:9‡emhass_defloads_params.txt](file-service://file-JLEeHiqVtmNrJGymnwYkL3)
+
+      # Last 3 (Bil) – fritt fönster via p_deferrable3_* helpers (15-min + floor)
+      - name: emhass_def_3_start_timestep
+        unique_id: emhass_def_3_start_timestep
+        state: >
+          {% set delta = ( today_at(states('input_datetime.p_deferrable3_start_time')) | as_timestamp )
+                        - ( now() | as_timestamp ) %}
+          {% set ts = (delta // 900) | int(0) %}
+          {% if states('input_datetime.p_deferrable3_start_time')
+                > states('input_datetime.p_deferrable3_end_time') %}
+            {% if now() < today_at(states('input_datetime.p_deferrable3_end_time')) %}
+              {% set ts = ts - 96 %}
+            {% endif %}
+          {% endif %}
+          {{ ts * is_state('input_boolean.p_deferrable_3_timestep','on') }}
+        # 30m->15m + floor. 
+
+      - name: emhass_def_3_end_timestep
+        unique_id: emhass_def_3_end_timestep
+        state: >
+          {% set delta = ( today_at(states('input_datetime.p_deferrable3_end_time')) | as_timestamp )
+                        - ( now() | as_timestamp ) %}
+          {% set ts = (delta // 900) | int(0) %}
+          {% if now() > today_at(states('input_datetime.p_deferrable3_end_time')) %}
+            {% set ts = ts + 96 %}
+          {% endif %}
+          {{ ts * is_state('input_boolean.p_deferrable_3_timestep','on') }}
+        # 30m->15m + floor. 
