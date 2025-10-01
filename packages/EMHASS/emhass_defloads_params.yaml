@@ -93,22 +93,21 @@ template:
           {% endif %}
         # Källa.  [oai_citation:3‡emhass_defloads_params.txt](file-service://file-JLEeHiqVtmNrJGymnwYkL3)
 
-      # VP (12h-logik): om fönster + prislista finns, annars fallback från schema
+        # VP (12h-logik): om fönster + prislista finns, annars fallback från schema
       - name: emhass_def_total_hours_vp
         unique_id: emhass_def_total_hours_vp
         state: >
           {% if states('sensor.emhass_def_0_start_timestep')|float(0) > 0
-            and min(96, [state_attr('sensor.elpris_sb','sälj_ny')|list|length,
-                          state_attr('sensor.elpris_sb','köp_ny') |list|length] | min )
+            and min(96, [ state_attr('sensor.emhass_prices','sälj')|list|length,
+                          state_attr('sensor.emhass_prices','köp') |list|length ] | min)
                 > states('sensor.emhass_def_0_end_timestep')|int(0) %}
             {{ states('sensor.emhass_operating_hours_vp_12') }}
           {% else %}
             {{ state_attr('sensor.p_deferrable0','deferrables_schedule')
               | map(attribute='p_deferrable0')
-              | select('search','[1-9]') | list | count / 2 }}
+              | select('search','[1-9]') | list | count / 4 }}
           {% endif %}
-        # 48->96 för kvartssteg. Byt elpris_sb till din 15-min sensor när den är klar.  [oai_citation:4‡emhass_defloads_params.txt](file-service://file-JLEeHiqVtmNrJGymnwYkL3)
-
+              
       # VP_24: bool off -> 0, annars samma princip men mot vp_24
       - name: emhass_def_total_hours_vp_24
         unique_id: emhass_def_total_hours_vp_24
@@ -116,17 +115,15 @@ template:
           {% if is_state('input_boolean.emhass_p_deferrable2','off') %}
             0
           {% elif states('sensor.emhass_def_2_start_timestep')|float(0) > 0
-            and min(96, [state_attr('sensor.elpris_sb','sälj_ny')|list|length,
-                          state_attr('sensor.elpris_sb','köp_ny') |list|length] | min )
+            and min(96, [ state_attr('sensor.emhass_prices','sälj')|list|length,
+                          state_attr('sensor.emhass_prices','köp') |list|length ] | min)
                 > states('sensor.emhass_def_2_end_timestep')|int(0) %}
             {{ states('sensor.emhass_operating_hours_vp_24') }}
           {% else %}
             {{ state_attr('sensor.p_deferrable2','deferrables_schedule')
               | map(attribute='p_deferrable2')
-              | select('search','[1-9]') | list | count / 2 }}
+              | select('search','[1-9]') | list | count / 4 }}
           {% endif %}
-        # 48->96 för kvartssteg. Byt elpris_sb till din 15-min sensor när den är klar.  [oai_citation:5‡emhass_defloads_params.txt](file-service://file-JLEeHiqVtmNrJGymnwYkL3)
-
 
       # -----------------------------
       # Timestepfönster (15-min, floor)
