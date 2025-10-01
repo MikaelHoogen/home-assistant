@@ -22,7 +22,9 @@ automation:
     id: kok_varme
     triggers:
       - trigger: time_pattern
-        minutes: "/30"
+        minutes: 2
+      - trigger: time_pattern
+        minutes: 32
     actions:
       - action: climate.set_hvac_mode
         target:
