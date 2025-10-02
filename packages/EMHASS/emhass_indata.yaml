@@ -1,7 +1,7 @@
 # packages/emhass/EMHASS_inndata.yaml
 #
 # Samlar all indata till MPC i en enda sensor.
-# - Prognoser (priser/PV) tas direkt från sina respektive sensorer, utan skivning.
+# - Prognoser (priser/PV) tas direkt från sina respektive sensorer.
 # - Alla MPC-parametrar och deferrables ingår.
 # - Klar att POST:a direkt som JSON i MPC-anropet.
 
@@ -11,13 +11,30 @@ template:
         unique_id: emhass_mpc_inputs
         state: "ok"
 
+        availability: >
+          {{
+            (state_attr('sensor.emhass_prices','sälj') is not none)
+            and (state_attr('sensor.emhass_prices','köp')  is not none)
+            and (state_attr('sensor.emhass_pv_forecast','pv_w_15min') is not none)
+            and (state_attr('sensor.emhass_prices','sälj')|list|length > 0)
+            and (state_attr('sensor.emhass_prices','köp') |list|length > 0)
+            and (state_attr('sensor.emhass_pv_forecast','pv_w_15min')|list|length > 0)
+          }}
+
         attributes:
           ####################################################################
-          # Index-info (mest för diagnos)
+          # Index-info
           ####################################################################
           step_minutes: 15
           i0: >
             {{ ((now().hour*60 + now().minute) // 15) }}
+
+          # Dynamisk horisont (kortaste listan)
+          prediction_horizon: >
+            {% set sell = state_attr('sensor.emhass_prices','sälj') | list %}
+            {% set buy  = state_attr('sensor.emhass_prices','köp')  | list %}
+            {% set pv   = state_attr('sensor.emhass_pv_forecast','pv_w_15min') | list %}
+            {{ [sell|length, buy|length, pv|length] | min }}
 
           ####################################################################
           # Prognoser (hela listorna från sensorerna)
@@ -27,7 +44,7 @@ template:
           pv_power_forecast:   "{{ state_attr('sensor.emhass_pv_forecast', 'pv_w_15min') | list }}"
 
           ####################################################################
-          # MPC-parametrar (direkt från helpers / hårdkod)
+          # MPC-parametrar
           ####################################################################
           alpha: >
             {{ (1.0 - states('input_number.emhass_beta') | float(0)) | round(1) }}
@@ -37,7 +54,7 @@ template:
           soc_init: >
             {{ min(1.0, (max(0.15, states('sensor.solar_battery_soc') | float(0) / 100))) }}
           treat_def_as_semi_cont: >
-            {{ [true, true, true] | tojson }}
+            {{ [true, true, true] }}
 
           # Nominell effekt för deferrable loads (W)
           P_deferrable_nom: >
@@ -47,7 +64,7 @@ template:
               2000
             ]
 
-          # set_def_constant – din logik för def_0, nu i 15-min (*4)
+          # set_def_constant – din logik för def_0, i 15-min (*4)
           set_def_constant: >
             [
               {{
