@@ -18,7 +18,7 @@ adaptive_lighting:
     transition: 30
     initial_transition: 5
     interval: 90
-    min_brightness: 20
+    min_brightness: 30
     max_brightness: 100
     min_color_temp: 2000
     max_color_temp: 4000
@@ -112,4 +112,4 @@ automation:
             - light.barnrum_fonster_1
             - light.barnrum_fonster_2
             # - light.barnrum_fonster
-            # - light.barnrum_ljusstake
+            - light.barnrum_ljusstake
