@@ -8,6 +8,7 @@
 # --- Ljusgrupp för hela vardagsrummet ---
 # En samlad grupp för att enkelt kunna styra alla lampor i
 # vardagsrummet samtidigt, t.ex. för en "släck allt"-knapp.
+# Flyttat till UI
 light:
   - platform: group
     name: Vardagsrum
@@ -22,8 +23,9 @@ light:
       - light.vardagsrum_fonster_vitrinskap
       - light.vardagsrum_bord
       # Ljusstakar
-      # - light.ac_0000002_3
-      # - light.ac_0ccc4aa_6
+      - light.ac_0000002_3
+      - light.ac_0ccc4aa_6
+      - light.vardagsrum_ljusstake_piano
 
 # --- Närvarosensor för hela vardagsrummet ---
 # Denna sensor blir 'on' vid rörelse och förblir 'on' i 20 minuter
