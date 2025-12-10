@@ -8,9 +8,8 @@
 adaptive_lighting:
   - name: Barnrum
     lights:
-    - light.barnrum_skank
     - light.barnrum_fonster_1
-    - light.barnrum_fonster_2
+    - light.barnrum_skrivbord
     - light.barnrum_tak
     # Julstjärna
     # - light.barnrum_fonster
@@ -96,7 +95,7 @@ automation:
       - action: "light.turn_{{ iif(states('binary_sensor.barnrum_belysning_automation_control') == 'on', 'on', 'off') }}"
         target:
           entity_id:
-            - light.barnrum_skank
+            - light.barnrum_skrivbord
   
   - alias: Barnrum belysning fönster
     id: barnrum_belysning_fonster
@@ -110,6 +109,5 @@ automation:
         target:
           entity_id:
             - light.barnrum_fonster_1
-            - light.barnrum_fonster_2
-            # - light.barnrum_fonster
+            - light.barnrum_skrivbord
             - light.barnrum_ljusstake
