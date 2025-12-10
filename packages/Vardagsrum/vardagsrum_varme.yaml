@@ -25,7 +25,11 @@ automation:
       - trigger: time_pattern
         minutes: 2
       - trigger: time_pattern
+        minutes: 17
+      - trigger: time_pattern
         minutes: 32
+      - trigger: time_pattern
+        minutes: 47
     actions:
       # Ställer in värmeläget baserat på om 'varmegolv_block' är på eller av.
       - action: climate.set_hvac_mode
