@@ -1,0 +1,80 @@
+# =================================================================
+# BALANSKONTROLL FÖR SOL & FÖRBRUKNING
+# =================================================================
+# Sensordefinitioner för att verifiera energiflöden.
+# PV-balans: att PV-produktionen ≈ egenanvändning + laddning + export.
+# Lastbalans: att Huslast ≈ egenanvändning + import + urladdning.
+# -----------------------------------------------------------------
+
+template:
+  - sensor:
+      # PV-balans: PV ≈ egenanvänd_sol + batteriladdning + sol-export
+      - name: solar_pv_balance_diff_w
+        unique_id: solar_pv_balance_diff_w
+        unit_of_measurement: W
+        state_class: measurement
+        availability: >
+          {{ has_value('sensor.solar_power_photovoltaics')
+            and has_value('sensor.solar_battery_charging')
+            and has_value('sensor.solar_power_sold_from_sun')
+            and has_value('sensor.solar_power_self_usage') }}
+        state: >
+          {{ (
+            states('sensor.solar_power_photovoltaics')|float(0)
+            - states('sensor.solar_battery_charging')|float(0)
+            - states('sensor.solar_power_sold_from_sun')|float(0)
+            - states('sensor.solar_power_self_usage')|float(0)
+          ) | round(0) }}
+        attributes:
+          formula: "PV ≈ self_use + batt_charge + sold_from_sun (bör vara nära 0)"
+
+      # Last-balans: Huslast ≈ egenanvänd_sol + import + batt_discharge
+      - name: power_usage_balance_diff_w
+        unique_id: power_usage_balance_diff_w
+        unit_of_measurement: W
+        state_class: measurement
+        availability: >
+          {{ has_value('sensor.power_usage')
+            and has_value('sensor.solar_power_self_usage')
+            and has_value('sensor.power_sannesholma_2181')
+            and has_value('sensor.solar_battery_discharging') }}
+        state: >
+          {% set L   = states('sensor.power_usage')               | float(0) %}
+          {% set su  = states('sensor.solar_power_self_usage')    | float(0) %}
+          {% set imp = max(0, states('sensor.power_sannesholma_2181') | float(0)) %}
+          {% set D   = states('sensor.solar_battery_discharging') | float(0) %}
+          {% set batt_to_load = min(D, max(0, L - su)) %}
+          {{ (L - su - imp - batt_to_load) | round(0) }}
+        attributes:
+          formula: "Load ≈ self_use + import + batt_to_load (bör vara nära 0)"
+
+  - binary_sensor:
+      # True när PV-balansen ligger inom tolerans (absolutdiff < 150 W)
+      - name: solar_pv_balance_ok
+        unique_id: solar_pv_balance_ok
+        availability: "{{ has_value('sensor.solar_pv_balance_diff_w') }}"
+        state: >
+          {{ (states('sensor.solar_pv_balance_diff_w')|float(99999) | abs) < 150 }}
+        attributes:
+          threshold_w: 150
+
+      # True när last-balansen ligger inom tolerans (absolutdiff < 200 W)
+      - name: power_usage_balance_ok
+        unique_id: power_usage_balance_ok
+        availability: "{{ has_value('sensor.power_usage_balance_diff_w') }}"
+        state: >
+          {{ (states('sensor.power_usage_balance_diff_w')|float(99999) | abs) < 200 }}
+        attributes:
+          threshold_w: 200
+
+  - sensor:
+      # Procentuell diff för PV-balans
+      - name: solar_pv_balance_diff_percent
+        unique_id: solar_pv_balance_diff_percent
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: "{{ has_value('sensor.solar_pv_balance_diff_w') and has_value('sensor.solar_power_photovoltaics') }}"
+        state: >
+          {% set pv = states('sensor.solar_power_photovoltaics')|float(0) %}
+          {% set diff = states('sensor.solar_pv_balance_diff_w')|float(0) %}
+          {{ (0 if pv == 0 else (100.0 * diff / pv)) | round(1) }}
