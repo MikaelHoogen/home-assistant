@@ -10,10 +10,6 @@ adaptive_lighting:
     lights:
       - light.linas_skrivbord
 #      - light.gastrum_fonster_1
-      - light.gastrum_byra
-      - light.gastrum_fonster_2
-      # Julstjärna
-      #  - light.gastrum_fonster
     prefer_rgb_color: false
     transition: 30
     initial_transition: 5
@@ -62,23 +58,19 @@ template:
             and is_state('binary_sensor.gastrum_belysning_lightlevel', 'on') ) }}
 
 # --- Automationen som tänder/släcker ---
-automation:
-  - alias: Gästrum belysning
-    id: Gästrum belysning
-    triggers:
-      - trigger: state
-        entity_id: binary_sensor.gastrum_belysning_automation_control
-      - trigger: state
-        entity_id: input_boolean.sovdags_gastrum
-      - trigger: homeassistant
-        event: start
-    actions:
-      # Steg 1: Styr fönsterlamporna baserat på kontrollsensorn.
-      - action: "light.turn_{{ iif(states('binary_sensor.gastrum_belysning_automation_control') == 'on', 'on', 'off') }}"
-        target:
-          entity_id:
+#automation:
+#  - alias: Gästrum belysning
+#    id: Gästrum belysning
+#    triggers:
+#      - trigger: state
+#        entity_id: binary_sensor.gastrum_belysning_automation_control
+#      - trigger: state
+#        entity_id: input_boolean.sovdags_gastrum
+#      - trigger: homeassistant
+#        event: start
+#    actions:
+#      # Steg 1: Styr fönsterlamporna baserat på kontrollsensorn.
+#      - action: "light.turn_{{ iif(states('binary_sensor.gastrum_belysning_automation_control') == 'on', 'on', 'off') }}"
+#        target:
+#          entity_id:
 #           - light.gastrum_fonster_1
-            - light.gastrum_fonster_2
-            - light.gastrum_byra
-            # Julstjärna
-            - light.gastrum_fonster
