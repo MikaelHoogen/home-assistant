@@ -9,10 +9,6 @@ input_boolean:
     name: Sovdags
     icon: mdi:sleep
 
-  sovdags_gastrum:
-    name: Sovdags gästrum
-    icon: mdi:sleep
-
 # =================================================================
 # AUTOMATION FÖR SOVDAGS-LÄGE
 # =================================================================
@@ -53,7 +49,7 @@ automation:
                     # Gästrum
                     - light.linas_skrivbord
                     # Barnrum
-                    - light.barnrum_tak_1
+                    - light.barnrum_tak
               
               # Steg 3: Vänta 5 sekunder.
               - delay:
@@ -118,6 +114,7 @@ automation:
                     - switch.adaptive_lighting_sleep_mode_sovrum
                     - switch.adaptive_lighting_sleep_mode_tvattstuga
                     - switch.adaptive_lighting_sleep_mode_vardagsrum_belysning_filament
+                    - switch.adaptive_lighting_sleep_mode_vardagsrum_tak
                     - switch.adaptive_lighting_sleep_mode_hall
 
               # Steg 2: Aktivera Adaptive Lighting helt i vissa rum.
