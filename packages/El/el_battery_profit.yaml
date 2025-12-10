@@ -18,11 +18,15 @@ template:
         unit_of_measurement: W
         device_class: power
         state_class: measurement
-        availability: "{{ is_number(states('sensor.power_production_sannesholma_2181')) and is_number(states('sensor.solar_power_photovoltaics')) }}"
+        availability: >
+          {{ has_value('sensor.solar_battery_discharging')
+            and has_value('sensor.power_usage')
+            and has_value('sensor.solar_power_self_usage') }}
         state: >
-          {% set total_export = states('sensor.power_production_sannesholma_2181') | float(0) %}
-          {% set solar_prod_w = states('sensor.solar_power_photovoltaics') | float(0) %}
-          {{ max(0, (total_export - solar_prod_w)) | round(0) }}
+          {% set D  = states('sensor.solar_battery_discharging') | float(0) %}
+          {% set L  = states('sensor.power_usage') | float(0) %}
+          {% set su = states('sensor.solar_power_self_usage') | float(0) %}
+          {{ max(0, D - max(0, L - su)) | round(0) }}
 
       # Batteriets självförbrukade effekt (inte såld)
       - name: solar_battery_power_self_usage
