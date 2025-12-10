@@ -17,7 +17,7 @@ template:
       - name: emhass_step_minutes_const
         unique_id: emhass_step_minutes_const
         unit_of_measurement: "min"
-        state: 30
+        state: 15
         # Byte till kvarts:
         #  - ändra state: 30 -> 15 (allt annat anpassar sig automatiskt)
 
