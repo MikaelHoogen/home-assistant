@@ -46,7 +46,7 @@ template:
         unique_id: avgift_energiskatt
         unit_of_measurement: "Öre/kWh"
         state_class: measurement
-        state: "{{ 53.5 }}"
+        state: "{{ 54.88 }}"
 
       # --- Totalpriser (inkl. alla avgifter) ---
       # Beräknar det totala priset per kWh som du betalar.
@@ -73,15 +73,28 @@ template:
           {{ ( states('sensor.avgift_elnat') | float('naan') / 100
           + states('sensor.avgift_energiskatt') | float('naan') / 100 ) | round(3) }}
 
+      # --- Aktuellt Nordpool spotpris per kvart (endast dagens raw_today) ---
+      - name: elpris_spot_kvart
+        unique_id: elpris_spot_kvart
+        unit_of_measurement: "SEK/kWh"
+        state_class: measurement
+        availability: >
+          {{ state_attr('sensor.elpris','raw_today') is not none }}
+        state: >
+          {% set i0 = ((now().hour*60 + now().minute) // 15) %}
+          {% set q_today = (state_attr('sensor.elpris','raw_today') or [])
+                            | map(attribute='value') | map('float') | list %}
+          {{ (q_today[i0] if (q_today|length > i0) else states('sensor.elpris')|float(0)) | round(3) }}
+
       # --- Produktionspriser (inkl. nätnytta etc.) ---
       # Beräknar det totala värdet per kWh som du tjänar när du säljer el.
       - name: elpris_produktion
         unique_id: elpris_produktion
         unit_of_measurement: "SEK/kWh"
         state_class: measurement
-        availability: "{{ is_number(states('sensor.elpris')) and is_number(states('sensor.elpris_natnytta'))}}"
+        availability: "{{ is_number(states('sensor.elpris_spot_kvart')) and is_number(states('sensor.elpris_natnytta'))}}"
         state: >
-          {{ ( states('sensor.elpris') | float('naan')
+          {{ ( states('sensor.elpris_spot_kvart') | float('naan')
           + 0.6
           + states('sensor.elpris_natnytta') | float('naan') ) | round(3) }}
       - name: elpris_natnytta
@@ -112,7 +125,7 @@ template:
         unit_of_measurement: "SEK/kWh"
         state_class: total
         availability: >
-          {{ is_number(states('sensor.accumulated_total_cost_month')) and states('sensor.solar_battery_discharged_month') | float(0) > 0 }}
+          {{ is_number(states('sensor.solar_battery_total_return_month')) and states('sensor.solar_battery_discharged_month') | float(0) > 0 }}
         state: >
           {{ (states('sensor.solar_battery_total_return_month') | float('nan') /
               states('sensor.solar_battery_discharged_month') | float('nan')) | round(2) }}
