@@ -86,7 +86,7 @@ automation:
       - action: "light.turn_{{ iif(states('binary_sensor.allrum_belysning_filament_automation_control') == 'on', 'on', 'off') }}"
         target:
           entity_id:
-            - light.allrum_klotlampa
+            - light.allrum_fonster_fatolj
   
   # Tänder/släcker huslampan.
   - alias: Allrum huslampa
