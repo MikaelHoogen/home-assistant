@@ -57,6 +57,24 @@ automation:
           entity_id: camera.carport_main
       - delay: 180
 
+        # --- Inspelning vid rörelse i entrén ---
+  - alias: Entré inspelning
+    id: entre_inspelning
+    mode: single
+    max_exceeded: silent
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.entre_reolink_person
+        to: 'on'
+    actions:
+      - action: camera.record
+        data:
+          filename: '/media/disk_f/recordings/{{ trigger.to_state.name }}/{{ now().strftime("%Y-%m-%d") }}/{{ now().strftime("%Y-%m-%d_%H:%M") }}.mp4'
+          duration: 60
+        target:
+          entity_id: camera.entre_reolink_clear
+      - delay: 60
+
   # --- Inspelning vid rörelse vid kattkamera ---
   - alias: Kattkamera inspelning
     id: kattkamera_inspelning

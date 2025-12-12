@@ -13,7 +13,8 @@ template:
         delay_off:
           minutes: 5
         state: >
-          {{ is_state('binary_sensor.carport_person', 'on') }}
+          {{ is_state('binary_sensor.carport_person', 'on')
+            or is_state('binary_sensor.carport_vehicle', 'on') }}
 
       - name: entre_presence_animal
         unique_id: entre_presence_animal
@@ -30,3 +31,12 @@ template:
           minutes: 5
         state: >
           {{ is_state('binary_sensor.entre_reolink_person', 'on') }}
+
+      # --- Närvarosensor för kattkameran ---
+      - name: tvattstuga_presence_katt
+        unique_id: tvattstuga_presence_katt
+        device_class: motion
+        delay_off:
+          minutes: 2 # Förhindrar nya notiser i 2 minuter efter senaste rörelse.
+        state: >
+          {{ is_state('binary_sensor.tvattstuga_djur', 'on') }}
