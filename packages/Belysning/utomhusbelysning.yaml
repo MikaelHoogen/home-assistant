@@ -8,8 +8,8 @@ adaptive_lighting:
     transition: 0
     initial_transition: 0
     interval: 90
-    min_brightness: 20
-    max_brightness: 90
+    min_brightness: 90
+    max_brightness: 100
     min_color_temp: 2200
     max_color_temp: 4000
     sleep_brightness: 1
@@ -50,7 +50,7 @@ adaptive_lighting:
     transition: 30
     initial_transition: 5
     interval: 90
-    min_brightness: 40
+    min_brightness: 60
     max_brightness: 100
     sleep_brightness: 1
     sleep_color_temp: 2200
@@ -58,25 +58,28 @@ adaptive_lighting:
     detect_non_ha_changes: false
     adapt_only_on_bare_turn_on: true
     #
-light:
-  - platform: group
-    name: Utomhusbelysning grupp
-    unique_id: utomhusbelysning_grupp
-    entities:
-      - light.entre_dorr
-      - light.groventre_dorr
-      - light.koksentre_dorr
-      - light.entre_ljusslinga
-      - light.koksentre_ljusslinga
-      - light.vaxthus_ljusslinga
-      - light.lekstuga_ljusslinga
-      - light.snickarboa_entre
-      - light.stall_entre
-      - light.carport_entre
-      - light.kackorna_entre
-      - light.stolpe_gang
-      - light.stolpe_grind
-      - light.carport_belysning
+# Flyttad till UI
+#light:
+#  - platform: group
+#    name: Utomhusbelysning grupp
+#    unique_id: utomhusbelysning_grupp
+#    entities:
+#      - light.entre_dorr
+#      - light.groventre_dorr
+#      - light.koksentre_dorr
+#      - light.entre_ljusslinga
+#      #- light.koksentre_ljusslinga
+#      - light.vaxthus_ljusslinga
+#      - light.utomhusbelysning_baksida_ljusslinga_lekstuga
+#      - light.utomhusbelysning_baksida_ljusslinga_altan
+#      #- light.lekstuga_ljusslinga
+#      - light.snickarboa_entre
+#      - light.stall_entre
+#      - light.carport_entre
+#      - light.kackorna_entre
+#      - light.stolpe_gang
+#      - light.stolpe_grind
+#      - light.carport_belysning
 #
 input_number:
   utomhusbelysning_light_level:
@@ -121,6 +124,13 @@ template:
         unique_id: utomhusbelysning_automation_control
         state: >
           {{ is_state('binary_sensor.utomhusbelysning_light_level', 'on') }}
+      #
+      ### Carport
+      - name: carport_belysning_automation_control
+        unique_id: carport_belysning_automation_control
+        state: >
+          {{ is_state('binary_sensor.utomhusbelysning_light_level', 'on')
+            and is_state('binary_sensor.carport_presence', 'on') }}
       #
       ### Entré
       - name: entre_presence_automation_control
@@ -220,9 +230,6 @@ automation:
                 state: 'off'
                 entity_id: binary_sensor.entre_presence_automation_control
             sequence:
-#              - service: light.turn_off
-#                entity_id:
-#                    - light.entre_dorr
               - service: switch.turn_on
                 entity_id: switch.adaptive_lighting_adapt_brightness_utomhusbelysning_hue
 #
@@ -264,6 +271,21 @@ automation:
           {% endif %}
         entity_id:
           - light.entre_ljusslinga
-          - light.koksentre_ljusslinga
+          - light.utomhusbelysning_baksida_ljusslinga_altan
           - light.vaxthus_ljusslinga
-          - light.lekstuga_ljusslinga
+          - light.utomhusbelysning_baksida_ljusslinga_lekstuga
+          - light.grillplats_ljusslinga
+  #
+  ### Carport belysning
+  - alias: Carport belysning
+    id: carport_belysning
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.carport_belysning_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ states('binary_sensor.carport_belysning_automation_control') }}"
+        target:
+          entity_id:
+            - light.carport_belysning
