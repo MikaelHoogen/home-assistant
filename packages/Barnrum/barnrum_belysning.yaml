@@ -11,8 +11,6 @@ adaptive_lighting:
     - light.barnrum_fonster_1
     - light.barnrum_skrivbord
     - light.barnrum_tak
-    # Julstjärna
-    # - light.barnrum_fonster
     prefer_rgb_color: false
     transition: 30
     initial_transition: 5
@@ -68,19 +66,15 @@ template:
       - name: barnrum_belysning_automation_control
         unique_id: barnrum_belysning_automation_control
         state: >
-          {{ ( is_state('binary_sensor.barnrum_belysning_lightlevel', 'on')
-          and is_state('input_boolean.sovdags', 'off') )
-          or ( is_state('binary_sensor.barnrum_belysning_lightlevel', 'on')
-          and is_state('input_boolean.barnrum_gaster', 'on') ) }}
+          {{ is_state('binary_sensor.barnrum_belysning_lightlevel', 'on')
+          and is_state('input_boolean.sovdags', 'off') }}
       
       # Steg 2: Kontrollsensor för fönsterbelysningen.
       - name: barnrum_belysning_fonster_automation_control
         unique_id: barnrum_belysning_fonster_automation_control
         state: >
-          {{ ( is_state('binary_sensor.barnrum_belysning_fonster_lightlevel', 'on')
-          and is_state('input_boolean.sovdags', 'off') )
-          or ( is_state('binary_sensor.barnrum_belysning_fonster_lightlevel', 'on')
-          and is_state('input_boolean.barnrum_gaster', 'on') ) }}
+          {{ is_state('binary_sensor.barnrum_belysning_fonster_lightlevel', 'on')
+          and is_state('input_boolean.sovdags', 'off') }}
 
 # --- Automationer ---
 automation:
@@ -109,5 +103,4 @@ automation:
         target:
           entity_id:
             - light.barnrum_fonster_1
-            - light.barnrum_skrivbord
             - light.barnrum_ljusstake
