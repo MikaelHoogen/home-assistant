@@ -1,0 +1,63 @@
+# =================================================================
+# LOGIK FÖR FILAMENTBELYSNING
+# =================================================================
+# All logik för att styra filamentlampan i studio.
+# -----------------------------------------------------------------
+
+# --- Profil för adaptiv belysning ---
+adaptive_lighting:
+  - name: Studio filament
+    lights:
+      - light.studio_hylla
+    transition: 45
+    initial_transition: 5
+    interval: 90
+    min_brightness: 1
+    max_brightness: 35
+    sleep_brightness: 1
+    take_over_control: true
+    detect_non_ha_changes: false
+    adapt_only_on_bare_turn_on: true
+
+# --- Inställning för ljusnivå ---
+input_number:
+  studio_filament_light_level:
+    name: Ljusstyrka studio för filamentbelysning
+    min: 0
+    max: 2000
+    step: 10
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
+
+# --- Sensorer som styr automationen ---
+template:
+  - binary_sensor:
+      # Steg 1: Är det mörkt nog ute för filamentbelysning?
+      - name: studio_belysning_filament_lightlevel
+        unique_id: studio_belysning_filament_lightlevel
+        delay_off:
+          minutes: 5
+        state: >
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.studio_filament_light_level') | float(0) }}
+
+      # Steg 2: Kontrollsensor som triggar automationen.
+      - name: studio_belysning_filament_automation_control
+        unique_id: studio_belysning_filament_automation_control
+        state: >
+          {{ is_state('binary_sensor.studio_belysning_filament_lightlevel', 'on')
+            and is_state('input_boolean.sovdags', 'off') }}
+
+# --- Automationen som tänder/släcker ---
+automation:
+  - alias: Studio belysning filament
+    id: studio_belysning_filament
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.studio_belysning_filament_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.studio_belysning_filament_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.studio_hylla
