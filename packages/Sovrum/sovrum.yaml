@@ -1,0 +1,159 @@
+# =================================================================
+# KONFIGURATION FÖR SOVRUMMET
+# =================================================================
+# All logik för att styra enheter och automationer i sovrummet.
+# -----------------------------------------------------------------
+
+# =================================================================
+# ADAPTIVE LIGHTING-PROFIL
+# =================================================================
+# Justerar automatiskt färgtemperatur och ljusstyrka på
+# lamporna i sovrummet baserat på solens position.
+# -----------------------------------------------------------------
+adaptive_lighting:
+  - name: Sovrum
+    lights:
+      - light.sovrum_byra
+      - light.sovrum_lang_byra
+      - light.sovrum_sang_mikael
+      - light.sovrum_sang_lina
+    transition: 30
+    initial_transition: 1
+    interval: 90
+    min_brightness: 20
+    max_brightness: 90
+    min_color_temp: 2000
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_rgb_color: [255, 161, 40]
+    take_over_control: true
+    detect_non_ha_changes: true
+    adapt_only_on_bare_turn_on: true
+
+# =================================================================
+# LJUSGRUPPER
+# =================================================================
+# En samlad grupp för att enkelt kunna styra alla lampor i rummet.
+# Flyttad till UI
+# -----------------------------------------------------------------
+#light:
+#  - platform: group
+#    name: Sovrum grupp
+#    unique_id: Sovrum grupp
+#    entities:
+#      - light.sovrum
+
+# =================================================================
+# INPUT NUMBERS (HJÄLPARE)
+# =================================================================
+# Ett justerbart tröskelvärde för när det ska anses vara
+# "mörkt nog" för att tända belysningen.
+# -----------------------------------------------------------------
+input_number:
+  sovrum_light_level:
+    name: Ljusstyrka utomhus för belysning sovrum
+    min: 0
+    max: 1000
+    step: 50
+    unit_of_measurement: lx
+    icon: mdi:lightbulb-on
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Dessa sensorer utgör grunden för automationerna.
+# -----------------------------------------------------------------
+template:
+  - binary_sensor:
+      # Steg 1: Är det mörkt nog ute för att tända?
+      - name: sovrum_belysning_lightlevel
+        unique_id: sovrum_belysning_lightlevel
+        device_class: light
+        delay_off:
+          minutes: 10
+        state: >-
+          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.sovrum_light_level') | float(0) }}
+      
+      # Steg 2: Den slutgiltiga kontrollsensorn som triggar automationen.
+      - name: sovrum_belysning_automation_control
+        unique_id: sovrum_belysning_automation_control
+        state: >-
+          {{ is_state('binary_sensor.sovrum_belysning_lightlevel', 'on')
+            and is_state('input_boolean.film_spelar', 'off')
+            and is_state('input_boolean.sovdags', 'off') }}
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# Styr händelser och logik i sovrummet.
+# -----------------------------------------------------------------
+automation:
+  # --- Automation för allmän belysning ---
+  - alias: Sovrum belysning
+    id: sovrum_belysning
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.sovrum_belysning_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.sovrum_belysning_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.sovrum_byra
+            - light.sovrum_lang_byra
+            - light.sovrum_sang_lina
+            - light.sovrum_sang_mikael
+            - light.sovrum_julstjarna
+
+  # --- Automation för knappen vid sängen (Mikael) ---
+  - alias: Sovrum Säng Mikael Knapp
+    id: sovrum_sang_mikael_knapp
+    triggers:
+      - platform: device
+        domain: mqtt
+        device_id: d804ff674d445d8a0704fc6dc3634837
+        type: action
+        subtype: single
+      - platform: device
+        domain: mqtt
+        device_id: d804ff674d445d8a0704fc6dc3634837
+        type: action
+        subtype: double
+      - platform: device
+        domain: mqtt
+        device_id: d804ff674d445d8a0704fc6dc3634837
+        type: action
+        subtype: hold
+    actions:
+      - choose:
+          # Enkeltryck: Växlar "Godnatt"-läget.
+          - conditions:
+              - condition: template
+                value_template: '{{ trigger.payload == "single" }}'
+            sequence:
+              - action: input_boolean.toggle
+                target:
+                  entity_id: input_boolean.sovdags
+          
+          # Dubbeltryck: Växlar sänglampan.
+          - conditions:
+              - condition: template
+                value_template: '{{ trigger.payload == "double" }}'
+            sequence:
+              - action: light.toggle
+                target:
+                  entity_id: light.sovrum_sang_mikael
+          
+          # Långtryck: Släcker allt i sovrummet och stänger av adaptiv belysning.
+          - conditions:
+              - condition: template
+                value_template: '{{ trigger.payload == "hold" }}'
+            sequence:
+              - action: light.turn_off
+                target:
+                  entity_id: light.sovrum
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.adaptive_lighting_sovrum
