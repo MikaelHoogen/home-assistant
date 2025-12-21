@@ -5,15 +5,25 @@ adaptive_lighting:
     lights:
       # Allrum mot altan dimmer
       - light.ac_000000a_1
-      # Kök
-      - light.ac_0000001_3
       # Allrum mot entré dimmer
       - light.ac0000001_4
     transition: 30
     initial_transition: 5
     interval: 90
-    min_brightness: 60
+    min_brightness: 70
     max_brightness: 80
+    sleep_brightness: 1
+    take_over_control: true
+#
+  - name: Kök Ljusstake
+    lights:
+      # Kök
+      - light.ac_0000001_3
+    transition: 30
+    initial_transition: 5
+    interval: 90
+    min_brightness: 100
+    max_brightness: 100
     sleep_brightness: 1
     take_over_control: true
 #
@@ -34,10 +44,10 @@ adaptive_lighting:
     take_over_control: true
     detect_non_ha_changes: true
 #
-  - name: Gästrum julstjarna
+  - name: Sovrum julstjarna
     lights:
       # Julstjärna
-      - light.gastrum_fonster
+      - light.sovrum_julstjarna
     transition: 30
     initial_transition: 5
     interval: 90
@@ -64,14 +74,15 @@ light:
       # Vardagsrum
       - light.ac_0000002_3
       - light.ac_0ccc4aa_6
+      - light.vardagsrum_ljusstake_piano
       # Allrum mot altan dimmer
       - light.ac_000000a_1
       # Kök
       - light.ac_0000001_3
       # Barnrum
       - light.barnrum_ljusstake
-      # Gästrum
-      - light.gastrum_ljusstake
+      # Sovrum
+      - light.sovrum_ljusstake
   #
   #
 #
@@ -104,17 +115,6 @@ template:
           and is_state('input_boolean.film_spelar', 'off')
           and is_state('input_boolean.sovdags', 'off') }}
 #
-    # Gästrum
-    - name: gastrum_ljusstakar_belysning_automation_control
-      unique_id: gastrum_ljusstakar_belysning_automation_control
-      state: >
-        {{ ( is_state('binary_sensor.ljusstakar_belysning_lightlevel', 'on')
-        and is_state('input_boolean.sovdags_gastrum', 'off')
-        and is_state('input_boolean.sovdags', 'off') )
-        or ( is_state('input_boolean.sovdags_gastrum', 'off') 
-        and is_state('input_boolean.gaster', 'on') 
-        and is_state('binary_sensor.ljusstakar_belysning_lightlevel', 'on') ) }}
-      #
 #
 #
 automation:
@@ -137,34 +137,18 @@ automation:
         entity_id:
           # Allrum
           #- light.ac_0000001_2
-          - light.ac_0000002_4
+          # Julgran
+#          - light.ac_0000002_4
           # Allrum mot entré dimmer
-          - light.ac0000001_4
+#          - light.ac0000001_4
           # Vardagsrum
-          - light.ac_0000002_3
-          - light.ac_0ccc4aa_6
+#          - light.ac_0000002_3
+#          - light.ac_0ccc4aa_6
+#          - light.vardagsrum_ljusstake_piano
           # Allrum mot altan dimmer
-          - light.ac_000000a_1
+#          - light.ac_000000a_1
           # Kök
-          - light.ac_0000001_3
-          # Barnrum
+#          - light.ac_0000001_3
+          # Sovrum
+#          - light.sovrum_ljusstake
 #
-#
-  ### Ljusstakar
-  - alias: Gästrum Ljusstakar
-    id: Gästrum Ljusstakar
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.gastrum_ljusstakar_belysning_automation_control
-      - platform: homeassistant
-        event: start
-    action:
-      - service: >
-          {% if is_state('binary_sensor.gastrum_ljusstakar_belysning_automation_control', 'on') %}
-          light.turn_on
-          {% elif is_state('binary_sensor.gastrum_ljusstakar_belysning_automation_control', 'off') %}
-          light.turn_off
-          {% endif %}
-        entity_id:
-          # Gästrum
-          - light.gastrum_ljusstake
