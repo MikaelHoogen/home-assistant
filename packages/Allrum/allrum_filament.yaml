@@ -86,7 +86,21 @@ automation:
       - action: "light.turn_{{ iif(states('binary_sensor.allrum_belysning_filament_automation_control') == 'on', 'on', 'off') }}"
         target:
           entity_id:
-            - light.allrum_fonster_fatolj
+            - light.allrum_styrning_fonster
+
+  # Tänder/släcker i trappan
+  - alias: Allrum belysning trappa
+    id: allrum_belysning_trappa
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.allrum_belysning_filament_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.allrum_belysning_filament_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.trappa
   
   # Tänder/släcker huslampan.
   - alias: Allrum huslampa
