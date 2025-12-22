@@ -27,7 +27,7 @@ adaptive_lighting:
     min_brightness: 10
     max_brightness: 100
     min_color_temp: 2000
-    max_color_temp: 4500
+    max_color_temp: 4000
     sleep_brightness: 1
     sleep_rgb_or_color_temp: rgb_color
     sleep_rgb_color: [255, 161, 40]
@@ -47,11 +47,11 @@ adaptive_lighting:
     min_brightness: 70
     max_brightness: 100
     min_color_temp: 2000
-    max_color_temp: 4500
+    max_color_temp: 4000
     sleep_brightness: 1
     sleep_rgb_or_color_temp: rgb_color
     sleep_rgb_color: [255, 161, 40]
-    max_sunrise_time: "07:00:00"
+#    max_sunrise_time: "07:00:00"
     take_over_control: true
     detect_non_ha_changes: true
     adapt_only_on_bare_turn_on: true
@@ -91,7 +91,8 @@ template:
       - name: mikaels_rum_belysning_automation_control
         unique_id: mikaels_rum_belysning_automation_control
         state: >
-          {{ is_state('binary_sensor.mikaels_rum_belysning_lightlevel', 'on') }}
+          {{ is_state('binary_sensor.mikaels_rum_belysning_lightlevel', 'on')
+            and is_state('input_boolean.sovdags', 'off') }}
 
       # --- Närvarosensorer ---
       # En grundläggande närvarosensor med 10 minuters fördröjning.
@@ -127,7 +128,7 @@ automation:
       - trigger: homeassistant
         event: start
     actions:
-      - action: "light.turn_{{ iif(states('binary_sensor.mikaels_rum_belysning_automation_control') == 'on', 'on', 'off') }}"
+      - action: "light.turn_{{ states('binary_sensor.mikaels_rum_belysning_automation_control') }}"
         target:
           entity_id:
             - light.mikaels_rum_fonster
@@ -145,9 +146,4 @@ automation:
       - action: light.turn_off
         target:
           entity_id:
-            - light.mikaels_rum_hue_play_1
-            - light.mikaels_rum_hue_play_2
-            - light.mikaels_rum_hue_play_3
-            - light.mikaels_rum_skrivbord
-            - light.mikaels_rum_ljusslinga
-            - light.mikaels_rum_tak
+            - light.mikaels_rum
