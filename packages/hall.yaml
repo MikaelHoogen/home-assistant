@@ -10,7 +10,6 @@ adaptive_lighting:
     lights:
       - light.hall
       - light.hall_byra
-    prefer_rgb_color: false
     transition: 30
     initial_transition: 2
     interval: 90
@@ -23,6 +22,7 @@ adaptive_lighting:
     sleep_rgb_color: [255, 161, 40]
     take_over_control: true
     detect_non_ha_changes: true
+    adapt_only_on_bare_turn_on: true
 
 # --- Inställning för ljusnivå ---
 input_number:
@@ -83,14 +83,14 @@ template:
 # --- Automationen som tänder/släcker ---
 automation:
   - alias: Hall takbelysning
-    id: Hall takbelysning
+    id: hall_takbelysning
     triggers:
       - trigger: state
         entity_id: binary_sensor.hall_presence_light_automation_control
       - trigger: homeassistant
         event: start
     actions:
-      - action: "light.turn_{{ iif(states('binary_sensor.hall_presence_light_automation_control') == 'on', 'on', 'off') }}"
+      - action: "light.turn_{{ states('binary_sensor.hall_presence_light_automation_control') }}"
         target:
           entity_id:
             - light.hall

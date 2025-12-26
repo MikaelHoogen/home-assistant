@@ -1,19 +1,27 @@
 # =================================================================
 # KONFIGURATION FÖR BADRUMMET
 # =================================================================
-# All logik för att styra enheter och automationer i badrummet.
+# All logik för att styra belysningen i badrummet.
+#
+# OBS! Lampor styrs via styrningsgrupp i UI:
+#  - light.badrum_styrning
+#
+# OBS! Styrparametrar hanteras via UI (Helpers):
+#  - input_number.badrum_light_level
 # -----------------------------------------------------------------
+
 
 # =================================================================
 # ADAPTIVE LIGHTING-PROFIL
 # =================================================================
-# Justerar automatiskt färgtemperatur och ljusstyrka på lampan
-# baserat på solens position.
+# Justerar automatiskt färgtemperatur och ljusstyrka på lamporna
+# baserat på dygnsrytm (solens position).
 # -----------------------------------------------------------------
 adaptive_lighting:
   - name: Badrum
     lights:
-    - light.badrum
+      - light.badrum_spegel
+      - light.badrum_tak
     prefer_rgb_color: false
     transition: 30
     initial_transition: 1
@@ -29,42 +37,45 @@ adaptive_lighting:
     detect_non_ha_changes: true
     adapt_only_on_bare_turn_on: true
 
-# =================================================================
-# INPUT NUMBERS (HJÄLPARE)
-# =================================================================
-# Ett justerbart tröskelvärde för när det ska anses vara
-# "mörkt nog" för att tända belysningen.
-# -----------------------------------------------------------------
-input_number:
-  badrum_light_level:
-    name: Ljusstyrka badrum för belysning
-    min: 0
-    max: 200
-    step: 10
-    unit_of_measurement: lx
-    icon: mdi:lightbulb-on
 
 # =================================================================
 # TEMPLATE-SENSORER
 # =================================================================
-# Dessa sensorer utgör grunden för automationen.
-# -----------------------------------------------------------------
 template:
   - binary_sensor:
+      # =============================================================
+      # LJUSNIVÅ (INNE)
+      # =============================================================
       # Steg 1: Är det för ljust inne för att tända belysningen?
-      # Har en "spärr" för att inte släckas direkt om lampan själv höjer ljusnivån.
+      #
+      # on  = för ljust (tänd inte)
+      # off = mörkt nog (OK att tända)
+      #
+      # Inkluderar spärrlogik så att lamporna inte släcker sig själva
+      # när de precis har tänts och luxvärdet hoppar upp.
+      # -------------------------------------------------------------
       - name: badrum_lightlevel
         unique_id: badrum_lightlevel
-        device_class: light
         delay_on:
           minutes: 5
         state: >
-          {{ ( states('sensor.badrum_hue_motion_sensor_light_level') | float(0.0) > states('input_number.badrum_light_level') | float(0.0)
-            and is_state('light.badrum', 'off') )
-            or ( is_state('binary_sensor.badrum_lightlevel', 'on')
-            and is_state('light.badrum', 'on') ) }}
-      
-      # En grundläggande närvarosensor med 7 minuters fördröjning.
+          {{
+            (
+              (states('sensor.badrum_hue_motion_sensor_light_level') | float(9999))
+              > (states('input_number.badrum_light_level') | float(0))
+              and is_state('light.badrum_styrning', 'off')
+            )
+            or
+            (
+              is_state('binary_sensor.badrum_lightlevel', 'on')
+              and is_state('light.badrum_styrning', 'on')
+            )
+          }}
+
+      # =============================================================
+      # NÄRVARO
+      # =============================================================
+      # Steg 1: Närvaro med fördröjning (undviker "fladder")
       - name: badrum_presence
         unique_id: badrum_presence
         device_class: motion
@@ -72,29 +83,31 @@ template:
           minutes: 7
         state: >
           {{ is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'on') }}
-      
-      # Steg 2: Den slutgiltiga kontrollsensorn som triggar automationen.
+
+      # =============================================================
+      # AUTOMATION CONTROL
+      # =============================================================
+      # Steg 2: Slutlig kontrollsensor som triggar automationen
       - name: badrum_presence_light_automation_control
         unique_id: badrum_presence_light_automation_control
         state: >
           {{ is_state('binary_sensor.badrum_presence', 'on')
-              and is_state('binary_sensor.badrum_lightlevel', 'off') }}
+            and is_state('binary_sensor.badrum_lightlevel', 'off') }}
+
 
 # =================================================================
-# AUTOMATIONER
+# AUTOMATION
 # =================================================================
-# Tänder och släcker belysningen baserat på närvaro och ljusnivå.
-# -----------------------------------------------------------------
 automation:
   - alias: Badrum belysning
     id: badrum_belysning
+    mode: single
     triggers:
       - trigger: state
         entity_id: binary_sensor.badrum_presence_light_automation_control
       - trigger: homeassistant
         event: start
     actions:
-      - action: "light.turn_{{ iif(states('binary_sensor.badrum_presence_light_automation_control') == 'on', 'on', 'off') }}"
+      - action: "light.turn_{{ states('binary_sensor.badrum_presence_light_automation_control') }}"
         target:
-          entity_id:
-            - light.badrum
+          entity_id: light.badrum_styrning
