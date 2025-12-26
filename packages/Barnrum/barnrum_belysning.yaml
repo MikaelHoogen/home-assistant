@@ -2,15 +2,31 @@
 # LOGIK FÖR BELYSNING
 # =================================================================
 # All logik för att styra belysningen i barnrummet.
+#
+# OBS! Styrparametrar hanteras via UI (Helpers):
+#  - input_number.barnrum_light_level
+#  - input_number.barnrum_fonster_light_level
+#
+# OBS! Lampor styrs via Light Groups i UI:
+#  - light.barnrum_styrning          <-- Allmän belysning (t.ex. skrivbord, tak)
+#  - light.barnrum_styrning_fonster  <-- Fönster/dekor (t.ex. fönsterlampa, ljusstake)
+#
+# VIKTIGT: För att undvika "kamp" mellan grupper:
+#  - Lägg inte samma lampa i både barnrum_styrning och barnrum_styrning_fonster.
 # -----------------------------------------------------------------
 
-# --- Profil för adaptiv belysning ---
+
+# =================================================================
+# ADAPTIVE LIGHTING PROFIL
+# =================================================================
+# Profiler för att anpassa ljus efter dygnsrytm (färgtemperatur/ljusstyrka).
+# -----------------------------------------------------------------
 adaptive_lighting:
   - name: Barnrum
     lights:
-    - light.barnrum_fonster_1
-    - light.barnrum_skrivbord
-    - light.barnrum_tak
+      - light.barnrum_fonster_1
+      - light.barnrum_skrivbord
+      - light.barnrum_tak
     prefer_rgb_color: false
     transition: 30
     initial_transition: 5
@@ -26,81 +42,85 @@ adaptive_lighting:
     detect_non_ha_changes: true
     adapt_only_on_bare_turn_on: true
 
-# --- Inställningar för ljusnivåer ---
-input_number:
-  barnrum_light_level:
-    name: Ljusstyrka utomhus för belysning barnrum
-    min: 0
-    max: 1000
-    step: 50
-    unit_of_measurement: lx
-    icon: mdi:lightbulb-on
-  barnrum_fonster_light_level:
-    name: Ljusstyrka utomhus för belysning i fönster barnrum
-    min: 0
-    max: 1000
-    step: 10
-    unit_of_measurement: lx
-    icon: mdi:lightbulb-on
-
-# --- Sensorer som styr automationerna ---
+# =================================================================
+# SENSORER SOM STYR AUTOMATIONERNA
+# =================================================================
+# Binary sensors som uttrycker "mörkt nog" samt automation_control-signaler.
+# -----------------------------------------------------------------
 template:
   - binary_sensor:
+      # -------------------------------------------------------------
       # Steg 1: Är det mörkt nog ute för den allmänna belysningen?
+      # -------------------------------------------------------------
       - name: barnrum_belysning_lightlevel
         unique_id: barnrum_belysning_lightlevel
+        device_class: light
         delay_off:
           minutes: 15
         state: >
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.barnrum_light_level') | float(0) }}
-      
+          {{ (states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(9999))
+              < (states('input_number.barnrum_light_level') | float(0)) }}
+
+      # -------------------------------------------------------------
       # Steg 1: Är det mörkt nog ute för fönsterbelysningen?
+      # -------------------------------------------------------------
       - name: barnrum_belysning_fonster_lightlevel
         unique_id: barnrum_belysning_fonster_lightlevel
+        device_class: light
         delay_off:
           minutes: 10
         state: >
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.barnrum_fonster_light_level') | float(0) }}
-      
-      # Steg 2: Kontrollsensor för den allmänna belysningen.
+          {{ (states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(9999))
+              < (states('input_number.barnrum_fonster_light_level') | float(0)) }}
+
+      # -------------------------------------------------------------
+      # Steg 2: Kontrollsensor för den allmänna belysningen
+      # -------------------------------------------------------------
       - name: barnrum_belysning_automation_control
         unique_id: barnrum_belysning_automation_control
         state: >
           {{ is_state('binary_sensor.barnrum_belysning_lightlevel', 'on')
-          and is_state('input_boolean.sovdags', 'off') }}
-      
-      # Steg 2: Kontrollsensor för fönsterbelysningen.
+            and is_state('input_boolean.sovdags', 'off') }}
+
+      # -------------------------------------------------------------
+      # Steg 2: Kontrollsensor för fönsterbelysningen
+      # -------------------------------------------------------------
       - name: barnrum_belysning_fonster_automation_control
         unique_id: barnrum_belysning_fonster_automation_control
         state: >
           {{ is_state('binary_sensor.barnrum_belysning_fonster_lightlevel', 'on')
-          and is_state('input_boolean.sovdags', 'off') }}
+            and is_state('input_boolean.sovdags', 'off') }}
 
-# --- Automationer ---
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# En automation som styr två belysningstyper via varsin automation_control.
+# Utförandet sker via Light Groups i UI.
+# -----------------------------------------------------------------
 automation:
   - alias: Barnrum belysning
     id: barnrum_belysning
+    mode: single
     triggers:
       - trigger: state
-        entity_id: binary_sensor.barnrum_belysning_automation_control
+        entity_id:
+          - binary_sensor.barnrum_belysning_automation_control
+          - binary_sensor.barnrum_belysning_fonster_automation_control
       - trigger: homeassistant
         event: start
+
     actions:
-      - action: "light.turn_{{ iif(states('binary_sensor.barnrum_belysning_automation_control') == 'on', 'on', 'off') }}"
+      # -------------------------------------------------------------
+      # DEL A: Allmän belysning
+      # -------------------------------------------------------------
+      - action: "light.turn_{{ states('binary_sensor.barnrum_belysning_automation_control') }}"
         target:
-          entity_id:
-            - light.barnrum_skrivbord
-  
-  - alias: Barnrum belysning fönster
-    id: barnrum_belysning_fonster
-    triggers:
-      - trigger: state
-        entity_id: binary_sensor.barnrum_belysning_fonster_automation_control
-      - trigger: homeassistant
-        event: start
-    actions:
-      - action: "light.turn_{{ iif(states('binary_sensor.barnrum_belysning_fonster_automation_control') == 'on', 'on', 'off') }}"
+          entity_id: light.barnrum_styrning
+
+      # -------------------------------------------------------------
+      # DEL B: Fönsterbelysning
+      # -------------------------------------------------------------
+      - action: "light.turn_{{ states('binary_sensor.barnrum_belysning_fonster_automation_control') }}"
         target:
-          entity_id:
-            - light.barnrum_fonster_1
-            - light.barnrum_ljusstake
+          entity_id: light.barnrum_styrning_fonster
