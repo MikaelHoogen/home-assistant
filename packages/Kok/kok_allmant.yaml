@@ -6,14 +6,16 @@
 # -----------------------------------------------------------------
 
 # --- Ljusgrupp för hela köket ---
-light:
-  - platform: group
-    name: Kök grupp
-    unique_id: kok_grupp
-    entities:
-      - light.kok
-      - light.kok_fonsterbelysning
-      # Ljusstake
+# Flyttad till UI
+#light:
+#  - platform: group
+#    name: Kök grupp
+#    unique_id: kok_grupp
+#    entities:
+#      - light.kok
+#      - light.kok_fonsterbelysning
+#      - light.kok_bankbelysning
+#      # Ljusstake
 #      - light.ac_0000001_3
 
 # --- Sensorer som styr automationen ---
@@ -37,7 +39,7 @@ template:
         unique_id: kok_presence
         device_class: motion
         delay_off:
-          minutes: 20
+          minutes: 15
         state: >
           {{ is_state('binary_sensor.kok_hue_motion_sensor_motion', 'on')
             or is_state('binary_sensor.koksentre_dorrtrigger', 'on') }}

@@ -1,10 +1,22 @@
 # =================================================================
-# LOGIK FÖR FÖNSTERBELYSNING
+# LOGIK FÖR FÖNSTERBELYSNING – KÖK
 # =================================================================
-# All logik för att styra fönsterlamporna i köket.
+# Styr fönsterlamporna i köket via två grupper:
+#  - Grundstyrning: tänd/släck vid mörker
+#  - Filmläge: tänd/släck vid mörker, men släck vid film
+#
+# OBS! Styrparametrar hanteras via UI (Helpers):
+#  - input_number.fonsterbelysning_light_level
+#
+# OBS! Lampor styrs via Light Groups i UI:
+#  - light.kok_styrning_fonster
+#  - light.kok_styrning_fonster_film
 # -----------------------------------------------------------------
 
-# --- Profil för adaptiv belysning ---
+
+# =================================================================
+# ADAPTIVE LIGHTING-PROFIL
+# =================================================================
 adaptive_lighting:
   - name: Kök fönster
     lights:
@@ -22,55 +34,68 @@ adaptive_lighting:
     detect_non_ha_changes: false
     adapt_only_on_bare_turn_on: true
 
-# --- Sensorer som styr automationerna ---
+
+# =================================================================
+# SENSORER SOM STYR AUTOMATIONEN
+# =================================================================
 template:
   - binary_sensor:
+      # -------------------------------------------------------------
       # Steg 1: Är det mörkt nog ute för fönsterbelysning?
-      - name: kok_belysning_filament_lightlevel
-        unique_id: kok_belysning_filament_lightlevel
+      # -------------------------------------------------------------
+      - name: kok_fonster_lightlevel
+        unique_id: kok_fonster_lightlevel
+        device_class: light
         delay_off:
           minutes: 10
         state: >
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.fonsterbelysning_light_level') | float(0) }}
-      
-      # Steg 2: Kontrollsensor för de stora fönstren.
-      - name: kok_belysning_filament_automation_control
-        unique_id: kok_belysning_filament_automation_control
-        state: >
-          {{ is_state('binary_sensor.kok_belysning_filament_lightlevel', 'on')
-            and is_state('input_boolean.film_spelar', 'off') }}
-      
-      # Steg 2: Kontrollsensor för det lilla fönstret.
-      - name: kok_belysning_litet_fonster_automation_control
-        unique_id: kok_belysning_litet_fonster_automation_control
-        state: >
-          {{ is_state('binary_sensor.kok_belysning_filament_lightlevel', 'on') }}
+          {{ (states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(9999))
+              < (states('input_number.fonsterbelysning_light_level') | float(0)) }}
 
-# --- Automationer ---
+      # -------------------------------------------------------------
+      # Steg 2: Grundstyrning (endast mörker)
+      # -------------------------------------------------------------
+      - name: kok_fonster_automation_control
+        unique_id: kok_fonster_automation_control
+        state: >
+          {{ is_state('binary_sensor.kok_fonster_lightlevel', 'on') }}
+
+      # -------------------------------------------------------------
+      # Steg 2: Filmläge (mörker, men släck vid film)
+      # -------------------------------------------------------------
+      - name: kok_fonster_automation_control_film
+        unique_id: kok_fonster_automation_control_film
+        state: >
+          {{ is_state('binary_sensor.kok_fonster_lightlevel', 'on')
+            and is_state('input_boolean.film_spelar', 'off') }}
+
+
+# =================================================================
+# AUTOMATION
+# =================================================================
 automation:
-  - alias: Kök belysning stora fönster
-    id: kok_belysning_stora_fonster
+  - alias: Kök fönsterbelysning
+    id: kok_fonsterbelysning
+    mode: single
     triggers:
       - trigger: state
-        entity_id: binary_sensor.kok_belysning_filament_automation_control
+        entity_id:
+          - binary_sensor.kok_fonster_automation_control
+          - binary_sensor.kok_fonster_automation_control_film
       - trigger: homeassistant
         event: start
+
     actions:
-      - action: "light.turn_{{ iif(states('binary_sensor.kok_belysning_filament_automation_control') == 'on', 'on', 'off') }}"
+      # -------------------------------------------------------------
+      # DEL A: Grundstyrning (mörker)
+      # -------------------------------------------------------------
+      - action: "light.turn_{{ states('binary_sensor.kok_fonster_automation_control') }}"
         target:
-          entity_id:
-            - light.kok_fonster_1
-            - light.kok_fonster_2
-#
-  - alias: Kök belysning litet fönster
-    id: kok_belysning_litet_fonster
-    triggers:
-      - trigger: state
-        entity_id: binary_sensor.kok_belysning_litet_fonster_automation_control
-      - trigger: homeassistant
-        event: start
-    actions:
-      - action: "light.turn_{{ iif(states('binary_sensor.kok_belysning_litet_fonster_automation_control') == 'on', 'on', 'off') }}"
+          entity_id: light.kok_styrning_fonster
+
+      # -------------------------------------------------------------
+      # DEL B: Filmläge (mörker, men släck vid film)
+      # -------------------------------------------------------------
+      - action: "light.turn_{{ states('binary_sensor.kok_fonster_automation_control_film') }}"
         target:
-          entity_id:
-            - light.kok_fonster_3
+          entity_id: light.kok_styrning_fonster_film

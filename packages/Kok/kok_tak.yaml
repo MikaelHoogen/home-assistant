@@ -1,16 +1,29 @@
 # =================================================================
-# LOGIK FÖR TAKBELYSNING
+# KÖK – TAKBELYSNING + BÄNKBELYSNING
 # =================================================================
-# All logik för att styra den primära takbelysningen i köket.
+# En gemensam automation ("Kök belysning") som styr:
+#  - Tak / allmän belysning (via light group i UI)
+#  - Bänkbelysning (egen logik p.g.a. "varmt nog" + minne)
+#
+# OBS! Styrparametrar hanteras via UI (Helpers):
+#  - input_number.kok_light_level
+#
+# OBS! Lampor styrs via Light Groups i UI:
+#  - light.kok_styrning   <-- lägg in valfria lampor som ska följa DEL A
 # -----------------------------------------------------------------
 
-# --- Profil för adaptiv belysning ---
+
+# =================================================================
+# ADAPTIVE LIGHTING – PROFILER
+# =================================================================
 adaptive_lighting:
+  # ---------------------------------------------------------------
+  # Profil: Kök (tak / allmän belysning)
+  # ---------------------------------------------------------------
   - name: Kök
     lights:
-      - light.kok_bankbelysning
-      - light.kok_koksbord_1
-      - light.kok_koksbord_2
+      # - light.kok_bankbelysning <-- BORTTAGEN från denna profil
+      - light.kok_koksbord
       - light.kok_kokso
       - light.kok_tak
       - light.kok_skafferi
@@ -19,7 +32,7 @@ adaptive_lighting:
     transition: 30
     initial_transition: 3
     interval: 90
-    min_brightness: 20
+    min_brightness: 30
     max_brightness: 100
     min_color_temp: 2000
     max_color_temp: 4000
@@ -30,53 +43,101 @@ adaptive_lighting:
     detect_non_ha_changes: true
     adapt_only_on_bare_turn_on: true
 
-# --- Inställning för ljusnivå ---
-input_number:
-  kok_light_level:
-    name: Ljusstyrka kök för belysning
-    min: 0
-    max: 200
-    step: 10
-    unit_of_measurement: lx
-    icon: mdi:lightbulb-on
+  # ---------------------------------------------------------------
+  # Profil: Kök bänkbelysning
+  # ---------------------------------------------------------------
+  - name: Kök bänkbelysning
+    lights:
+      - light.kok_bankbelysning
+    prefer_rgb_color: false
+    transition: 30
+    initial_transition: 3
+    interval: 90
+    min_brightness: 30
+    max_brightness: 100
+    min_color_temp: 2000
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_color_temp: 2000 # Använder color_temp istället för RGB
+    take_over_control: true
+    detect_non_ha_changes: true
+    adapt_only_on_bare_turn_on: true
 
-# --- Sensorer som styr automationen ---
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
 template:
   - binary_sensor:
+      # -------------------------------------------------------------
       # Steg 1: Är det för ljust inne för att tända taklamporna?
+      # -------------------------------------------------------------
       - name: kok_lightlevel
         unique_id: kok_lightlevel
         device_class: light
         delay_on:
-          minutes: 10
+          minutes: 5
         state: >
-          {{ states('sensor.kok_hue_motion_sensor_light_level') | float(0) > states('input_number.kok_light_level') | float(0) }}
-      
-      # Steg 2: Kontrollsensor som triggar automationen.
+          {{ (states('sensor.kok_hue_motion_sensor_light_level') | float(9999))
+              > (states('input_number.kok_light_level') | float(0)) }}
+
+      # -------------------------------------------------------------
+      # Steg 2: Kontrollsensor för tak / allmän belysning
+      # -------------------------------------------------------------
       - name: kok_presence_light_automation_control
         unique_id: kok_presence_light_automation_control
         state: >
           {{ ( is_state('binary_sensor.vardagsrum_presence', 'on')
-            or is_state('binary_sensor.kok_presence', 'on')
-            or is_state('binary_sensor.hall_presence', 'on') )
+              or is_state('binary_sensor.kok_presence', 'on')
+              or is_state('binary_sensor.hall_presence', 'on') )
             and is_state('binary_sensor.kok_lightlevel', 'off') }}
 
-# --- Automationen som tänder/släcker ---
+      # -------------------------------------------------------------
+      # Steg 2: Kontrollsensor för bänkbelysning
+      # -------------------------------------------------------------
+      # "Minne" för att inte fladdra:
+      # - Tänd när närvaro + mörkt + tillräckligt varmt (kelvin)
+      # - Håll tänd så länge närvaro finns och lampan redan är tänd
+      # -------------------------------------------------------------
+      - name: kok_bank_presence_light_automation_control
+        unique_id: kok_bank_presence_light_automation_control
+        state: >
+          {% set presence = is_state('binary_sensor.kok_presence', 'on') %}
+          {% set dark_enough = is_state('binary_sensor.kok_lightlevel', 'off') %}
+          {% set bank_on = is_state('light.kok_bankbelysning', 'on') %}
+
+          {% set kelvin = state_attr('switch.adaptive_lighting_kok', 'color_temp_kelvin') | float(0) %}
+          {% set warm_enough = kelvin >= 2200 %}
+
+          {{ (presence and dark_enough and warm_enough) or (presence and bank_on) }}
+
+
+# =================================================================
+# AUTOMATION
+# =================================================================
 automation:
-  - alias: Kök takbelysning
-    id: kok_takbelysning
+  - alias: Kök belysning
+    id: kok_belysning
+    mode: single
     triggers:
       - trigger: state
-        entity_id: binary_sensor.kok_presence_light_automation_control
+        entity_id:
+          - binary_sensor.kok_presence_light_automation_control
+          - binary_sensor.kok_bank_presence_light_automation_control
       - trigger: homeassistant
         event: start
+
     actions:
-      - action: "light.turn_{{ iif(states('binary_sensor.kok_presence_light_automation_control') == 'on', 'on', 'off') }}"
+      # -------------------------------------------------------------
+      # DEL A: Tak / allmän belysning (via light group i UI)
+      # -------------------------------------------------------------
+      - action: "light.turn_{{ states('binary_sensor.kok_presence_light_automation_control') }}"
         target:
-          entity_id:
-            - light.kok_tak
-            - light.kok_koksbord_1
-            - light.kok_koksbord_2
-            - light.kok_kokso
-            - light.hall_byra
-            - light.kok_vedspis
+          entity_id: light.kok_styrning
+
+      # -------------------------------------------------------------
+      # DEL B: Bänkbelysning
+      # -------------------------------------------------------------
+      - action: "light.turn_{{ states('binary_sensor.kok_bank_presence_light_automation_control') }}"
+        target:
+          entity_id: light.kok_bankbelysning

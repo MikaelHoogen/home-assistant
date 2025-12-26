@@ -9,8 +9,10 @@ template:
   - binary_sensor:
       - name: kok_skafferi_presence_light_automation_control
         unique_id: kok_skafferi_presence_light_automation_control
+        delay_off:
+          minutes: 5
         state: >
-          {{ is_state('binary_sensor.kok_presence', 'on') }}
+          {{ is_state('binary_sensor.kok_skafferi_rorelseomrade', 'on') }}
 
 # --- Automationen som tänder/släcker ---
 automation:
