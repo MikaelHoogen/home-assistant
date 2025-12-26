@@ -1,0 +1,187 @@
+# =================================================================
+# LOGIK FÖR BELYSNING – VARDAGSRUM
+# =================================================================
+# Separata automationer (en per belysningstyp) så att du enkelt
+# kan slå av/på dem oberoende.
+#
+# OBS! Styrparametrar hanteras via UI (Helpers):
+#  - input_number.vardagsrum_light_level
+#  - input_number.fonsterbelysning_light_level
+#  - input_number.vardagsrum_filament_light_level
+#
+# OBS! Lampor styrs via Light Groups i UI:
+#  - light.vardagsrum_styrning_tak
+#  - light.vardagsrum_styrning_fonster
+#  - light.vardagsrum_styrning_filament
+# -----------------------------------------------------------------
+
+
+# =================================================================
+# ADAPTIVE LIGHTING-PROFILER
+# =================================================================
+adaptive_lighting:
+  # -------------------------------------------------------------
+  # Profil: Takbelysning
+  # -------------------------------------------------------------
+  - name: Vardagsrum tak
+    lights:
+      - light.vardagsrum_tak
+      - light.vardagsrum_bord
+    prefer_rgb_color: false
+    transition: 30
+    initial_transition: 2
+    interval: 90
+    min_brightness: 30
+    max_brightness: 100
+    min_color_temp: 2000
+    max_color_temp: 4000
+    sleep_brightness: 1
+    sleep_rgb_or_color_temp: rgb_color
+    sleep_rgb_color: [255, 161, 40]
+    take_over_control: true
+    detect_non_ha_changes: true
+    adapt_only_on_bare_turn_on: true
+
+  # -------------------------------------------------------------
+  # Profil: Filament/dekor
+  # -------------------------------------------------------------
+  - name: Vardagsrum belysning filament
+    lights:
+      - light.vardagsrum_fonster_hangande
+      - light.vardagsrum_fonster_fotogen
+      - light.vardagsrum_fonster_piano
+      - light.vardagsrum_fonster_trappa
+      - light.vardagsrum_fonster_ytterdorr
+      - light.vardagsrum_fonster_vitrinskap
+    prefer_rgb_color: false
+    transition: 45
+    initial_transition: 5
+    interval: 90
+    min_brightness: 1
+    max_brightness: 35
+    sleep_brightness: 1
+    take_over_control: true
+    detect_non_ha_changes: true
+    adapt_only_on_bare_turn_on: true
+
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+template:
+  - binary_sensor:
+      # =============================================================
+      # TAKBELYSNING
+      # =============================================================
+      # Steg 1: Är det för ljust inne för att tända taklamporna?
+      - name: vardagsrum_lightlevel
+        unique_id: vardagsrum_lightlevel
+        device_class: light
+        delay_on:
+          minutes: 10
+        state: >
+          {{ (states('sensor.vardagsrum_hue_motion_sensor_light_level') | float(9999))
+              > (states('input_number.vardagsrum_light_level') | float(0)) }}
+
+      # Steg 2: Kontrollsensor som triggar takbelysningen
+      - name: vardagsrum_presence_light_automation_control
+        unique_id: vardagsrum_presence_light_automation_control
+        state: >
+          {{ ( is_state('binary_sensor.vardagsrum_presence', 'on')
+              or is_state('binary_sensor.kok_presence', 'on')
+              or is_state('binary_sensor.hall_presence', 'on') )
+            and is_state('binary_sensor.vardagsrum_lightlevel', 'off') }}
+
+
+      # =============================================================
+      # FÖNSTERBELYSNING
+      # =============================================================
+      - name: vardagsrum_belysning_fonster_lightlevel
+        unique_id: vardagsrum_belysning_fonster_lightlevel
+        delay_off:
+          minutes: 10
+        state: >
+          {{ (states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(9999))
+              < (states('input_number.fonsterbelysning_light_level') | float(0)) }}
+
+      - name: vardagsrum_belysning_fonster_automation_control
+        unique_id: vardagsrum_belysning_fonster_automation_control
+        state: >
+          {{ is_state('binary_sensor.vardagsrum_belysning_fonster_lightlevel', 'on')
+            and is_state('input_boolean.film_spelar', 'off')
+            and is_state('input_boolean.sovdags', 'off') }}
+
+
+      # =============================================================
+      # FILAMENTBELYSNING
+      # =============================================================
+      - name: vardagsrum_belysning_filament_lightlevel
+        unique_id: vardagsrum_belysning_filament_lightlevel
+        device_class: light
+        delay_off:
+          minutes: 10
+        state: >
+          {{ (states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(9999))
+              < (states('input_number.vardagsrum_filament_light_level') | float(0)) }}
+
+      - name: vardagsrum_belysning_filament_automation_control
+        unique_id: vardagsrum_belysning_filament_automation_control
+        state: >
+          {{ ( is_state('binary_sensor.vardagsrum_presence', 'on')
+              or is_state('binary_sensor.kok_presence', 'on') )
+            and is_state('binary_sensor.vardagsrum_belysning_filament_lightlevel', 'on')
+            and is_state('input_boolean.film_spelar', 'off')
+            and is_state('input_boolean.sovdags', 'off') }}
+
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+automation:
+  # -------------------------------------------------------------
+  # Takbelysning
+  # -------------------------------------------------------------
+  - alias: Vardagsrum belysning tak
+    id: vardagsrum_belysning_tak
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.vardagsrum_presence_light_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ states('binary_sensor.vardagsrum_presence_light_automation_control') }}"
+        target:
+          entity_id: light.vardagsrum_styrning_tak
+
+  # -------------------------------------------------------------
+  # Fönsterbelysning
+  # -------------------------------------------------------------
+  - alias: Vardagsrum belysning fönster
+    id: vardagsrum_belysning_fonster
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.vardagsrum_belysning_fonster_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ states('binary_sensor.vardagsrum_belysning_fonster_automation_control') }}"
+        target:
+          entity_id: light.vardagsrum_styrning_fonster
+
+  # -------------------------------------------------------------
+  # Filamentbelysning
+  # -------------------------------------------------------------
+  - alias: Vardagsrum belysning filament
+    id: vardagsrum_belysning_filament
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.vardagsrum_belysning_filament_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ states('binary_sensor.vardagsrum_belysning_filament_automation_control') }}"
+        target:
+          entity_id: light.vardagsrum_styrning_filament
