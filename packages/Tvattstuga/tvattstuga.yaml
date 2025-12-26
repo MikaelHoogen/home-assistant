@@ -1,0 +1,73 @@
+# =================================================================
+# KONFIGURATION FÖR TVÄTTSTUGAN
+# =================================================================
+# All logik för att styra enheter och automationer i tvättstugan.
+# -----------------------------------------------------------------
+
+# =================================================================
+# ADAPTIVE LIGHTING-PROFIL
+# =================================================================
+# Justerar automatiskt färgtemperatur och ljusstyrka på
+# lampan i tvättstugan baserat på solens position.
+# -----------------------------------------------------------------
+adaptive_lighting:
+- name: Tvättstuga
+  lights:
+    - light.tvattstuga_fonster
+  prefer_rgb_color: false
+  transition: 45
+  initial_transition: 0
+  interval: 90
+  min_brightness: 1
+  max_brightness: 35
+  sleep_brightness: 2
+  take_over_control: true
+  detect_non_ha_changes: false
+
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
+# Dessa sensorer utgör grunden för automationerna.
+# -----------------------------------------------------------------
+template:
+  - binary_sensor:
+    # Steg 1: Är det mörkt nog ute för att tända fönsterlampan?
+    - name: tvattstuga_belysning_lightlevel
+      unique_id: tvattstuga_belysning_lightlevel
+      delay_off:
+        minutes: 30
+      state: >
+        {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.fonsterbelysning_light_level') | float(0) }}
+
+    # Steg 2: Den slutgiltiga kontrollsensorn som triggar automationen.
+    - name: tvattstuga_belysning_automation_control
+      unique_id: tvattstuga_belysning_automation_control
+      state: >
+        {{ is_state('binary_sensor.tvattstuga_belysning_lightlevel', 'on') }}
+
+    # En sensor som indikerar när kattluckan har använts.
+    - name: tvattstuga_kattlucka
+      unique_id: tvattstuga_kattlucka
+      delay_off:
+        seconds: 10
+      state: >
+        {{ is_state('binary_sensor.tvattstuga_kattlucka_oppning', 'on') }}
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
+# Tänder och släcker fönsterbelysningen baserat på ljusnivån utomhus.
+# -----------------------------------------------------------------
+automation:
+  - alias: Tvättstuga belysning
+    id: tvattstuga_belysning
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.tvattstuga_belysning_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ iif(states('binary_sensor.tvattstuga_belysning_automation_control') == 'on', 'on', 'off') }}"
+        target:
+          entity_id:
+            - light.tvattstuga_fonster
