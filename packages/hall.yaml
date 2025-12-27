@@ -2,9 +2,21 @@
 # PAKET FÖR BELYSNING I HALLEN
 # =================================================================
 # All logik för att styra belysningen i hallen.
+#
+# OBS! Lampor styrs via styrningsgrupp i UI:
+#  - light.hall_styrning
+#
+# OBS! Styrparametrar hanteras via UI (Helpers):
+#  - input_number.hall_light_level
 # -----------------------------------------------------------------
 
-# --- Profil för adaptiv belysning ---
+
+# =================================================================
+# ADAPTIVE LIGHTING-PROFIL
+# =================================================================
+# Justerar automatiskt färgtemperatur och ljusstyrka på hallens
+# lampor baserat på dygnsrytm (solens position).
+# -----------------------------------------------------------------
 adaptive_lighting:
   - name: Hall
     lights:
@@ -24,32 +36,30 @@ adaptive_lighting:
     detect_non_ha_changes: true
     adapt_only_on_bare_turn_on: true
 
-# --- Inställning för ljusnivå ---
-input_number:
-  hall_light_level:
-    name: Ljusstyrka hall för belysning
-    min: 0
-    max: 100
-    step: 1
-    unit_of_measurement: lx
-    icon: mdi:lightbulb-on
 
-# --- Sensorer som styr automationen ---
+# =================================================================
+# TEMPLATE-SENSORER
+# =================================================================
 template:
-  # Skapar en kort "närvaro"-puls när ytterdörren öppnas.
+  # -------------------------------------------------------------
+  # Dörrtrigger: skapar en kort "närvaro-puls" när ytterdörren öppnas
+  # -------------------------------------------------------------
   - trigger:
-      - platform: state
+      - trigger: state
         entity_id: binary_sensor.entre_dorrbrytare
-        to: 'on'
-        from: 'off'
+        from: "off"
+        to: "on"
     binary_sensor:
-      - name: Hall dörrtrigger
-        unique_id: Hall dörrtrigger
+      - name: hall_dorrtrigger
+        unique_id: hall_dorrtrigger
         auto_off: 30
         state: "true"
 
   - binary_sensor:
-      # Kombinerar rörelsesensor och dörrtrigger till en närvarosensor.
+      # =============================================================
+      # NÄRVARO
+      # =============================================================
+      # Kombinerar rörelse + dörrtrigger till en närvarosensor
       - name: hall_presence
         unique_id: hall_presence
         device_class: motion
@@ -59,31 +69,55 @@ template:
           {{ is_state('binary_sensor.hall_hue_motion_sensor_motion', 'on')
             or is_state('binary_sensor.hall_dorrtrigger', 'on') }}
 
-      # Kollar om det är tillräckligt mörkt inne för att tända.
+      # =============================================================
+      # LJUSNIVÅ (INNE)
+      # =============================================================
+      # on  = för ljust (tänd inte)
+      # off = mörkt nog (OK att tända)
+      #
+      # Spärrlogik: när hallen väl är tänd ska den inte “fladdra”
+      # p.g.a. att lamporna höjer luxvärdet.
+      # -------------------------------------------------------------
       - name: hall_lightlevel
         unique_id: hall_lightlevel
-        device_class: light
-        availability: "{{ is_number(states('sensor.hall_hue_motion_sensor_light_level')) and is_number(states('input_number.hall_light_level')) }}"
+        delay_on:
+          minutes: 5
         state: >
-          {{ ( states('sensor.hall_hue_motion_sensor_light_level') | float(0.0) > states('input_number.hall_light_level') | float(0.0)
-            and is_state('light.hall', 'off') )
-            or ( is_state('binary_sensor.hall_lightlevel', 'on')
-            and is_state('light.hall', 'on') ) }}
+          {{
+            (
+              (states('sensor.hall_hue_motion_sensor_light_level') | float(9999))
+              > (states('input_number.hall_light_level') | float(0))
+              and is_state('light.hall_styrning', 'off')
+            )
+            or
+            (
+              is_state('binary_sensor.hall_lightlevel', 'on')
+              and is_state('light.hall_styrning', 'on')
+            )
+          }}
 
-      # Den slutgiltiga kontrollsensorn som triggar automationen.
+      # =============================================================
+      # AUTOMATION CONTROL
+      # =============================================================
+      # Trigger när det finns närvaro i "huset" (hall/kök/vardagsrum)
+      # och det är mörkt nog i hallen.
       - name: hall_presence_light_automation_control
         unique_id: hall_presence_light_automation_control
         state: >
           {{ ( is_state('binary_sensor.vardagsrum_presence', 'on')
-            or is_state('binary_sensor.kok_presence', 'on')
-            or is_state('binary_sensor.hall_presence', 'on') )
+              or is_state('binary_sensor.kok_presence', 'on')
+              or is_state('binary_sensor.hall_presence', 'on') )
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('binary_sensor.hall_lightlevel', 'off') }}
 
-# --- Automationen som tänder/släcker ---
+
+# =================================================================
+# AUTOMATION
+# =================================================================
 automation:
-  - alias: Hall takbelysning
-    id: hall_takbelysning
+  - alias: Hall belysning
+    id: hall_belysning
+    mode: single
     triggers:
       - trigger: state
         entity_id: binary_sensor.hall_presence_light_automation_control
@@ -92,5 +126,4 @@ automation:
     actions:
       - action: "light.turn_{{ states('binary_sensor.hall_presence_light_automation_control') }}"
         target:
-          entity_id:
-            - light.hall
+          entity_id: light.hall_styrning
