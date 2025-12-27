@@ -1,3 +1,4 @@
+#Flyttad till UI
 input_number:
   fonsterbelysning_light_level:
     name: Ljusstyrka utomhus för fönsterbelysning
