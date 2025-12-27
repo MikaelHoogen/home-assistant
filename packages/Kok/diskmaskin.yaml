@@ -49,7 +49,7 @@ template:
         delay_on:
           seconds: 30
         state: >
-          {{ states('sensor.diskmaskin_power') | float(0.0) > 3 }}
+          {{ states('sensor.diskmaskin_power') | float(0.0) > 4 }}
 
 # =================================================================
 # AUTOMATIONER
