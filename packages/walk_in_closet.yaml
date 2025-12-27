@@ -26,6 +26,7 @@ adaptive_lighting:
     sleep_rgb_color: [255, 161, 40]
     take_over_control: true
     detect_non_ha_changes: true
+    adapt_only_on_bare_turn_on: true
 
 # =================================================================
 # TEMPLATE-SENSORER
@@ -63,7 +64,7 @@ automation:
       - trigger: homeassistant
         event: start
     actions:
-      - action: "light.turn_{{ iif(states('binary_sensor.walk_in_closet_presence_light_automation_control') == 'on', 'on', 'off') }}"
+      - action: "light.turn_{{ states('binary_sensor.walk_in_closet_presence_light_automation_control') }}"
         target:
           entity_id:
             - light.walk_in_closet
