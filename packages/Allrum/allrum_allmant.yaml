@@ -6,25 +6,26 @@
 # -----------------------------------------------------------------
 
 # --- Ljusgrupp för hela allrummet ---
-light:
-  - platform: group
-    name: Allrum grupp
-    unique_id: allrum_grupp
-    entities:
-      - light.allrum_tak_1
-      - light.allrum_tak_2
-      - light.allrum_tak_3
-      - light.allrum_laslampa
-      - light.allrum_klotlampa
-      - light.allrum_huslampa
-      - light.trappa
-      # Ljusstakar
-      # - light.ac_000000a_1
-      # - light.ac0000001_4
-      # Tomte
-      # - light.ac_0000001_2
-      # Julgran
-      # - light.ac_0000002_4
+# FLyttad till UI
+#light:
+#  - platform: group
+#    name: Allrum grupp
+#    unique_id: allrum_grupp
+#    entities:
+#      - light.allrum_tak_1
+#      - light.allrum_tak_2
+#      - light.allrum_tak_3
+#      - light.allrum_laslampa
+#      - light.allrum_fonster_fatolj
+#      - light.allrum_huslampa
+#      - light.trappa
+#      # Ljusstakar
+#      - light.ac_000000a_1
+#      - light.ac0000001_4
+#      # Tomte
+#      # - light.ac_0000001_2
+#      # Julgran
+#      # - light.ac_0000002_4
 
 # --- Närvarosensorer för allrummet ---
 template:

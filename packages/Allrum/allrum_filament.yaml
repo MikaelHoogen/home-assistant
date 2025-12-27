@@ -1,10 +1,29 @@
 # =================================================================
-# LOGIK FÖR FILAMENT- OCH FÖNSTERBELYSNING
+# LOGIK FÖR FILAMENT- OCH FÖNSTERBELYSNING – ALLRUM
 # =================================================================
-# All logik för att styra de dekorativa lamporna.
+# All logik för att styra dekorativ belysning i allrummet:
+#  - Filament/dekor (huslampa + trappa) – egen lux-tröskel
+#  - Fönsterbelysning – egen lux-tröskel
+#
+# Blockeras vid:
+#  - film_spelar
+#  - sovdags
+#
+# OBS! Styrparametrar hanteras via UI (Helpers):
+#  - input_number.allrum_filament_light_level
+#  - input_number.allrum_fonster_light_level
+#
+# OBS! Lampor styrs via Light Groups i UI:
+#  - light.allrum_styrning_filament   <-- huslampa + trappa
+#  - light.allrum_styrning_fonster
 # -----------------------------------------------------------------
 
-# --- Profil för adaptiv belysning ---
+
+# =================================================================
+# ADAPTIVE LIGHTING-PROFIL
+# =================================================================
+# Profil för filament/dekor-lampor.
+# -----------------------------------------------------------------
 adaptive_lighting:
   - name: Allrum belysning filament
     lights:
@@ -20,102 +39,88 @@ adaptive_lighting:
     detect_non_ha_changes: false
     adapt_only_on_bare_turn_on: true
 
-# --- Inställningar för ljusnivåer ---
-input_number:
-  allrum_huslampa_light_level:
-    name: Ljusstyrka allrum för belysning huslampa
-    min: 0
-    max: 2000
-    step: 10
-    unit_of_measurement: lx
-    icon: mdi:lightbulb-on
-  allrum_fonster_light_level:
-    name: Ljusstyrka allrum för fönsterbelysning
-    min: 0
-    max: 2000
-    step: 10
-    unit_of_measurement: lx
-    icon: mdi:lightbulb-on
 
-# --- Sensorer som styr automationerna ---
+# =================================================================
+# SENSORER SOM STYR AUTOMATIONERNA
+# =================================================================
 template:
   - binary_sensor:
+      # -------------------------------------------------------------
       # Steg 1: Är det mörkt nog för fönsterbelysning?
+      # -------------------------------------------------------------
+      - name: allrum_belysning_fonster_lightlevel
+        unique_id: allrum_belysning_fonster_lightlevel
+        device_class: light
+        delay_off:
+          minutes: 5
+        state: >
+          {{ (states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(9999))
+              < (states('input_number.allrum_fonster_light_level') | float(0)) }}
+
+      # -------------------------------------------------------------
+      # Steg 1: Är det mörkt nog för filament/dekor?
+      # -------------------------------------------------------------
       - name: allrum_belysning_filament_lightlevel
         unique_id: allrum_belysning_filament_lightlevel
+        device_class: light
         delay_off:
           minutes: 5
         state: >
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.allrum_fonster_light_level') | float(0) }}
-      
-      # Steg 1: Är det mörkt nog för huslampan?
-      - name: allrum_huslampa_lightlevel
-        unique_id: allrum_huslampa_lightlevel
-        delay_off:
-          minutes: 5
+          {{ (states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(9999))
+              < (states('input_number.allrum_filament_light_level') | float(0)) }}
+
+      # -------------------------------------------------------------
+      # Steg 2: Kontrollsensor för fönsterbelysning
+      # -------------------------------------------------------------
+      - name: allrum_belysning_automation_control_fonster
+        unique_id: allrum_belysning_automation_control_fonster
         state: >
-          {{ states('sensor.entre_hue_outdoor_motion_sensor_light_level') | float(0) < states('input_number.allrum_huslampa_light_level') | float(0) }}
-      
-      # Steg 2: Kontrollsensor för fönsterbelysningen.
-      - name: allrum_belysning_filament_automation_control
-        unique_id: allrum_belysning_filament_automation_control
+          {{ is_state('binary_sensor.allrum_belysning_fonster_lightlevel', 'on')
+            and is_state('input_boolean.film_spelar', 'off')
+            and is_state('input_boolean.sovdags', 'off') }}
+
+      # -------------------------------------------------------------
+      # Steg 2: Kontrollsensor för filament/dekor
+      # -------------------------------------------------------------
+      - name: allrum_belysning_automation_control_filament
+        unique_id: allrum_belysning_automation_control_filament
         state: >
           {{ is_state('binary_sensor.allrum_belysning_filament_lightlevel', 'on')
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('input_boolean.sovdags', 'off') }}
-      
-      # Steg 2: Kontrollsensor för huslampan.
-      - name: allrum_huslampa_automation_control
-        unique_id: allrum_huslampa_automation_control
-        state: >
-          {{ is_state('binary_sensor.allrum_huslampa_lightlevel', 'on')
-            and is_state('input_boolean.film_spelar', 'off')
-            and is_state('input_boolean.sovdags', 'off') }}
 
-# --- Automationer ---
+
+# =================================================================
+# AUTOMATIONER
+# =================================================================
 automation:
-  # Tänder/släcker den allmänna fönsterbelysningen.
-  - alias: Allrum belysning fönster
-    id: allrum_belysning_fonster
+  # =================================================================
+  # ALLRUM – DEKORBELYSNING (STYRNING)
+  # =================================================================
+  # En automation som mappar automation_control -> light group i UI.
+  # -----------------------------------------------------------------
+  - alias: Allrum belysning
+    id: allrum_belysning
+    mode: single
     triggers:
       - trigger: state
-        entity_id: binary_sensor.allrum_belysning_filament_automation_control
+        entity_id:
+          - binary_sensor.allrum_belysning_automation_control_fonster
+          - binary_sensor.allrum_belysning_automation_control_filament
       - trigger: homeassistant
         event: start
-    actions:
-      - action: "light.turn_{{ iif(states('binary_sensor.allrum_belysning_filament_automation_control') == 'on', 'on', 'off') }}"
-        target:
-          entity_id:
-            - light.allrum_styrning_fonster
 
-  # Tänder/släcker i trappan
-  - alias: Allrum belysning trappa
-    id: allrum_belysning_trappa
-    triggers:
-      - trigger: state
-        entity_id: binary_sensor.allrum_belysning_filament_automation_control
-      - trigger: homeassistant
-        event: start
     actions:
-      - action: "light.turn_{{ iif(states('binary_sensor.allrum_belysning_filament_automation_control') == 'on', 'on', 'off') }}"
+      # -------------------------------------------------------------
+      # DEL A: Fönsterbelysning
+      # -------------------------------------------------------------
+      - action: "light.turn_{{ states('binary_sensor.allrum_belysning_automation_control_fonster') }}"
         target:
-          entity_id:
-            - light.trappa
-  
-  # Tänder/släcker huslampan.
-  - alias: Allrum huslampa
-    id: allrum_huslampa
-    triggers:
-      - trigger: state
-        entity_id: binary_sensor.allrum_huslampa_automation_control
-      - trigger: homeassistant
-        event: start
-    actions:
-      - action: "light.turn_{{ iif(states('binary_sensor.allrum_huslampa_automation_control') == 'on', 'on', 'off') }}"
+          entity_id: light.allrum_styrning_fonster
+
+      # -------------------------------------------------------------
+      # DEL B: Filament/dekor (huslampa + trappa)
+      # -------------------------------------------------------------
+      - action: "light.turn_{{ states('binary_sensor.allrum_belysning_automation_control_filament') }}"
         target:
-          entity_id:
-            - light.allrum_huslampa
-            # Tomte
-            # - light.ac_0000001_2
-            # Julgran
-            # - light.ac_0000002_4
+          entity_id: light.allrum_styrning_filament
