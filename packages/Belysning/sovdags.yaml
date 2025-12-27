@@ -93,6 +93,10 @@ automation:
                   entity_id:
                     - automation.barnrum_belysning
                     - automation.barnrum_belysning_fonster
+              
+              - action: lock.lock
+                target:
+                  entity_id: lock.ytterdorr
 
           # ---------------------------------------------------
           # SEKVENS NÄR SOVDAGS AVAKTIVERAS (OFF)
