@@ -19,7 +19,7 @@ template:
       attributes:
         timme: "00:00 - 00:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 0 %}
                 {{ tib[0]['total'] | round(3) }}
               {% else %}
@@ -27,7 +27,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 0 %}
                 {{ ( (tib[0]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -59,7 +59,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 0 %}
                 {{ (
                   (tib[0]['total'] | float('nan'))
@@ -87,7 +87,7 @@ template:
       attributes:
         timme: "00:15 - 00:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 0 %}
                 {{ tib[0]['total'] | round(3) }}
               {% else %}
@@ -95,7 +95,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 0 %}
                 {{ ( (tib[0]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -127,7 +127,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 0 %}
                 {{ (
                   (tib[0]['total'] | float('nan'))
@@ -155,7 +155,7 @@ template:
       attributes:
         timme: "00:30 - 00:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 0 %}
                 {{ tib[0]['total'] | round(3) }}
               {% else %}
@@ -163,7 +163,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 0 %}
                 {{ ( (tib[0]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -195,7 +195,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 0 %}
                 {{ (
                   (tib[0]['total'] | float('nan'))
@@ -223,7 +223,7 @@ template:
       attributes:
         timme: "00:45 - 01:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 0 %}
                 {{ tib[0]['total'] | round(3) }}
               {% else %}
@@ -231,7 +231,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 0 %}
                 {{ ( (tib[0]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -263,7 +263,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 0 %}
                 {{ (
                   (tib[0]['total'] | float('nan'))
@@ -291,7 +291,7 @@ template:
       attributes:
         timme: "01:00 - 01:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 1 %}
                 {{ tib[1]['total'] | round(3) }}
               {% else %}
@@ -299,7 +299,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 1 %}
                 {{ ( (tib[1]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -331,7 +331,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 1 %}
                 {{ (
                   (tib[1]['total'] | float('nan'))
@@ -359,7 +359,7 @@ template:
       attributes:
         timme: "01:15 - 01:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 1 %}
                 {{ tib[1]['total'] | round(3) }}
               {% else %}
@@ -367,7 +367,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 1 %}
                 {{ ( (tib[1]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -399,7 +399,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 1 %}
                 {{ (
                   (tib[1]['total'] | float('nan'))
@@ -427,7 +427,7 @@ template:
       attributes:
         timme: "01:30 - 01:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 1 %}
                 {{ tib[1]['total'] | round(3) }}
               {% else %}
@@ -435,7 +435,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 1 %}
                 {{ ( (tib[1]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -467,7 +467,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 1 %}
                 {{ (
                   (tib[1]['total'] | float('nan'))
@@ -495,7 +495,7 @@ template:
       attributes:
         timme: "01:45 - 02:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 1 %}
                 {{ tib[1]['total'] | round(3) }}
               {% else %}
@@ -503,7 +503,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 1 %}
                 {{ ( (tib[1]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -535,7 +535,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 1 %}
                 {{ (
                   (tib[1]['total'] | float('nan'))
@@ -563,7 +563,7 @@ template:
       attributes:
         timme: "02:00 - 02:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 2 %}
                 {{ tib[2]['total'] | round(3) }}
               {% else %}
@@ -571,7 +571,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 2 %}
                 {{ ( (tib[2]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -603,7 +603,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 2 %}
                 {{ (
                   (tib[2]['total'] | float('nan'))
@@ -631,7 +631,7 @@ template:
       attributes:
         timme: "02:15 - 02:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 2 %}
                 {{ tib[2]['total'] | round(3) }}
               {% else %}
@@ -639,7 +639,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 2 %}
                 {{ ( (tib[2]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -671,7 +671,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 2 %}
                 {{ (
                   (tib[2]['total'] | float('nan'))
@@ -699,7 +699,7 @@ template:
       attributes:
         timme: "02:30 - 02:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 2 %}
                 {{ tib[2]['total'] | round(3) }}
               {% else %}
@@ -707,7 +707,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 2 %}
                 {{ ( (tib[2]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -739,7 +739,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 2 %}
                 {{ (
                   (tib[2]['total'] | float('nan'))
@@ -767,7 +767,7 @@ template:
       attributes:
         timme: "02:45 - 03:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 2 %}
                 {{ tib[2]['total'] | round(3) }}
               {% else %}
@@ -775,7 +775,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 2 %}
                 {{ ( (tib[2]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -807,7 +807,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 2 %}
                 {{ (
                   (tib[2]['total'] | float('nan'))
@@ -835,7 +835,7 @@ template:
       attributes:
         timme: "03:00 - 03:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 3 %}
                 {{ tib[3]['total'] | round(3) }}
               {% else %}
@@ -843,7 +843,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 3 %}
                 {{ ( (tib[3]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -875,7 +875,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 3 %}
                 {{ (
                   (tib[3]['total'] | float('nan'))
@@ -903,7 +903,7 @@ template:
       attributes:
         timme: "03:15 - 03:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 3 %}
                 {{ tib[3]['total'] | round(3) }}
               {% else %}
@@ -911,7 +911,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 3 %}
                 {{ ( (tib[3]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -943,7 +943,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 3 %}
                 {{ (
                   (tib[3]['total'] | float('nan'))
@@ -971,7 +971,7 @@ template:
       attributes:
         timme: "03:30 - 03:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 3 %}
                 {{ tib[3]['total'] | round(3) }}
               {% else %}
@@ -979,7 +979,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 3 %}
                 {{ ( (tib[3]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1011,7 +1011,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 3 %}
                 {{ (
                   (tib[3]['total'] | float('nan'))
@@ -1039,7 +1039,7 @@ template:
       attributes:
         timme: "03:45 - 04:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 3 %}
                 {{ tib[3]['total'] | round(3) }}
               {% else %}
@@ -1047,7 +1047,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 3 %}
                 {{ ( (tib[3]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1079,7 +1079,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 3 %}
                 {{ (
                   (tib[3]['total'] | float('nan'))
@@ -1107,7 +1107,7 @@ template:
       attributes:
         timme: "04:00 - 04:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 4 %}
                 {{ tib[4]['total'] | round(3) }}
               {% else %}
@@ -1115,7 +1115,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 4 %}
                 {{ ( (tib[4]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1147,7 +1147,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 4 %}
                 {{ (
                   (tib[4]['total'] | float('nan'))
@@ -1175,7 +1175,7 @@ template:
       attributes:
         timme: "04:15 - 04:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 4 %}
                 {{ tib[4]['total'] | round(3) }}
               {% else %}
@@ -1183,7 +1183,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 4 %}
                 {{ ( (tib[4]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1215,7 +1215,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 4 %}
                 {{ (
                   (tib[4]['total'] | float('nan'))
@@ -1243,7 +1243,7 @@ template:
       attributes:
         timme: "04:30 - 04:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 4 %}
                 {{ tib[4]['total'] | round(3) }}
               {% else %}
@@ -1251,7 +1251,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 4 %}
                 {{ ( (tib[4]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1283,7 +1283,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 4 %}
                 {{ (
                   (tib[4]['total'] | float('nan'))
@@ -1311,7 +1311,7 @@ template:
       attributes:
         timme: "04:45 - 05:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 4 %}
                 {{ tib[4]['total'] | round(3) }}
               {% else %}
@@ -1319,7 +1319,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 4 %}
                 {{ ( (tib[4]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1351,7 +1351,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 4 %}
                 {{ (
                   (tib[4]['total'] | float('nan'))
@@ -1379,7 +1379,7 @@ template:
       attributes:
         timme: "05:00 - 05:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 5 %}
                 {{ tib[5]['total'] | round(3) }}
               {% else %}
@@ -1387,7 +1387,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 5 %}
                 {{ ( (tib[5]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1419,7 +1419,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 5 %}
                 {{ (
                   (tib[5]['total'] | float('nan'))
@@ -1447,7 +1447,7 @@ template:
       attributes:
         timme: "05:15 - 05:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 5 %}
                 {{ tib[5]['total'] | round(3) }}
               {% else %}
@@ -1455,7 +1455,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 5 %}
                 {{ ( (tib[5]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1487,7 +1487,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 5 %}
                 {{ (
                   (tib[5]['total'] | float('nan'))
@@ -1515,7 +1515,7 @@ template:
       attributes:
         timme: "05:30 - 05:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 5 %}
                 {{ tib[5]['total'] | round(3) }}
               {% else %}
@@ -1523,7 +1523,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 5 %}
                 {{ ( (tib[5]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1555,7 +1555,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 5 %}
                 {{ (
                   (tib[5]['total'] | float('nan'))
@@ -1583,7 +1583,7 @@ template:
       attributes:
         timme: "05:45 - 06:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 5 %}
                 {{ tib[5]['total'] | round(3) }}
               {% else %}
@@ -1591,7 +1591,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 5 %}
                 {{ ( (tib[5]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1623,7 +1623,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 5 %}
                 {{ (
                   (tib[5]['total'] | float('nan'))
@@ -1651,7 +1651,7 @@ template:
       attributes:
         timme: "06:00 - 06:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 6 %}
                 {{ tib[6]['total'] | round(3) }}
               {% else %}
@@ -1659,7 +1659,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 6 %}
                 {{ ( (tib[6]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1691,7 +1691,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 6 %}
                 {{ (
                   (tib[6]['total'] | float('nan'))
@@ -1719,7 +1719,7 @@ template:
       attributes:
         timme: "06:15 - 06:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 6 %}
                 {{ tib[6]['total'] | round(3) }}
               {% else %}
@@ -1727,7 +1727,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 6 %}
                 {{ ( (tib[6]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1759,7 +1759,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 6 %}
                 {{ (
                   (tib[6]['total'] | float('nan'))
@@ -1787,7 +1787,7 @@ template:
       attributes:
         timme: "06:30 - 06:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 6 %}
                 {{ tib[6]['total'] | round(3) }}
               {% else %}
@@ -1795,7 +1795,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 6 %}
                 {{ ( (tib[6]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1827,7 +1827,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 6 %}
                 {{ (
                   (tib[6]['total'] | float('nan'))
@@ -1855,7 +1855,7 @@ template:
       attributes:
         timme: "06:45 - 07:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 6 %}
                 {{ tib[6]['total'] | round(3) }}
               {% else %}
@@ -1863,7 +1863,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 6 %}
                 {{ ( (tib[6]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1895,7 +1895,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 6 %}
                 {{ (
                   (tib[6]['total'] | float('nan'))
@@ -1923,7 +1923,7 @@ template:
       attributes:
         timme: "07:00 - 07:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 7 %}
                 {{ tib[7]['total'] | round(3) }}
               {% else %}
@@ -1931,7 +1931,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 7 %}
                 {{ ( (tib[7]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -1963,7 +1963,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 7 %}
                 {{ (
                   (tib[7]['total'] | float('nan'))
@@ -1991,7 +1991,7 @@ template:
       attributes:
         timme: "07:15 - 07:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 7 %}
                 {{ tib[7]['total'] | round(3) }}
               {% else %}
@@ -1999,7 +1999,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 7 %}
                 {{ ( (tib[7]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2031,7 +2031,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 7 %}
                 {{ (
                   (tib[7]['total'] | float('nan'))
@@ -2059,7 +2059,7 @@ template:
       attributes:
         timme: "07:30 - 07:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 7 %}
                 {{ tib[7]['total'] | round(3) }}
               {% else %}
@@ -2067,7 +2067,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 7 %}
                 {{ ( (tib[7]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2099,7 +2099,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 7 %}
                 {{ (
                   (tib[7]['total'] | float('nan'))
@@ -2127,7 +2127,7 @@ template:
       attributes:
         timme: "07:45 - 08:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 7 %}
                 {{ tib[7]['total'] | round(3) }}
               {% else %}
@@ -2135,7 +2135,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 7 %}
                 {{ ( (tib[7]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2167,7 +2167,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 7 %}
                 {{ (
                   (tib[7]['total'] | float('nan'))
@@ -2195,7 +2195,7 @@ template:
       attributes:
         timme: "08:00 - 08:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 8 %}
                 {{ tib[8]['total'] | round(3) }}
               {% else %}
@@ -2203,7 +2203,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 8 %}
                 {{ ( (tib[8]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2235,7 +2235,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 8 %}
                 {{ (
                   (tib[8]['total'] | float('nan'))
@@ -2263,7 +2263,7 @@ template:
       attributes:
         timme: "08:15 - 08:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 8 %}
                 {{ tib[8]['total'] | round(3) }}
               {% else %}
@@ -2271,7 +2271,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 8 %}
                 {{ ( (tib[8]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2303,7 +2303,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 8 %}
                 {{ (
                   (tib[8]['total'] | float('nan'))
@@ -2331,7 +2331,7 @@ template:
       attributes:
         timme: "08:30 - 08:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 8 %}
                 {{ tib[8]['total'] | round(3) }}
               {% else %}
@@ -2339,7 +2339,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 8 %}
                 {{ ( (tib[8]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2371,7 +2371,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 8 %}
                 {{ (
                   (tib[8]['total'] | float('nan'))
@@ -2399,7 +2399,7 @@ template:
       attributes:
         timme: "08:45 - 09:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 8 %}
                 {{ tib[8]['total'] | round(3) }}
               {% else %}
@@ -2407,7 +2407,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 8 %}
                 {{ ( (tib[8]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2439,7 +2439,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 8 %}
                 {{ (
                   (tib[8]['total'] | float('nan'))
@@ -2467,7 +2467,7 @@ template:
       attributes:
         timme: "09:00 - 09:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 9 %}
                 {{ tib[9]['total'] | round(3) }}
               {% else %}
@@ -2475,7 +2475,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 9 %}
                 {{ ( (tib[9]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2507,7 +2507,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 9 %}
                 {{ (
                   (tib[9]['total'] | float('nan'))
@@ -2535,7 +2535,7 @@ template:
       attributes:
         timme: "09:15 - 09:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 9 %}
                 {{ tib[9]['total'] | round(3) }}
               {% else %}
@@ -2543,7 +2543,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 9 %}
                 {{ ( (tib[9]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2575,7 +2575,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 9 %}
                 {{ (
                   (tib[9]['total'] | float('nan'))
@@ -2603,7 +2603,7 @@ template:
       attributes:
         timme: "09:30 - 09:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 9 %}
                 {{ tib[9]['total'] | round(3) }}
               {% else %}
@@ -2611,7 +2611,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 9 %}
                 {{ ( (tib[9]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2643,7 +2643,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 9 %}
                 {{ (
                   (tib[9]['total'] | float('nan'))
@@ -2671,7 +2671,7 @@ template:
       attributes:
         timme: "09:45 - 10:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 9 %}
                 {{ tib[9]['total'] | round(3) }}
               {% else %}
@@ -2679,7 +2679,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 9 %}
                 {{ ( (tib[9]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2711,7 +2711,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 9 %}
                 {{ (
                   (tib[9]['total'] | float('nan'))
@@ -2739,7 +2739,7 @@ template:
       attributes:
         timme: "10:00 - 10:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 10 %}
                 {{ tib[10]['total'] | round(3) }}
               {% else %}
@@ -2747,7 +2747,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 10 %}
                 {{ ( (tib[10]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2779,7 +2779,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 10 %}
                 {{ (
                   (tib[10]['total'] | float('nan'))
@@ -2807,7 +2807,7 @@ template:
       attributes:
         timme: "10:15 - 10:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 10 %}
                 {{ tib[10]['total'] | round(3) }}
               {% else %}
@@ -2815,7 +2815,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 10 %}
                 {{ ( (tib[10]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2847,7 +2847,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 10 %}
                 {{ (
                   (tib[10]['total'] | float('nan'))
@@ -2875,7 +2875,7 @@ template:
       attributes:
         timme: "10:30 - 10:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 10 %}
                 {{ tib[10]['total'] | round(3) }}
               {% else %}
@@ -2883,7 +2883,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 10 %}
                 {{ ( (tib[10]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2915,7 +2915,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 10 %}
                 {{ (
                   (tib[10]['total'] | float('nan'))
@@ -2943,7 +2943,7 @@ template:
       attributes:
         timme: "10:45 - 11:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 10 %}
                 {{ tib[10]['total'] | round(3) }}
               {% else %}
@@ -2951,7 +2951,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 10 %}
                 {{ ( (tib[10]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -2983,7 +2983,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 10 %}
                 {{ (
                   (tib[10]['total'] | float('nan'))
@@ -3011,7 +3011,7 @@ template:
       attributes:
         timme: "11:00 - 11:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 11 %}
                 {{ tib[11]['total'] | round(3) }}
               {% else %}
@@ -3019,7 +3019,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 11 %}
                 {{ ( (tib[11]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3051,7 +3051,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 11 %}
                 {{ (
                   (tib[11]['total'] | float('nan'))
@@ -3079,7 +3079,7 @@ template:
       attributes:
         timme: "11:15 - 11:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 11 %}
                 {{ tib[11]['total'] | round(3) }}
               {% else %}
@@ -3087,7 +3087,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 11 %}
                 {{ ( (tib[11]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3119,7 +3119,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 11 %}
                 {{ (
                   (tib[11]['total'] | float('nan'))
@@ -3147,7 +3147,7 @@ template:
       attributes:
         timme: "11:30 - 11:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 11 %}
                 {{ tib[11]['total'] | round(3) }}
               {% else %}
@@ -3155,7 +3155,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 11 %}
                 {{ ( (tib[11]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3187,7 +3187,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 11 %}
                 {{ (
                   (tib[11]['total'] | float('nan'))
@@ -3215,7 +3215,7 @@ template:
       attributes:
         timme: "11:45 - 12:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 11 %}
                 {{ tib[11]['total'] | round(3) }}
               {% else %}
@@ -3223,7 +3223,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 11 %}
                 {{ ( (tib[11]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3255,7 +3255,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 11 %}
                 {{ (
                   (tib[11]['total'] | float('nan'))
@@ -3283,7 +3283,7 @@ template:
       attributes:
         timme: "12:00 - 12:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 12 %}
                 {{ tib[12]['total'] | round(3) }}
               {% else %}
@@ -3291,7 +3291,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 12 %}
                 {{ ( (tib[12]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3323,7 +3323,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 12 %}
                 {{ (
                   (tib[12]['total'] | float('nan'))
@@ -3351,7 +3351,7 @@ template:
       attributes:
         timme: "12:15 - 12:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 12 %}
                 {{ tib[12]['total'] | round(3) }}
               {% else %}
@@ -3359,7 +3359,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 12 %}
                 {{ ( (tib[12]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3391,7 +3391,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 12 %}
                 {{ (
                   (tib[12]['total'] | float('nan'))
@@ -3419,7 +3419,7 @@ template:
       attributes:
         timme: "12:30 - 12:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 12 %}
                 {{ tib[12]['total'] | round(3) }}
               {% else %}
@@ -3427,7 +3427,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 12 %}
                 {{ ( (tib[12]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3459,7 +3459,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 12 %}
                 {{ (
                   (tib[12]['total'] | float('nan'))
@@ -3487,7 +3487,7 @@ template:
       attributes:
         timme: "12:45 - 13:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 12 %}
                 {{ tib[12]['total'] | round(3) }}
               {% else %}
@@ -3495,7 +3495,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 12 %}
                 {{ ( (tib[12]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3527,7 +3527,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 12 %}
                 {{ (
                   (tib[12]['total'] | float('nan'))
@@ -3555,7 +3555,7 @@ template:
       attributes:
         timme: "13:00 - 13:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 13 %}
                 {{ tib[13]['total'] | round(3) }}
               {% else %}
@@ -3563,7 +3563,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 13 %}
                 {{ ( (tib[13]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3595,7 +3595,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 13 %}
                 {{ (
                   (tib[13]['total'] | float('nan'))
@@ -3623,7 +3623,7 @@ template:
       attributes:
         timme: "13:15 - 13:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 13 %}
                 {{ tib[13]['total'] | round(3) }}
               {% else %}
@@ -3631,7 +3631,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 13 %}
                 {{ ( (tib[13]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3663,7 +3663,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 13 %}
                 {{ (
                   (tib[13]['total'] | float('nan'))
@@ -3691,7 +3691,7 @@ template:
       attributes:
         timme: "13:30 - 13:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 13 %}
                 {{ tib[13]['total'] | round(3) }}
               {% else %}
@@ -3699,7 +3699,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 13 %}
                 {{ ( (tib[13]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3731,7 +3731,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 13 %}
                 {{ (
                   (tib[13]['total'] | float('nan'))
@@ -3759,7 +3759,7 @@ template:
       attributes:
         timme: "13:45 - 14:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 13 %}
                 {{ tib[13]['total'] | round(3) }}
               {% else %}
@@ -3767,7 +3767,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 13 %}
                 {{ ( (tib[13]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3799,7 +3799,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 13 %}
                 {{ (
                   (tib[13]['total'] | float('nan'))
@@ -3827,7 +3827,7 @@ template:
       attributes:
         timme: "14:00 - 14:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 14 %}
                 {{ tib[14]['total'] | round(3) }}
               {% else %}
@@ -3835,7 +3835,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 14 %}
                 {{ ( (tib[14]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3867,7 +3867,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 14 %}
                 {{ (
                   (tib[14]['total'] | float('nan'))
@@ -3895,7 +3895,7 @@ template:
       attributes:
         timme: "14:15 - 14:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 14 %}
                 {{ tib[14]['total'] | round(3) }}
               {% else %}
@@ -3903,7 +3903,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 14 %}
                 {{ ( (tib[14]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -3935,7 +3935,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 14 %}
                 {{ (
                   (tib[14]['total'] | float('nan'))
@@ -3963,7 +3963,7 @@ template:
       attributes:
         timme: "14:30 - 14:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 14 %}
                 {{ tib[14]['total'] | round(3) }}
               {% else %}
@@ -3971,7 +3971,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 14 %}
                 {{ ( (tib[14]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4003,7 +4003,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 14 %}
                 {{ (
                   (tib[14]['total'] | float('nan'))
@@ -4031,7 +4031,7 @@ template:
       attributes:
         timme: "14:45 - 15:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 14 %}
                 {{ tib[14]['total'] | round(3) }}
               {% else %}
@@ -4039,7 +4039,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 14 %}
                 {{ ( (tib[14]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4071,7 +4071,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 14 %}
                 {{ (
                   (tib[14]['total'] | float('nan'))
@@ -4099,7 +4099,7 @@ template:
       attributes:
         timme: "15:00 - 15:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 15 %}
                 {{ tib[15]['total'] | round(3) }}
               {% else %}
@@ -4107,7 +4107,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 15 %}
                 {{ ( (tib[15]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4139,7 +4139,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 15 %}
                 {{ (
                   (tib[15]['total'] | float('nan'))
@@ -4167,7 +4167,7 @@ template:
       attributes:
         timme: "15:15 - 15:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 15 %}
                 {{ tib[15]['total'] | round(3) }}
               {% else %}
@@ -4175,7 +4175,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 15 %}
                 {{ ( (tib[15]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4207,7 +4207,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 15 %}
                 {{ (
                   (tib[15]['total'] | float('nan'))
@@ -4235,7 +4235,7 @@ template:
       attributes:
         timme: "15:30 - 15:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 15 %}
                 {{ tib[15]['total'] | round(3) }}
               {% else %}
@@ -4243,7 +4243,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 15 %}
                 {{ ( (tib[15]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4275,7 +4275,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 15 %}
                 {{ (
                   (tib[15]['total'] | float('nan'))
@@ -4303,7 +4303,7 @@ template:
       attributes:
         timme: "15:45 - 16:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 15 %}
                 {{ tib[15]['total'] | round(3) }}
               {% else %}
@@ -4311,7 +4311,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 15 %}
                 {{ ( (tib[15]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4343,7 +4343,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 15 %}
                 {{ (
                   (tib[15]['total'] | float('nan'))
@@ -4371,7 +4371,7 @@ template:
       attributes:
         timme: "16:00 - 16:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 16 %}
                 {{ tib[16]['total'] | round(3) }}
               {% else %}
@@ -4379,7 +4379,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 16 %}
                 {{ ( (tib[16]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4411,7 +4411,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 16 %}
                 {{ (
                   (tib[16]['total'] | float('nan'))
@@ -4439,7 +4439,7 @@ template:
       attributes:
         timme: "16:15 - 16:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 16 %}
                 {{ tib[16]['total'] | round(3) }}
               {% else %}
@@ -4447,7 +4447,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 16 %}
                 {{ ( (tib[16]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4479,7 +4479,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 16 %}
                 {{ (
                   (tib[16]['total'] | float('nan'))
@@ -4507,7 +4507,7 @@ template:
       attributes:
         timme: "16:30 - 16:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 16 %}
                 {{ tib[16]['total'] | round(3) }}
               {% else %}
@@ -4515,7 +4515,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 16 %}
                 {{ ( (tib[16]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4547,7 +4547,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 16 %}
                 {{ (
                   (tib[16]['total'] | float('nan'))
@@ -4575,7 +4575,7 @@ template:
       attributes:
         timme: "16:45 - 17:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 16 %}
                 {{ tib[16]['total'] | round(3) }}
               {% else %}
@@ -4583,7 +4583,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 16 %}
                 {{ ( (tib[16]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4615,7 +4615,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 16 %}
                 {{ (
                   (tib[16]['total'] | float('nan'))
@@ -4643,7 +4643,7 @@ template:
       attributes:
         timme: "17:00 - 17:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 17 %}
                 {{ tib[17]['total'] | round(3) }}
               {% else %}
@@ -4651,7 +4651,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 17 %}
                 {{ ( (tib[17]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4683,7 +4683,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 17 %}
                 {{ (
                   (tib[17]['total'] | float('nan'))
@@ -4711,7 +4711,7 @@ template:
       attributes:
         timme: "17:15 - 17:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 17 %}
                 {{ tib[17]['total'] | round(3) }}
               {% else %}
@@ -4719,7 +4719,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 17 %}
                 {{ ( (tib[17]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4751,7 +4751,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 17 %}
                 {{ (
                   (tib[17]['total'] | float('nan'))
@@ -4779,7 +4779,7 @@ template:
       attributes:
         timme: "17:30 - 17:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 17 %}
                 {{ tib[17]['total'] | round(3) }}
               {% else %}
@@ -4787,7 +4787,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 17 %}
                 {{ ( (tib[17]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4819,7 +4819,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 17 %}
                 {{ (
                   (tib[17]['total'] | float('nan'))
@@ -4847,7 +4847,7 @@ template:
       attributes:
         timme: "17:45 - 18:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 17 %}
                 {{ tib[17]['total'] | round(3) }}
               {% else %}
@@ -4855,7 +4855,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 17 %}
                 {{ ( (tib[17]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4887,7 +4887,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 17 %}
                 {{ (
                   (tib[17]['total'] | float('nan'))
@@ -4915,7 +4915,7 @@ template:
       attributes:
         timme: "18:00 - 18:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 18 %}
                 {{ tib[18]['total'] | round(3) }}
               {% else %}
@@ -4923,7 +4923,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 18 %}
                 {{ ( (tib[18]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -4955,7 +4955,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 18 %}
                 {{ (
                   (tib[18]['total'] | float('nan'))
@@ -4983,7 +4983,7 @@ template:
       attributes:
         timme: "18:15 - 18:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 18 %}
                 {{ tib[18]['total'] | round(3) }}
               {% else %}
@@ -4991,7 +4991,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 18 %}
                 {{ ( (tib[18]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5023,7 +5023,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 18 %}
                 {{ (
                   (tib[18]['total'] | float('nan'))
@@ -5051,7 +5051,7 @@ template:
       attributes:
         timme: "18:30 - 18:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 18 %}
                 {{ tib[18]['total'] | round(3) }}
               {% else %}
@@ -5059,7 +5059,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 18 %}
                 {{ ( (tib[18]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5091,7 +5091,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 18 %}
                 {{ (
                   (tib[18]['total'] | float('nan'))
@@ -5119,7 +5119,7 @@ template:
       attributes:
         timme: "18:45 - 19:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 18 %}
                 {{ tib[18]['total'] | round(3) }}
               {% else %}
@@ -5127,7 +5127,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 18 %}
                 {{ ( (tib[18]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5159,7 +5159,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 18 %}
                 {{ (
                   (tib[18]['total'] | float('nan'))
@@ -5187,7 +5187,7 @@ template:
       attributes:
         timme: "19:00 - 19:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 19 %}
                 {{ tib[19]['total'] | round(3) }}
               {% else %}
@@ -5195,7 +5195,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 19 %}
                 {{ ( (tib[19]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5227,7 +5227,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 19 %}
                 {{ (
                   (tib[19]['total'] | float('nan'))
@@ -5255,7 +5255,7 @@ template:
       attributes:
         timme: "19:15 - 19:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 19 %}
                 {{ tib[19]['total'] | round(3) }}
               {% else %}
@@ -5263,7 +5263,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 19 %}
                 {{ ( (tib[19]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5295,7 +5295,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 19 %}
                 {{ (
                   (tib[19]['total'] | float('nan'))
@@ -5323,7 +5323,7 @@ template:
       attributes:
         timme: "19:30 - 19:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 19 %}
                 {{ tib[19]['total'] | round(3) }}
               {% else %}
@@ -5331,7 +5331,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 19 %}
                 {{ ( (tib[19]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5363,7 +5363,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 19 %}
                 {{ (
                   (tib[19]['total'] | float('nan'))
@@ -5391,7 +5391,7 @@ template:
       attributes:
         timme: "19:45 - 20:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 19 %}
                 {{ tib[19]['total'] | round(3) }}
               {% else %}
@@ -5399,7 +5399,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 19 %}
                 {{ ( (tib[19]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5431,7 +5431,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 19 %}
                 {{ (
                   (tib[19]['total'] | float('nan'))
@@ -5459,7 +5459,7 @@ template:
       attributes:
         timme: "20:00 - 20:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 20 %}
                 {{ tib[20]['total'] | round(3) }}
               {% else %}
@@ -5467,7 +5467,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 20 %}
                 {{ ( (tib[20]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5499,7 +5499,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 20 %}
                 {{ (
                   (tib[20]['total'] | float('nan'))
@@ -5527,7 +5527,7 @@ template:
       attributes:
         timme: "20:15 - 20:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 20 %}
                 {{ tib[20]['total'] | round(3) }}
               {% else %}
@@ -5535,7 +5535,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 20 %}
                 {{ ( (tib[20]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5567,7 +5567,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 20 %}
                 {{ (
                   (tib[20]['total'] | float('nan'))
@@ -5595,7 +5595,7 @@ template:
       attributes:
         timme: "20:30 - 20:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 20 %}
                 {{ tib[20]['total'] | round(3) }}
               {% else %}
@@ -5603,7 +5603,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 20 %}
                 {{ ( (tib[20]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5635,7 +5635,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 20 %}
                 {{ (
                   (tib[20]['total'] | float('nan'))
@@ -5663,7 +5663,7 @@ template:
       attributes:
         timme: "20:45 - 21:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 20 %}
                 {{ tib[20]['total'] | round(3) }}
               {% else %}
@@ -5671,7 +5671,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 20 %}
                 {{ ( (tib[20]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5703,7 +5703,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 20 %}
                 {{ (
                   (tib[20]['total'] | float('nan'))
@@ -5731,7 +5731,7 @@ template:
       attributes:
         timme: "21:00 - 21:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 21 %}
                 {{ tib[21]['total'] | round(3) }}
               {% else %}
@@ -5739,7 +5739,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 21 %}
                 {{ ( (tib[21]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5771,7 +5771,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 21 %}
                 {{ (
                   (tib[21]['total'] | float('nan'))
@@ -5799,7 +5799,7 @@ template:
       attributes:
         timme: "21:15 - 21:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 21 %}
                 {{ tib[21]['total'] | round(3) }}
               {% else %}
@@ -5807,7 +5807,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 21 %}
                 {{ ( (tib[21]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5839,7 +5839,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 21 %}
                 {{ (
                   (tib[21]['total'] | float('nan'))
@@ -5867,7 +5867,7 @@ template:
       attributes:
         timme: "21:30 - 21:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 21 %}
                 {{ tib[21]['total'] | round(3) }}
               {% else %}
@@ -5875,7 +5875,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 21 %}
                 {{ ( (tib[21]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5907,7 +5907,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 21 %}
                 {{ (
                   (tib[21]['total'] | float('nan'))
@@ -5935,7 +5935,7 @@ template:
       attributes:
         timme: "21:45 - 22:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 21 %}
                 {{ tib[21]['total'] | round(3) }}
               {% else %}
@@ -5943,7 +5943,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 21 %}
                 {{ ( (tib[21]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -5975,7 +5975,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 21 %}
                 {{ (
                   (tib[21]['total'] | float('nan'))
@@ -6003,7 +6003,7 @@ template:
       attributes:
         timme: "22:00 - 22:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 22 %}
                 {{ tib[22]['total'] | round(3) }}
               {% else %}
@@ -6011,7 +6011,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 22 %}
                 {{ ( (tib[22]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -6043,7 +6043,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 22 %}
                 {{ (
                   (tib[22]['total'] | float('nan'))
@@ -6071,7 +6071,7 @@ template:
       attributes:
         timme: "22:15 - 22:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 22 %}
                 {{ tib[22]['total'] | round(3) }}
               {% else %}
@@ -6079,7 +6079,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 22 %}
                 {{ ( (tib[22]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -6111,7 +6111,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 22 %}
                 {{ (
                   (tib[22]['total'] | float('nan'))
@@ -6139,7 +6139,7 @@ template:
       attributes:
         timme: "22:30 - 22:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 22 %}
                 {{ tib[22]['total'] | round(3) }}
               {% else %}
@@ -6147,7 +6147,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 22 %}
                 {{ ( (tib[22]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -6179,7 +6179,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 22 %}
                 {{ (
                   (tib[22]['total'] | float('nan'))
@@ -6207,7 +6207,7 @@ template:
       attributes:
         timme: "22:45 - 23:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 22 %}
                 {{ tib[22]['total'] | round(3) }}
               {% else %}
@@ -6215,7 +6215,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 22 %}
                 {{ ( (tib[22]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -6247,7 +6247,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 22 %}
                 {{ (
                   (tib[22]['total'] | float('nan'))
@@ -6275,7 +6275,7 @@ template:
       attributes:
         timme: "23:00 - 23:15"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 23 %}
                 {{ tib[23]['total'] | round(3) }}
               {% else %}
@@ -6283,7 +6283,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 23 %}
                 {{ ( (tib[23]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -6315,7 +6315,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 23 %}
                 {{ (
                   (tib[23]['total'] | float('nan'))
@@ -6343,7 +6343,7 @@ template:
       attributes:
         timme: "23:15 - 23:30"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 23 %}
                 {{ tib[23]['total'] | round(3) }}
               {% else %}
@@ -6351,7 +6351,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 23 %}
                 {{ ( (tib[23]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -6383,7 +6383,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 23 %}
                 {{ (
                   (tib[23]['total'] | float('nan'))
@@ -6411,7 +6411,7 @@ template:
       attributes:
         timme: "23:30 - 23:45"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 23 %}
                 {{ tib[23]['total'] | round(3) }}
               {% else %}
@@ -6419,7 +6419,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 23 %}
                 {{ ( (tib[23]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -6451,7 +6451,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 23 %}
                 {{ (
                   (tib[23]['total'] | float('nan'))
@@ -6479,7 +6479,7 @@ template:
       attributes:
         timme: "23:45 - 00:00"
         tibber: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 23 %}
                 {{ tib[23]['total'] | round(3) }}
               {% else %}
@@ -6487,7 +6487,7 @@ template:
               {% endif %}
               
         total: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 23 %}
                 {{ ( (tib[23]['total'] | float('nan')) + (states('sensor.elpris_grid') | float('nan')) ) | round(3) }}
               {% else %}
@@ -6519,7 +6519,7 @@ template:
               {% endif %}
               
         köp: >
-              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_prices','tomorrow') or []) %}
+              {% set tib = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) %}
               {% if tib|length > 23 %}
                 {{ (
                   (tib[23]['total'] | float('nan'))
