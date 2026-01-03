@@ -1,5 +1,13 @@
 # Easyserv värmepump REST API
 #
+# Finns i powercalc:
+# sensor.heatpump_heatcircuitpump_power
+# sensor.heatpump_heatcircuitpump_energy
+# sensor.heatpump_heatcircuitpump_energy_daily
+# sensor.heatpump_heatcircuitpump_energy_monthly
+#
+# sensor.heatpump_floorcircuit_power
+#
 sensor:
   - platform: rest
     resource: !secret easyserv
@@ -456,7 +464,10 @@ template:
         state_class: measurement
         device_class: power
         state: >
-          {{ states('sensor.heatpump_coldcircuitpump_real_power') | float(0) + states('sensor.heatpump_compressor_real_power') | float(0) }}
+          {{ states('sensor.heatpump_coldcircuitpump_real_power') | float(0)
+            + states('sensor.heatpump_compressor_real_power') | float(0)
+            + states('sensor.heatpump_heatcircuitpump_power') | float(0)
+            + states('sensor.heatpump_floorcircuit_power') | float(0) }}
 #
       - name: heatpump_addheat1_power
         unique_id: heatpump_addheat1_power
@@ -677,7 +688,11 @@ automation:
       - trigger: time_pattern
         minutes: 2
       - trigger: time_pattern
+        minutes: 17
+      - trigger: time_pattern
         minutes: 32
+      - trigger: time_pattern
+        minutes: 47
 #      - platform: homeassistant
 #        event: start
     action:
