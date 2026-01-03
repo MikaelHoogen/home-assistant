@@ -1,0 +1,182 @@
+# =====================================================================
+# EASYSERV – REST + DIREKT MAPPING
+# =====================================================================
+# Denna fil är adapter-lagret mot Easyserv.
+#
+# Innehåller ENBART:
+#  - REST-sensor
+#  - Binärsensorer som direkt speglar Easyserv-flaggor (1:1)
+#  - Sensorer som direkt exponerar Easyserv-attribut (1:1)
+#
+# INGEN tolkning, INGA kombinationer, INGEN styrning.
+# =====================================================================
+
+sensor:
+  # -------------------------------------------------------------------
+  # Easyserv REST-sensor (rådata)
+  # -------------------------------------------------------------------
+  - platform: rest
+    resource: !secret easyserv
+    verify_ssl: false
+    name: heatpump
+    unique_id: heatpump
+    value_template: "{{ value_json.CompressorState }}"
+    json_attributes:
+      - HotwaterTemp1
+      - HotwaterTemp2
+      - IndoorTemp
+      - OutdoorTemp
+      - RadiatorForwardTemp
+      - RadiatorReturnTemp
+      - HeatCarrierInTemp
+      - HeatCarrierOutTemp
+      - BrineInTemp
+      - BrineOutTemp
+      - HotGasTemp
+      - CompressorState
+      - ColdCircuitPumpState
+      - HeatCircuitPumpState
+      - RadiatorPumpState
+      - AddHeat1State
+      - AddHeat2State
+      - SwitchValve1State
+      - HeatingSetpointTemp
+      - HotwaterSetpointTemp
+      - AddHeatLevelPercent
+      - SumAlarm
+      - Integral
+
+# =====================================================================
+# BINÄRSENSORER – DIREKT STATUSMAPPING (1:1)
+# =====================================================================
+template:
+  - binary_sensor:
+      # Kompressor
+      - name: heatpump_compressor_state
+        unique_id: heatpump_compressor_state
+        availability: "{{ is_number(states('sensor.heatpump')) }}"
+        state: "{{ state_attr('sensor.heatpump', 'CompressorState') > 0 }}"
+
+      # Växelventil
+      - name: heatpump_switchvalve_state
+        unique_id: heatpump_switchvalve_state
+        availability: "{{ is_number(states('sensor.heatpump')) }}"
+        state: "{{ state_attr('sensor.heatpump', 'SwitchValve1State') > 0 }}"
+
+      # Köldbärarpump
+      - name: heatpump_coldcircuitpump_state
+        unique_id: heatpump_coldcircuitpump_state
+        availability: "{{ is_number(states('sensor.heatpump')) }}"
+        state: "{{ state_attr('sensor.heatpump', 'ColdCircuitPumpState') > 0 }}"
+
+      # Radiatorpump
+      - name: heatpump_radiatorpump_state
+        unique_id: heatpump_radiatorpump_state
+        availability: "{{ is_number(states('sensor.heatpump')) }}"
+        state: "{{ state_attr('sensor.heatpump', 'RadiatorPumpState') > 0 }}"
+
+      # Värmekretspump
+      - name: heatpump_heatcircuitpump_state
+        unique_id: heatpump_heatcircuitpump_state
+        availability: "{{ is_number(states('sensor.heatpump')) }}"
+        state: "{{ state_attr('sensor.heatpump', 'HeatCircuitPumpState') > 0 }}"
+
+      # Tillsatsvärme 1
+      - name: heatpump_addheat1state
+        unique_id: heatpump_addheat1state
+        availability: "{{ is_number(states('sensor.heatpump')) }}"
+        state: "{{ state_attr('sensor.heatpump', 'AddHeat1State') > 0 }}"
+
+      # Tillsatsvärme 2
+      - name: heatpump_addheat2state
+        unique_id: heatpump_addheat2state
+        availability: "{{ is_number(states('sensor.heatpump')) }}"
+        state: "{{ state_attr('sensor.heatpump', 'AddHeat2State') > 0 }}"
+
+      # Summalarm
+      - name: heatpump_sumalarm
+        unique_id: heatpump_sumalarm
+        availability: "{{ is_number(states('sensor.heatpump')) }}"
+        state: "{{ state_attr('sensor.heatpump', 'SumAlarm') > 0 }}"
+
+# =====================================================================
+# SENSORER – DIREKT ATTRIBUTEXPONERING (1:1)
+# =====================================================================
+  - sensor:
+      # Gradminuter
+      - name: heatpump_integral
+        unique_id: heatpump_integral
+        state: "{{ state_attr('sensor.heatpump', 'Integral') }}"
+
+      # Utomhustemperatur
+      - name: heatpump_outdoor_temp
+        unique_id: heatpump_outdoor_temp
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'OutdoorTemp') }}"
+
+      # Värmebärare
+      - name: heatpump_heatcarrier_in
+        unique_id: heatpump_heatcarrier_in
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'HeatCarrierInTemp') }}"
+
+      - name: heatpump_heatcarrier_out
+        unique_id: heatpump_heatcarrier_out
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'HeatCarrierOutTemp') }}"
+
+      # Radiator retur
+      - name: heatpump_radiator_return
+        unique_id: heatpump_radiator_return
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'RadiatorReturnTemp') }}"
+
+      # Köldbärare
+      - name: heatpump_brine_in
+        unique_id: heatpump_brine_in
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'BrineInTemp') }}"
+
+      - name: heatpump_brine_out
+        unique_id: heatpump_brine_out
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'BrineOutTemp') }}"
+
+      # Hetgas
+      - name: heatpump_hotgas
+        unique_id: heatpump_hotgas
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'HotGasTemp') }}"
+
+      # Varmvatten
+      - name: heatpump_hotwater_temp
+        unique_id: heatpump_hotwater_temp
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'HotwaterTemp1') }}"
+
+      - name: heatpump_hotwater_temp_2
+        unique_id: heatpump_hotwater_temp_2
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'HotwaterTemp2') }}"
+
+      # Börvärden
+      - name: heatpump_heating_setpoint
+        unique_id: heatpump_heating_setpoint
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'HeatingSetpointTemp') }}"
+
+      - name: heatpump_hotwater_setpoint
+        unique_id: heatpump_hotwater_setpoint
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "{{ state_attr('sensor.heatpump', 'HotwaterSetpointTemp') }}"
