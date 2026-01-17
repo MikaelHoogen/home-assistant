@@ -41,12 +41,12 @@ template:
         unique_id: avgift_elnat
         unit_of_measurement: "Öre/kWh"
         state_class: measurement
-        state: "{{ 30.7 }}"
+        state: "{{ 32.3 }}"
       - name: avgift_energiskatt
         unique_id: avgift_energiskatt
         unit_of_measurement: "Öre/kWh"
         state_class: measurement
-        state: "{{ 54.88 }}"
+        state: "{{ 45.0 }}"
 
       # --- Totalpriser (inkl. alla avgifter) ---
       # Beräknar det totala priset per kWh som du betalar.
@@ -95,7 +95,6 @@ template:
         availability: "{{ is_number(states('sensor.elpris_spot_kvart')) and is_number(states('sensor.elpris_natnytta'))}}"
         state: >
           {{ ( states('sensor.elpris_spot_kvart') | float('naan')
-          + 0.6
           + states('sensor.elpris_natnytta') | float('naan') ) | round(3) }}
       - name: elpris_natnytta
         unique_id: elpris_natnytta
