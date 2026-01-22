@@ -24,14 +24,13 @@
 adaptive_lighting:
   - name: Barnrum
     lights:
-      - light.barnrum_fonster_1
       - light.barnrum_skrivbord
       - light.barnrum_tak
     prefer_rgb_color: false
     transition: 30
     initial_transition: 5
     interval: 90
-    min_brightness: 30
+    min_brightness: 50
     max_brightness: 100
     min_color_temp: 2000
     max_color_temp: 4000
@@ -40,6 +39,23 @@ adaptive_lighting:
     sleep_rgb_color: [255, 161, 40]
     take_over_control: true
     detect_non_ha_changes: true
+    adapt_only_on_bare_turn_on: true
+
+  # -------------------------------------------------------------
+  # Profil: Filament/dekor
+  # -------------------------------------------------------------
+  - name: Barnrum filament
+    lights:
+      - light.barnrum_fonster_altan
+      - light.barnrum_fonster_gunga
+    transition: 45
+    initial_transition: 5
+    interval: 90
+    min_brightness: 2
+    max_brightness: 35
+    sleep_brightness: 1
+    take_over_control: true
+    detect_non_ha_changes: false
     adapt_only_on_bare_turn_on: true
 
 # =================================================================
