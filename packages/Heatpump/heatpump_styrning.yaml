@@ -10,139 +10,130 @@
 #       Manuell "värme endast radiatorer" (t.ex. 2h).
 #       Golvvärmepump / cirkulationspump för golvvärme hålls AV.
 #
+#   - timer.heatpump_heat_floor_boost
+#       Manuell "värme + golvvärme" (t.ex. 2h).
+#       Forcerar VP-tillåtelse och golvvärmepump ON (override av EMHASS-block).
+#
 #   - input_number.heatpump_integral_target
-#       Önskad integral-nivå ("skuld") att ligga kring medan pumpen är blockerad,
-#       för att inte bygga upp för stor skuld innan EMHASS släpper till heat.
 #       Ex: -200.
 #
 #   - input_number.heatpump_integral_hysteresis
-#       Hur mycket lägre (mer negativ) integral vi tillåter under block innan vi
-#       aktiverar kompensering yttre för att bromsa skuldökningen.
 #       Ex: 50  → nedre gräns blir (target - 50), t.ex. -250.
 #
 # Princip:
 #   - heat:
-#       Normal drift (block OFF, komp yttre OFF).
-#       Under läget "heat" sköter värmepumpen sin reglering helt själv.
-#       Golvvärmepump (switch.heatpump_floorcircuit) ON.
+#       Normal drift (block OFF, komp yttre OFF). Golvvärmepump ON.
+#
+#   - heat_forced:
+#       Manuell override (block OFF oavsett EMHASS, komp yttre OFF). Golvvärmepump ON.
 #
 #   - radiators_only:
-#       Värme endast radiatorer (block OFF, komp yttre OFF).
-#       Golvvärmepump (switch.heatpump_floorcircuit) OFF.
+#       Värme endast radiatorer (block OFF, komp yttre OFF). Golvvärmepump OFF.
 #
 #   - hotwater_only:
-#       Endast varmvatten (block OFF, komp yttre ON konstant).
-#       Golvvärmepump OFF.
+#       Endast varmvatten (block OFF, komp yttre ON konstant). Golvvärmepump OFF.
 #
 #   - blocked:
-#       Kompressorn blockeras ALLTID av EMHASS.
-#       Kompensering yttre används ENBART för att begränsa integral-skuld under block
-#       så att vi inte får ett extremt utgångsläge när EMHASS senare släpper till heat.
-#       Golvvärmepump OFF.
+#       Blockerad av EMHASS. Komp yttre hysteres på integralen. Golvvärmepump OFF.
 #
-# Integral-logik (hysteresband under block):
-#   - target        (ex -200) = "rimlig skuld" vi vill ligga kring under block
-#   - lower         (ex -250) = target - hysteres
-#   - När integral >= target  → komp yttre OFF
-#   - När integral <= lower   → komp yttre ON
-#   - Inom bandet             → behåll senaste läge (för att undvika fladder)
-#
-# EMHASS workaround:
-#   - Verkställning sker endast 1 gång per kvart (2/17/32/47)
-#   - Varmvatten-timer slår igenom direkt
-#
-# OBS:
-# - Byt switch.nibe_kompensering_yttre till din faktiska Shelly-switch om den heter annat. Tillfälligt switch.kok_varmegolv
-# - Om Nibe-ingången är inverterad: byt turn_on/turn_off för Shelly.
 # =====================================================================
 
 template:
   - sensor:
       # ---------------------------------------------------------------
       # MODE – strategiskt driftläge
+      # Prioritet:
+      #   1) hotwater_boost
+      #   2) heat+floor_boost (override)
+      #   3) radiators_only
+      #   4) blocked (EMHASS)
+      #   5) heat
       # ---------------------------------------------------------------
-    - name: heatpump_mode
-      unique_id: heatpump_mode
-      state: >-
-        {% if is_state('timer.heatpump_hotwater_boost', 'active') %}
-          hotwater_only
-        {% elif is_state('timer.heatpump_radiators_only', 'active') %}
-          radiators_only
-        {% elif is_state('binary_sensor.heatpump_emhass', 'off') %}
-          blocked
-        {%- else -%}
-          heat
-        {%- endif %}
+      - name: heatpump_mode
+        unique_id: heatpump_mode
+        state: >-
+          {% if is_state('timer.heatpump_hotwater_boost', 'active') -%}
+            hotwater_only
+          {%- elif is_state('timer.heatpump_heat_floor_boost', 'active') -%}
+            heat_forced
+          {%- elif is_state('timer.heatpump_radiators_only', 'active') -%}
+            radiators_only
+          {%- elif is_state('binary_sensor.heatpump_emhass', 'off') -%}
+            blocked
+          {%- else -%}
+            heat
+          {%- endif %}
 
   - binary_sensor:
       # ---------------------------------------------------------------
       # KOMPENSERING YTTRE
       #
       # - hotwater_only: alltid ON
-      # - heat: OFF (pumpen sköter reglering helt själv)
-      # - radiators_only: OFF (värme bara radiatorer, ingen komp yttre)
+      # - heat / heat_forced / radiators_only: OFF
       # - blocked: hysteresband på integralen för att begränsa skuld
       # ---------------------------------------------------------------
       - name: heatpump_kompensering_yttre
         unique_id: heatpump_kompensering_yttre
-        state: >
+        state: >-
           {% set mode = states('sensor.heatpump_mode') %}
           {% set integral = states('sensor.heatpump_integral') | float(0) %}
           {% set target = states('input_number.heatpump_integral_target') | float(-200) %}
           {% set h = states('input_number.heatpump_integral_hysteresis') | float(50) %}
           {% set lower = target - h %}
 
-          {% if mode == 'hotwater_only' %}
+          {% if mode == 'hotwater_only' -%}
             true
 
-          {% elif mode == 'blocked' %}
-            {% if integral >= target %}
+          {%- elif mode == 'blocked' -%}
+            {%- if integral >= target -%}
               false
-            {% elif integral <= lower %}
+            {%- elif integral <= lower -%}
               true
-            {% else %}
+            {%- else -%}
               {{ is_state('switch.kok_varmegolv', 'on') }}
-            {% endif %}
+            {%- endif -%}
 
-          {% else %}
+          {%- else -%}
             false
-          {% endif %}
-
+          {%- endif %}
+          
 automation:
+  # ===================================================================
+  # HEATPUMP – HUVUDSTYRNING (MODE → AKTUATORER)
+  # ===================================================================
+  # Denna automation:
+  #   - kör ALL styrning som baseras på sensor.heatpump_mode
+  #   - styr ENDAST:
+  #       * hård blockering av värmepumpen
+  #       * golvvärmens cirkulationspump
+  #
+  # Viktigt:
+  #   - Kompensering yttre styrs INTE här.
+  #   - switch.kok_varmegolv styrs enbart av automationen
+  #     "Heatpump kompensering yttre".
+  # ===================================================================
   - alias: Heatpump styrning
     id: heatpump_styrning
     mode: single
 
     triggers:
-      # Kvart-lås (EMHASS-fladder-workaround)
-      - trigger: time_pattern
-        minutes: 2
-      - trigger: time_pattern
-        minutes: 17
-      - trigger: time_pattern
-        minutes: 32
-      - trigger: time_pattern
-        minutes: 47
-
-      # Varmvatten ska slå igenom direkt
+      # Mode ändras → verkställ styrning
       - trigger: state
-        entity_id: timer.heatpump_hotwater_boost
+        entity_id: sensor.heatpump_mode
 
-      # Radiatorer-only ska slå igenom direkt
-      - trigger: state
-        entity_id: timer.heatpump_radiators_only
-
-      # Kompensering yttre ska slå igenom direkt
-      - trigger: state
-        entity_id: binary_sensor.heatpump_kompensering_yttre
-
-      # Failsafe
-#      - trigger: homeassistant
-#        event: start
+      # Periodisk verkställning (watchdog mot "unavailable" vid tidigare körning)
+      - trigger: time_pattern
+        minutes: "/2"
 
     actions:
       # ---------------------------------------------------------------
-      # 1) HÅRD BLOCKERING – mode -> switch.heatpump
+      # 1) HÅRD BLOCKERING AV VÄRMEPUMP
+      #
+      # Definition:
+      #   - mode == "blocked"  → blockering ON
+      #   - alla andra lägen   → blockering OFF
+      #
+      # switch.heatpump är ett relä som fysiskt stoppar kompressorn.
       # ---------------------------------------------------------------
       - choose:
           - conditions:
@@ -159,8 +150,58 @@ automation:
               entity_id: switch.heatpump
 
       # ---------------------------------------------------------------
-      # 2) KOMPENSERING YTTRE (Shelly)
+      # 2) GOLVVÄRME – CIRKULATIONSPUMP
+      #
+      # Definition:
+      #   - mode == "heat" eller "heat_forced" → ON
+      #   - övriga lägen                       → OFF
+      #
+      # Golvvärmen ska endast cirkulera när värme
+      # faktiskt tillåts till golvslingorna.
       # ---------------------------------------------------------------
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: >
+                  {{ states('sensor.heatpump_mode') in ['heat', 'heat_forced'] }}
+            sequence:
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.heatpump_floorcircuit
+        default:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.heatpump_floorcircuit
+
+
+  # ===================================================================
+  # HEATPUMP – KOMPENSERING YTTRE (SPEGELLOGIK)
+  # ===================================================================
+  # Denna automation:
+  #   - speglar beslutet i binary_sensor.heatpump_kompensering_yttre
+  #     direkt till ett relä (Shelly)
+  #
+  # All logik för NÄR komp yttre ska vara på/av
+  # ligger i templaten för binary_sensor.
+  #
+  # Automationens enda ansvar:
+  #   binary_sensor ON  → switch ON
+  #   binary_sensor OFF → switch OFF
+  # ===================================================================
+  - alias: Heatpump kompensering yttre
+    id: heatpump_kompensering_yttre
+    mode: single
+
+    triggers:
+      # Beslut ändras → spegla till relä
+      - trigger: state
+        entity_id: binary_sensor.heatpump_kompensering_yttre
+
+      # Periodisk verkställning (watchdog mot "unavailable" vid tidigare körning)
+      - trigger: time_pattern
+        minutes: "/2"
+
+    actions:
       - choose:
           - conditions:
               - condition: state
@@ -174,22 +215,3 @@ automation:
           - action: switch.turn_off
             target:
               entity_id: switch.kok_varmegolv
-
-      # ---------------------------------------------------------------
-      # 3) GOLVVÄRMEPUMP (smartplug)
-      #    - Endast ON i läget "heat"
-      #    - OFF i radiators_only / hotwater_only / blocked
-      # ---------------------------------------------------------------
-      - choose:
-          - conditions:
-              - condition: state
-                entity_id: sensor.heatpump_mode
-                state: "heat"
-            sequence:
-              - action: switch.turn_on
-                target:
-                  entity_id: switch.heatpump_floorcircuit
-        default:
-          - action: switch.turn_off
-            target:
-              entity_id: switch.heatpump_floorcircuit
