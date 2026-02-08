@@ -62,7 +62,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[0] if arr|length == 96 else (arr[0] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -139,7 +139,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[1] if arr|length == 96 else (arr[0] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -216,7 +216,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[2] if arr|length == 96 else (arr[0] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -293,7 +293,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[3] if arr|length == 96 else (arr[0] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -370,7 +370,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[4] if arr|length == 96 else (arr[1] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -447,7 +447,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[5] if arr|length == 96 else (arr[1] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -524,7 +524,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[6] if arr|length == 96 else (arr[1] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -601,7 +601,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[7] if arr|length == 96 else (arr[1] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -678,7 +678,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[8] if arr|length == 96 else (arr[2] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -755,7 +755,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[9] if arr|length == 96 else (arr[2] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -832,7 +832,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[10] if arr|length == 96 else (arr[2] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -909,7 +909,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[11] if arr|length == 96 else (arr[2] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -986,7 +986,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[12] if arr|length == 96 else (arr[3] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -1063,7 +1063,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[13] if arr|length == 96 else (arr[3] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -1140,7 +1140,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[14] if arr|length == 96 else (arr[3] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -1217,7 +1217,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[15] if arr|length == 96 else (arr[3] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -1294,7 +1294,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[16] if arr|length == 96 else (arr[4] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -1371,7 +1371,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[17] if arr|length == 96 else (arr[4] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -1448,7 +1448,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[18] if arr|length == 96 else (arr[4] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -1525,7 +1525,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[19] if arr|length == 96 else (arr[4] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -1602,7 +1602,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[20] if arr|length == 96 else (arr[5] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -1679,7 +1679,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[21] if arr|length == 96 else (arr[5] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -1756,7 +1756,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[22] if arr|length == 96 else (arr[5] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -1833,7 +1833,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[23] if arr|length == 96 else (arr[5] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -1910,7 +1910,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[24] if arr|length == 96 else (arr[6] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -1987,7 +1987,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[25] if arr|length == 96 else (arr[6] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -2064,7 +2064,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[26] if arr|length == 96 else (arr[6] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -2141,7 +2141,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[27] if arr|length == 96 else (arr[6] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -2218,7 +2218,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[28] if arr|length == 96 else (arr[7] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -2295,7 +2295,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[29] if arr|length == 96 else (arr[7] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -2372,7 +2372,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[30] if arr|length == 96 else (arr[7] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -2449,7 +2449,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[31] if arr|length == 96 else (arr[7] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -2526,7 +2526,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[32] if arr|length == 96 else (arr[8] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -2603,7 +2603,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[33] if arr|length == 96 else (arr[8] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -2680,7 +2680,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[34] if arr|length == 96 else (arr[8] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -2757,7 +2757,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[35] if arr|length == 96 else (arr[8] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -2834,7 +2834,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[36] if arr|length == 96 else (arr[9] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -2911,7 +2911,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[37] if arr|length == 96 else (arr[9] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -2988,7 +2988,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[38] if arr|length == 96 else (arr[9] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -3065,7 +3065,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[39] if arr|length == 96 else (arr[9] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -3142,7 +3142,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[40] if arr|length == 96 else (arr[10] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -3219,7 +3219,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[41] if arr|length == 96 else (arr[10] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -3296,7 +3296,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[42] if arr|length == 96 else (arr[10] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -3373,7 +3373,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[43] if arr|length == 96 else (arr[10] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -3450,7 +3450,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[44] if arr|length == 96 else (arr[11] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -3527,7 +3527,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[45] if arr|length == 96 else (arr[11] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -3604,7 +3604,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[46] if arr|length == 96 else (arr[11] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -3681,7 +3681,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[47] if arr|length == 96 else (arr[11] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -3758,7 +3758,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[48] if arr|length == 96 else (arr[12] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -3835,7 +3835,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[49] if arr|length == 96 else (arr[12] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -3912,7 +3912,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[50] if arr|length == 96 else (arr[12] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -3989,7 +3989,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[51] if arr|length == 96 else (arr[12] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -4066,7 +4066,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[52] if arr|length == 96 else (arr[13] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -4143,7 +4143,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[53] if arr|length == 96 else (arr[13] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -4220,7 +4220,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[54] if arr|length == 96 else (arr[13] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -4297,7 +4297,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[55] if arr|length == 96 else (arr[13] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -4374,7 +4374,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[56] if arr|length == 96 else (arr[14] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -4451,7 +4451,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[57] if arr|length == 96 else (arr[14] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -4528,7 +4528,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[58] if arr|length == 96 else (arr[14] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -4605,7 +4605,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[59] if arr|length == 96 else (arr[14] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -4682,7 +4682,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[60] if arr|length == 96 else (arr[15] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -4759,7 +4759,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[61] if arr|length == 96 else (arr[15] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -4836,7 +4836,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[62] if arr|length == 96 else (arr[15] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -4913,7 +4913,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[63] if arr|length == 96 else (arr[15] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -4990,7 +4990,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[64] if arr|length == 96 else (arr[16] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -5067,7 +5067,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[65] if arr|length == 96 else (arr[16] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -5144,7 +5144,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[66] if arr|length == 96 else (arr[16] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -5221,7 +5221,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[67] if arr|length == 96 else (arr[16] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -5298,7 +5298,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[68] if arr|length == 96 else (arr[17] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -5375,7 +5375,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[69] if arr|length == 96 else (arr[17] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -5452,7 +5452,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[70] if arr|length == 96 else (arr[17] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -5529,7 +5529,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[71] if arr|length == 96 else (arr[17] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -5606,7 +5606,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[72] if arr|length == 96 else (arr[18] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -5683,7 +5683,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[73] if arr|length == 96 else (arr[18] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -5760,7 +5760,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[74] if arr|length == 96 else (arr[18] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -5837,7 +5837,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[75] if arr|length == 96 else (arr[18] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -5914,7 +5914,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[76] if arr|length == 96 else (arr[19] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -5991,7 +5991,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[77] if arr|length == 96 else (arr[19] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -6068,7 +6068,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[78] if arr|length == 96 else (arr[19] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -6145,7 +6145,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[79] if arr|length == 96 else (arr[19] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -6222,7 +6222,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[80] if arr|length == 96 else (arr[20] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -6299,7 +6299,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[81] if arr|length == 96 else (arr[20] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -6376,7 +6376,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[82] if arr|length == 96 else (arr[20] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -6453,7 +6453,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[83] if arr|length == 96 else (arr[20] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -6530,7 +6530,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[84] if arr|length == 96 else (arr[21] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -6607,7 +6607,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[85] if arr|length == 96 else (arr[21] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -6684,7 +6684,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[86] if arr|length == 96 else (arr[21] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -6761,7 +6761,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[87] if arr|length == 96 else (arr[21] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -6838,7 +6838,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[88] if arr|length == 96 else (arr[22] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -6915,7 +6915,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[89] if arr|length == 96 else (arr[22] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -6992,7 +6992,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[90] if arr|length == 96 else (arr[22] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -7069,7 +7069,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[91] if arr|length == 96 else (arr[22] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -7146,7 +7146,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[92] if arr|length == 96 else (arr[23] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -7223,7 +7223,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[93] if arr|length == 96 else (arr[23] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -7300,7 +7300,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[94] if arr|length == 96 else (arr[23] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
@@ -7377,7 +7377,7 @@ template:
               {% set arr = state_attr('sensor.elpris','today') or [] %}
               {% set p = (arr[95] if arr|length == 96 else (arr[23] if arr|length == 24 else none)) %}
               {% if p is not none %}
-                {{ ( (p | float('nan')) + 0.6 + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
+                {{ ( (p | float('nan')) + (states('sensor.elpris_natnytta') | float(0)) ) | round(3) }}
               {% else %}
               -
               {% endif %}
