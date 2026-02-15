@@ -8,34 +8,59 @@
 #
 #   - timer.heatpump_radiators_only
 #       Manuell "värme endast radiatorer" (t.ex. 2h).
-#       Golvvärmepump / cirkulationspump för golvvärme hålls AV.
+#       Golvvärmens cirkulationspump av + golvventiler stängda.
 #
 #   - timer.heatpump_heat_floor_boost
 #       Manuell "värme + golvvärme" (t.ex. 2h).
-#       Forcerar VP-tillåtelse och golvvärmepump ON (override av EMHASS-block).
+#       Forcerar VP-tillåtelse och golvvärme ON (override av EMHASS-block).
 #
 #   - input_number.heatpump_integral_target
-#       Ex: -200.
+#       Önskad integral-nivå under block (ex -200).
 #
 #   - input_number.heatpump_integral_hysteresis
-#       Ex: 50  → nedre gräns blir (target - 50), t.ex. -250.
+#       Hysteres under block (ex 50 → lower = target - 50).
 #
-# Princip:
+# Entiteter:
+#   - binary_sensor.heatpump_emhass
+#       ON  = värme tillåts av EMHASS
+#       OFF = värme blockeras av EMHASS
+#
+#   - switch.heatpump
+#       Relä för hård blockering av kompressor (ON = blockerad)
+#
+#   - switch.heatpump_floorcircuit
+#       Smartplug/cirkpump för golvvärme (ON = cirkulerar)
+#
+#   - switch.vardagsrum_varmegolv / switch.barnrum_varmegolv / switch.sovrum_varmegolv
+#       Ventiler till golvvärmeslingor (ON = öppna)
+#
+#   - switch.kok_varmegolv
+#       Shelly för "kompensering yttre" (ON = komp aktiv)
+#
+# Driftlägen:
 #   - heat:
-#       Normal drift (block OFF, komp yttre OFF). Golvvärmepump ON.
+#       Normal drift (block OFF, komp OFF). Golvvärme ON (pump + ventiler).
 #
 #   - heat_forced:
-#       Manuell override (block OFF oavsett EMHASS, komp yttre OFF). Golvvärmepump ON.
+#       Manuell override (block OFF oavsett EMHASS, komp OFF).
+#       Golvvärme ON (pump + ventiler).
 #
 #   - radiators_only:
-#       Värme endast radiatorer (block OFF, komp yttre OFF). Golvvärmepump OFF.
+#       Värme endast radiatorer (block OFF, komp OFF).
+#       Golvvärme OFF (pump OFF + ventiler stängda).
 #
 #   - hotwater_only:
-#       Endast varmvatten (block OFF, komp yttre ON konstant). Golvvärmepump OFF.
+#       Endast varmvatten (block OFF, komp ON konstant).
+#       Golvvärme OFF (pump OFF + ventiler stängda).
 #
 #   - blocked:
-#       Blockerad av EMHASS. Komp yttre hysteres på integralen. Golvvärmepump OFF.
+#       Blockerad av EMHASS (block ON).
+#       Komp yttre hysteres på integralen för att begränsa skuld.
+#       Golvvärme OFF (pump OFF + ventiler stängda).
 #
+# Watchdog:
+#   - Periodisk verkställning var 2:e minut för att hämta upp fall där
+#     en switch var unavailable exakt vid state-change.
 # =====================================================================
 
 template:
@@ -95,22 +120,11 @@ template:
 
           {%- else -%}
             false
-          {%- endif %}
-          
+          {% endif %}
+
 automation:
   # ===================================================================
   # HEATPUMP – HUVUDSTYRNING (MODE → AKTUATORER)
-  # ===================================================================
-  # Denna automation:
-  #   - kör ALL styrning som baseras på sensor.heatpump_mode
-  #   - styr ENDAST:
-  #       * hård blockering av värmepumpen
-  #       * golvvärmens cirkulationspump
-  #
-  # Viktigt:
-  #   - Kompensering yttre styrs INTE här.
-  #   - switch.kok_varmegolv styrs enbart av automationen
-  #     "Heatpump kompensering yttre".
   # ===================================================================
   - alias: Heatpump styrning
     id: heatpump_styrning
@@ -173,6 +187,28 @@ automation:
             target:
               entity_id: switch.heatpump_floorcircuit
 
+      # ---------------------------------------------------------------
+      # 3) GOLVVÄRME – VENTILER
+      # ---------------------------------------------------------------
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: >
+                  {{ states('sensor.heatpump_mode') in ['heat', 'heat_forced'] }}
+            sequence:
+              - action: switch.turn_on
+                target:
+                  entity_id:
+                    - switch.vardagsrum_varmegolv
+                    - switch.barnrum_varmegolv
+                    - switch.sovrum_varmegolv
+        default:
+          - action: switch.turn_off
+            target:
+              entity_id:
+                - switch.vardagsrum_varmegolv
+                - switch.barnrum_varmegolv
+                - switch.sovrum_varmegolv
 
   # ===================================================================
   # HEATPUMP – KOMPENSERING YTTRE (SPEGELLOGIK)
