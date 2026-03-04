@@ -12,7 +12,11 @@
 #
 #   - timer.heatpump_heat_floor_boost
 #       Manuell "värme + golvvärme" (t.ex. 2h).
-#       Forcerar VP-tillåtelse och golvvärme ON (override av EMHASS-block).
+#       Forcerar VP-tillåtelse och golvvärme ON (override av block).
+#
+#   - input_boolean.heatpump_slot_hold
+#       Hållflagga per 15-minutersslot.
+#       Sätts när EMHASS slår till värme, släpps vid kvartskifte.
 #
 #   - input_number.heatpump_integral_target
 #       Önskad integral-nivå under block (ex -200).
@@ -42,8 +46,7 @@
 #       Normal drift (block OFF, komp OFF). Golvvärme ON (pump + ventiler).
 #
 #   - heat_forced:
-#       Manuell override (block OFF oavsett EMHASS, komp OFF).
-#       Golvvärme ON (pump + ventiler).
+#       Manuell override (block OFF, komp OFF). Golvvärme ON (pump + ventiler).
 #
 #   - radiators_only:
 #       Värme endast radiatorer (block OFF, komp OFF).
@@ -54,7 +57,7 @@
 #       Golvvärme OFF (pump OFF + ventiler stängda).
 #
 #   - blocked:
-#       Blockerad av EMHASS (block ON).
+#       Blockerad av "tillåtelse"-logiken (block ON).
 #       Komp yttre hysteres på integralen för att begränsa skuld.
 #       Golvvärme OFF (pump OFF + ventiler stängda).
 #
@@ -64,6 +67,18 @@
 # =====================================================================
 
 template:
+  - binary_sensor:
+      # ---------------------------------------------------------------
+      # HEAT ALLOWED – tillåtelse som används av mode-logiken
+      # ---------------------------------------------------------------
+      - name: heatpump_heat_allowed
+        unique_id: heatpump_heat_allowed
+        delay_off:
+          seconds: 60
+        state: >-
+          {{ is_state('binary_sensor.heatpump_emhass', 'on')
+            or is_state('input_boolean.heatpump_slot_hold', 'on') }}
+
   - sensor:
       # ---------------------------------------------------------------
       # MODE – strategiskt driftläge
@@ -123,6 +138,40 @@ template:
           {% endif %}
 
 automation:
+  # ===================================================================
+  # HEATPUMP – HÅLLFLAGGA PER 15-MINUTERSSLOT
+  # ===================================================================
+  # Funktion:
+  #   - När EMHASS slår till värme i en slot: hållflagga ON tills kvartskifte.
+  #   - Vid kvartskifte: hållflagga OFF.
+  # ===================================================================
+  - alias: Heatpump hållflagga per kvart
+    id: heatpump_slot_hold
+    mode: single
+
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.heatpump_emhass
+        to: "on"
+
+      - trigger: time_pattern
+        minutes: "/15"
+        seconds: 0
+
+    actions:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.platform == 'state' }}"
+            sequence:
+              - action: input_boolean.turn_on
+                target:
+                  entity_id: input_boolean.heatpump_slot_hold
+        default:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.heatpump_slot_hold
+
   # ===================================================================
   # HEATPUMP – HUVUDSTYRNING (MODE → AKTUATORER)
   # ===================================================================
