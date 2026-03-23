@@ -30,7 +30,8 @@ template:
           {% elif -15 <= temp < -10 %} 4
           {% elif -10 <= temp < -5 %} 3
           {% elif -5 <= temp < -3 %} 2
-          {% elif -3 <= temp < 2 %} 1.5
+          {% elif -3 <= temp < 0 %} 1.5
+          {% elif 0 <= temp < 2 %} 1
           {% elif 2 <= temp < 4 %} 0.5
           {% elif 4 <= temp < 10 %} 0
           {% else %} 0
@@ -43,15 +44,17 @@ template:
         state: >
           {% set temp = state_attr('sensor.smhi_sannesholma_hourly','forecast')[:24]
                         | map(attribute='temperature') | average | round(1) %}
-          {% if temp < -20 %} 12
-          {% elif -20 <= temp < -15 %} 12
-          {% elif -15 <= temp < -10 %} 11
-          {% elif -10 <= temp < -4 %} 10
-          {% elif -4 <= temp < 0 %} 9.5
-          {% elif 0 <= temp < 2 %} 8.5
-          {% elif 2 <= temp < 5 %} 7.5
-          {% elif 5 <= temp < 10 %} 6.5
-          {% elif temp >= 10 %} 6
+          {% if temp < -20 %} 20
+          {% elif -20 <= temp < -15 %} 18
+          {% elif -15 <= temp < -10 %} 16
+          {% elif -10 <= temp < -7 %} 14
+          {% elif -7 <= temp < -5 %} 13
+          {% elif -5 <= temp < -2 %} 12
+          {% elif -2 <= temp < 0 %} 10
+          {% elif 0 <= temp < 2 %} 9
+          {% elif 2 <= temp < 5 %} 8
+          {% elif 5 <= temp < 10 %} 7
+          {% elif temp >= 10 %} 7
           {% else %} 8
           {% endif %}
         # Källa. 
@@ -65,8 +68,8 @@ template:
           {% if temp < -20 %} 4
           {% elif -20 <= temp < -15 %} 2
           {% elif -15 <= temp < -10 %} 1
-          {% elif -10 <= temp < -5 %} 0.5
-          {% elif -5 <= temp < 0 %} 0.5
+          {% elif -10 <= temp < -5 %} 2
+          {% elif -5 <= temp < 0 %} 2
           {% elif 0 <= temp < 5 %} 0.5
           {% elif 5 <= temp < 10 %} 0.5
           {% else %} 0.5
@@ -82,14 +85,23 @@ template:
       - name: emhass_def_total_hours_sbv
         unique_id: emhass_def_total_hours_sbv
         state: >
-          {% if (now().hour == 4 and now().minute < 30)
-            or (now().hour == 12 and now().minute < 30)
-            or (now().hour == 20 and now().minute < 30) %}
+          {# Kvart-index i dygnet (0..95) #}
+          {%- set q_day = now().hour * 4 + (now().minute // 15) -%}
+          {# Uppdatera vid 04:00, 12:00, 20:00 (på kvarten) #}
+          {% if q_day in [16, 48, 80] %}
             {{ states('sensor.emhass_operating_hours_sbv') }}
           {% else %}
-            {{ state_attr('sensor.p_deferrable1','deferrables_schedule')
-              | map(attribute='p_deferrable1')
-              | select('search','[1-9]') | list | count / 2 }}
+            {%- set sched = state_attr('sensor.p_deferrable1','deferrables_schedule') or [] -%}
+            {%- set floored = now().replace(minute=(now().minute // 15) * 15, second=0, microsecond=0) -%}
+            {%- set floor_ts = as_timestamp(floored) -%}
+            {%- set n = namespace(cnt=0) -%}
+            {%- for row in sched -%}
+              {%- set ts = as_timestamp(row.date) -%}
+              {%- if ts >= floor_ts and (row.p_deferrable1 | float(0)) > 0 -%}
+                {%- set n.cnt = n.cnt + 1 -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {{ (n.cnt / 4) | round(2) }}
           {% endif %}
         # Källa.  [oai_citation:3‡emhass_defloads_params.txt](file-service://file-JLEeHiqVtmNrJGymnwYkL3)
 
@@ -103,9 +115,17 @@ template:
                 > states('sensor.emhass_def_0_end_timestep')|int(0) %}
             {{ states('sensor.emhass_operating_hours_vp_12') }}
           {% else %}
-            {{ state_attr('sensor.p_deferrable0','deferrables_schedule')
-              | map(attribute='p_deferrable0')
-              | select('search','[1-9]') | list | count / 4 }}
+            {%- set sched = state_attr('sensor.p_deferrable0','deferrables_schedule') or [] -%}
+            {%- set floored = now().replace(minute=(now().minute // 15) * 15, second=0, microsecond=0) -%}
+            {%- set floor_ts = as_timestamp(floored) -%}
+            {%- set n = namespace(cnt=0) -%}
+            {%- for row in sched -%}
+              {%- set ts = as_timestamp(row.date) -%}
+              {%- if ts >= floor_ts and (row.p_deferrable0 | float(0)) > 0 -%}
+                {%- set n.cnt = n.cnt + 1 -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {{ (n.cnt / 4) | round(2) }}
           {% endif %}
               
       # VP_24: bool off -> 0, annars samma princip men mot vp_24
