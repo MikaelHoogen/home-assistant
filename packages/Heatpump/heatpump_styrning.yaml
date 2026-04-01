@@ -86,7 +86,7 @@ template:
       #   1) hotwater_boost
       #   2) heat+floor_boost (override)
       #   3) radiators_only
-      #   4) blocked (EMHASS)
+      #   4) blocked (heat_allowed)
       #   5) heat
       # ---------------------------------------------------------------
       - name: heatpump_mode
@@ -98,7 +98,7 @@ template:
             heat_forced
           {%- elif is_state('timer.heatpump_radiators_only', 'active') -%}
             radiators_only
-          {%- elif is_state('binary_sensor.heatpump_emhass', 'off') -%}
+          {%- elif is_state('binary_sensor.heatpump_heat_allowed', 'off') -%}
             blocked
           {%- else -%}
             heat
