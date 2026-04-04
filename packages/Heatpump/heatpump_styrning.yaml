@@ -237,7 +237,7 @@ automation:
               entity_id: switch.heatpump_floorcircuit
 
       # ---------------------------------------------------------------
-      # 3) GOLVVÄRME – VENTILER
+      # 3) GOLVVÄRME – VENTILER / TERMOSTAT
       # ---------------------------------------------------------------
       - choose:
           - conditions:
@@ -249,15 +249,26 @@ automation:
                 target:
                   entity_id:
                     - switch.vardagsrum_varmegolv
-                    - switch.barnrum_varmegolv
                     - switch.sovrum_varmegolv
+
+              - action: climate.set_hvac_mode
+                target:
+                  entity_id: climate.barnrum_varmegolv
+                data:
+                  hvac_mode: heat
+
         default:
           - action: switch.turn_off
             target:
               entity_id:
                 - switch.vardagsrum_varmegolv
-                - switch.barnrum_varmegolv
                 - switch.sovrum_varmegolv
+
+          - action: climate.set_hvac_mode
+            target:
+              entity_id: climate.barnrum_varmegolv
+            data:
+              hvac_mode: "off"
 
   # ===================================================================
   # HEATPUMP – KOMPENSERING YTTRE (SPEGELLOGIK)
