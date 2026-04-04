@@ -15,7 +15,7 @@ tts:
 
 recorder:
   db_url: !secret maria
-  purge_keep_days: 30
+  purge_keep_days: 45
   exclude:
     entity_globs:
       - sensor.sensorer*
@@ -37,6 +37,15 @@ sensor:
       - 'time'
       - 'time_utc'
 #
+influxdb:
+  database: homeassistant
+  username: homeassistant
+  password: homeassistant
+  include:
+    entities:
+      - sensor.power_sannesholma_2181_no_var_loads_filtered
+      - sensor.power_sannesholma_2181_no_var_loads_filtered_test
+      - sensor.power_sannesholma_2181_no_var_loads
 #
 frontend:
   extra_module_url:
