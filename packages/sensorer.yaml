@@ -51,7 +51,7 @@ template:
       ### Sovrum
       - name: sensorer_sovrum
         unique_id: sensorer_sovrum
-      #  #friendly_name: "1 Sovrum"
+      #  #friendly_name: "0 Sovrum"
         state: "{{ states('sensor.time') }}"
         attributes:
           temperature: "{{ states('sensor.sovrum_temperature') | round(1,'round-to-even', '-') }}°C"
@@ -127,16 +127,16 @@ template:
           co2: "{{ states('sensor.barnrum_co2') | round(0, 'round-to-even', '-')}} ppm"
           v: "{{ states('sensor.barnrum_v') | round(1, 'round-to-even', '-') }} g/m³"
 #
-          ### gastrum
-      - name: sensorer_gastrum
-        unique_id: sensorer_gastrum
-        #friendly_name: "0 Gästrum"
+          ### studio
+      - name: sensorer_studio
+        unique_id: sensorer_studio
+        #friendly_name: "1 Studio"
         state: "{{ states('sensor.time') }}"
         attributes:
-          temperature: "{{ states('sensor.gastrum_temperature') | round(1,'round-to-even', '-') }}°C"
-          humidity: "{{ states('sensor.gastrum_humidity') | round(0, 'round-to-even', '-') }}"
+          temperature: "{{ states('sensor.studio_temperature') | round(1,'round-to-even', '-') }}°C"
+          humidity: "{{ states('sensor.studio_humidity') | round(0, 'round-to-even', '-') }}"
           co2: ""
-          v: "{{ states('sensor.gastrum_v') | round(1, 'round-to-even', '-') }} g/m³"
+          v: "{{ states('sensor.studio_v') | round(1, 'round-to-even', '-') }} g/m³"
 #
           ### kok
       - name: sensorer_kok

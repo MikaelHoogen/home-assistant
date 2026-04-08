@@ -110,11 +110,11 @@ template:
       - name: sovrum_ps
         unique_id: sovrum_ps
         state: "{{ 288.68 * ( 1.098 + states('sensor.sovrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
-      #
+#      #
       - name: sovrum_vs
         unique_id: sovrum_vs
         state: "{{ states('sensor.sovrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.sovrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
-      #
+#      #
       - name: sovrum_v
         unique_id: sovrum_v
         unit_of_measurement: "g/m3"
@@ -180,20 +180,20 @@ template:
         state_class: measurement
         state: "{{ ( states('sensor.barnrum_vs') | float(0.0) * ( states('sensor.barnrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
 #
-      ### gastrum
-      - name: gastrum_ps
-        unique_id: gastrum_ps
-        state: "{{ 288.68 * ( 1.098 + states('sensor.gastrum_temperature') | float(0.0) / 100 ) ** 8.02 }}"
+      ### studio
+      - name: studio_ps
+        unique_id: studio_ps
+        state: "{{ 288.68 * ( 1.098 + states('sensor.studio_temperature') | float(0.0) / 100 ) ** 8.02 }}"
       #
-      - name: gastrum_vs
-        unique_id: gastrum_vs
-        state: "{{ states('sensor.gastrum_ps') | float(0.0) / ( 461.4 * ( states('sensor.gastrum_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
-      #
-      - name: gastrum_v
-        unique_id: gastrum_v
+      - name: studio_vs
+        unique_id: studio_vs
+        state: "{{ states('sensor.studio_ps') | float(0.0) / ( 461.4 * ( states('sensor.studio_temperature') | float(0.0) + 273.2 ) ) * 1000 }}"
+#      #
+      - name: studio_v
+        unique_id: studio_v
         unit_of_measurement: "g/m3"
         state_class: measurement
-        state: "{{ ( states('sensor.gastrum_vs') | float(0.0) * ( states('sensor.gastrum_humidity') | float(0.0) / 100 ) ) | round(2) }}"
+        state: "{{ ( states('sensor.studio_vs') | float(0.0) * ( states('sensor.studio_humidity') | float(0.0) / 100 ) ) | round(2) }}"
 #
       ### kok
       - name: kok_ps
