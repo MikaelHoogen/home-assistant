@@ -237,7 +237,7 @@ automation:
               entity_id: switch.heatpump_floorcircuit
 
       # ---------------------------------------------------------------
-      # 3) GOLVVÄRME – VENTILER / TERMOSTAT
+      # 3) GOLVVÄRME – VENTILER / TERMOSTATER
       # ---------------------------------------------------------------
       - choose:
           - conditions:
@@ -247,26 +247,26 @@ automation:
             sequence:
               - action: switch.turn_on
                 target:
-                  entity_id:
-                    - switch.vardagsrum_varmegolv
-                    - switch.sovrum_varmegolv
+                  entity_id: switch.vardagsrum_varmegolv
 
               - action: climate.set_hvac_mode
                 target:
-                  entity_id: climate.barnrum_varmegolv
+                  entity_id:
+                    - climate.barnrum_varmegolv
+                    - climate.sovrum_varmegolv
                 data:
                   hvac_mode: heat
 
         default:
           - action: switch.turn_off
             target:
-              entity_id:
-                - switch.vardagsrum_varmegolv
-                - switch.sovrum_varmegolv
+              entity_id: switch.vardagsrum_varmegolv
 
           - action: climate.set_hvac_mode
             target:
-              entity_id: climate.barnrum_varmegolv
+              entity_id:
+                - climate.barnrum_varmegolv
+                - climate.sovrum_varmegolv
             data:
               hvac_mode: "off"
 
