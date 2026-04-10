@@ -1,55 +1,45 @@
-# EMHASS_priser.yaml
+# packages/emhass/EMHASS_priser.yaml
+#
+# Priser i 15-min (kvartar) för EMHASS.
+# - SÄLJ: Nordpool-kvartar direkt (raw_today + raw_tomorrow), inga tim→×4-fallbacks.
+# - KÖP : Tibber-kvartar direkt (today + tomorrow).
+# - emhass_prices skär från NU (i0) och lägger på dina påslag.
+
 template:
   - sensor:
+
       # ------------------------------------------------------------
-      # 1) Bassteg: SÄLJ = Nordpool
-      #    - IDAG: alltid från 'today' (timserie) → expandera 4× till kvartar
-      #    - IMORGON: endast 15-min från 'raw_tomorrow' (ingen expansion)
+      # 1) Bassteg: råa listor (kvartar) från källsensorer
       # ------------------------------------------------------------
       - name: emhass_steps
         unique_id: emhass_steps
         state: "{{ states('sensor.elpris') }}"
         attributes:
+          # SÄLJ (Nordpool kvartar, utan moms/avgifter)
           sälj: >
-            {# --- IDAG: 'today' -> 96 kvartar --- #}
-            {% set t = state_attr('sensor.elpris','today') %}
-            {% if t is string %}
-              {% set today_vals = t.split(',') | map('trim') | map('float') | list %}
-            {% else %}
-              {% set today_vals = (t or []) | map('float') | list %}
-            {% endif %}
-
-            {% set today_ns = namespace(x=[]) %}
-            {% for v in today_vals %}
-              {% set today_ns.x = today_ns.x + [v, v, v, v] %}
-            {% endfor %}
-
-            {# --- IMORGON: ta bara kvartsrader från raw_tomorrow --- #}
-            {% set rm = (state_attr('sensor.elpris','raw_tomorrow') or []) | list %}
-            {% set tom_ns = namespace(x=[]) %}
-            {% if rm | length >= 90 %}
-              {% for h in rm %}
-                {% set tom_ns.x = tom_ns.x + [ (h['value'] | float(0)) ] %}
-              {% endfor %}
-            {% endif %}
-
-            {{ today_ns.x + tom_ns.x }}
+            {% set q_today = (state_attr('sensor.elpris','raw_today')    or [])
+                              | map(attribute='value') | map('float') | list %}
+            {% set q_tomor = (state_attr('sensor.elpris','raw_tomorrow') or [])
+                              | map(attribute='value') | map('float') | list %}
+            {{ q_today + q_tomor }}
 
           # KÖP (Tibber kvartar, 15-min) – rakt av
           köp: >
-            {% set t_today = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','today')    or []) | list %}
-            {% set t_tomor = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or []) | list %}
-            {{ (t_today + t_tomor) | map(attribute='total') | map('float') | list }}
+            {% set t_today = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','today')    or [])
+                              | map(attribute='total') | map('float') | list %}
+            {% set t_tomor = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or [])
+                              | map(attribute='total') | map('float') | list %}
+            {{ t_today + t_tomor }}
 
       # ------------------------------------------------------------
       # 2) EMHASS-fönster från NU och framåt + påslag
-      #    - sälj = spot + 0.6 + natnytta
+      #    - sälj = spot + natnytta
       #    - köp  = total + elnät + energiskatt
       #    - längd = sensor.emhass_horizon_steps (t.ex. 192 vid 48h & 15-min)
       # ------------------------------------------------------------
       - name: emhass_prices
         unique_id: emhass_prices
-        state: "{{ states('sensor.elpris') }}"
+        state: "ok"
         availability: >
           {{ (state_attr('sensor.emhass_steps','sälj') is not none)
             and (state_attr('sensor.emhass_steps','sälj')|list|length > 0)
@@ -67,7 +57,7 @@ template:
             {% set i0 = ((now().hour*60 + now().minute) // step_min) %}
             {% set H  = states('sensor.emhass_horizon_steps')|int(192) %}
             {% set base = (state_attr('sensor.emhass_steps','sälj') | list)[i0:][:H] %}
-            {% set m = 0.6 + states('sensor.elpris_natnytta')|float(0) %}
+            {% set m = states('sensor.elpris_natnytta')|float(0) %}
             {% set ns = namespace(x=[]) %}
             {% for v in base %}
               {% set ns.x = ns.x + [ (v|float(0) + m) | round(3) ] %}
@@ -87,5 +77,6 @@ template:
             {% endfor %}
             {{ ns.x }}
 
+# (Valfria debug-fält)
 #          längd_sälj: "{{ (state_attr('sensor.emhass_prices','sälj')|list)|length }}"
 #          längd_köp:  "{{ (state_attr('sensor.emhass_prices','köp') |list)|length }}"
