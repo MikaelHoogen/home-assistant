@@ -104,8 +104,7 @@ template:
       - name: barnrum_belysning_fonster_automation_control
         unique_id: barnrum_belysning_fonster_automation_control
         state: >
-          {{ is_state('binary_sensor.barnrum_belysning_fonster_lightlevel', 'on')
-            and is_state('input_boolean.sovdags', 'off') }}
+          {{ is_state('binary_sensor.barnrum_belysning_fonster_lightlevel', 'on') }}
 
 
 # =================================================================
