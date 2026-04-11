@@ -8,17 +8,15 @@ homekit:
         - light.allrum_huslampa
         # Badrum
         - light.badrum
+        - light.badrum_spegel
+        - light.badrum_tak
         # Barnrum
-        - light.barnrum_skank
         - light.barnrum_fonster_1
-        - light.barnrum_fonster_2
         - light.barnrum_tak
-        # Gästrum
+        - light.barnrum_skrivbord
+        # Studio
         - light.linas_skrivbord
-#        - light.gastrum_fonster_1
-        - light.gastrum_byra
-        - light.gastrum_fonster_2
-        - light.gastrum_hylla
+        - light.studio_hylla
         # Hall
         - light.hall
         # Kök
@@ -33,7 +31,8 @@ homekit:
         - light.sovrum_sang_mikael
         - light.sovrum_sang_lina
         - light.sovrum_byra
-#        - light.sovrum_fonster
+        - light.sovrum_lang_byra
+        # Walk in closet
         - light.walk_in_closet
         # Mikaels rum
         - light.mikaels_rum_fonster
@@ -41,6 +40,7 @@ homekit:
         - light.mikaels_rum_skrivbord
         - light.mikaels_rum_tak
         - light.mikaels_rum_ljusslinga
+        - light.mikaels_rum_bollar
         # Vardagsrum
         - light.vardagsrum_fonster_hangande
         - light.vardagsrum_fonster_fotogen
@@ -64,7 +64,12 @@ homekit:
         - light.stolpe_gang
         - light.stolpe_grind
         - light.carport_belysning
+        - light.entre_reolink_stralkastare
+        - light.carport_stralkastare
         # Sovdags
         - input_boolean.sovdags
         # Kattmat
         - button.foderautomat_utfodra
+        # Snickarboa
+        - light.snickarboa_arbetsbank
+        - light.snickarboa_spotlights
