@@ -1,0 +1,20 @@
+# =================================================================
+# ALLMÄNNA KONFIGURATIONER FÖR SOVRUMMET
+# =================================================================
+# Detta paket innehåller entiteter som används av flera olika
+# funktioner i sovrummet.
+# -----------------------------------------------------------------
+
+# --- Närvarosensor för hela sovrummet ---
+# Denna sensor blir 'on' vid rörelse och förblir 'on' i 20 minuter
+# efter senaste rörelse. Används som en grund för många andra
+# automationer som behöver veta om någon är i rummet.
+template:
+  - binary_sensor:
+      - name: sovrum_presence
+        unique_id: sovrum_presence
+        device_class: motion
+        delay_off:
+          minutes: 10
+        state: >
+          {{ is_state('binary_sensor.sovrum_rorelseomrade', 'on') }}
