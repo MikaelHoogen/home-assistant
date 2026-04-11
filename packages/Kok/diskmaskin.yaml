@@ -11,27 +11,27 @@
 # Dessa entiteter spårar diskmaskinens elförbrukning över olika
 # tidsperioder (timme, dag, månad, år).
 # -----------------------------------------------------------------
-utility_meter:
-  diskmaskin_timme:
-    unique_id: diskmaskin_timme
-    source: sensor.diskmaskin_consumption
-    periodically_resetting: false
-    cycle: hourly
-  diskmaskin_dag:
-    unique_id: diskmaskin_dag
-    source: sensor.diskmaskin_consumption
-    periodically_resetting: false
-    cycle: daily
-  diskmaskin_manad:
-    unique_id: diskmaskin_manad
-    source: sensor.diskmaskin_consumption
-    periodically_resetting: false
-    cycle: monthly
-  diskmaskin_ar:
-    unique_id: diskmaskin_ar
-    source: sensor.diskmaskin_consumption
-    periodically_resetting: false
-    cycle: yearly
+#utility_meter:
+#  diskmaskin_timme:
+#    unique_id: diskmaskin_timme
+#    source: sensor.diskmaskin_consumption
+#    periodically_resetting: false
+#    cycle: hourly
+#  diskmaskin_dag:
+#    unique_id: diskmaskin_dag
+#    source: sensor.diskmaskin_consumption
+#    periodically_resetting: false
+#    cycle: daily
+#  diskmaskin_manad:
+#    unique_id: diskmaskin_manad
+#    source: sensor.diskmaskin_consumption
+#    periodically_resetting: false
+#    cycle: monthly
+#  diskmaskin_ar:
+#    unique_id: diskmaskin_ar
+#    source: sensor.diskmaskin_consumption
+#    periodically_resetting: false
+#    cycle: yearly
 
 # =================================================================
 # TEMPLATE-SENSORER

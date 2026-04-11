@@ -1,9 +1,10 @@
 # =================================================================
 # LOGIK FÖR FÖNSTERBELYSNING – KÖK
 # =================================================================
-# Styr fönsterlamporna i köket via två grupper:
+# Styr fönsterlamporna i köket via tre grupper:
 #  - Grundstyrning: tänd/släck vid mörker
 #  - Filmläge: tänd/släck vid mörker, men släck vid film
+#  - Sovdags: tänd/släck vid mörker, men släck vid sovdags
 #
 # OBS! Styrparametrar hanteras via UI (Helpers):
 #  - input_number.fonsterbelysning_light_level
@@ -11,6 +12,7 @@
 # OBS! Lampor styrs via Light Groups i UI:
 #  - light.kok_styrning_fonster
 #  - light.kok_styrning_fonster_film
+#  - light.kok_styrning_fonster_sovdags
 # -----------------------------------------------------------------
 
 
@@ -69,6 +71,15 @@ template:
           {{ is_state('binary_sensor.kok_fonster_lightlevel', 'on')
             and is_state('input_boolean.film_spelar', 'off') }}
 
+      # -------------------------------------------------------------
+      # Steg 2: Sovdags (mörker, men släck vid sovdags)
+      # -------------------------------------------------------------
+      - name: kok_fonster_automation_control_sovdags
+        unique_id: kok_fonster_automation_control_sovdags
+        state: >
+          {{ is_state('binary_sensor.kok_fonster_lightlevel', 'on')
+            and is_state('input_boolean.sovdags', 'off') }}
+
 
 # =================================================================
 # AUTOMATION
@@ -82,6 +93,7 @@ automation:
         entity_id:
           - binary_sensor.kok_fonster_automation_control
           - binary_sensor.kok_fonster_automation_control_film
+          - binary_sensor.kok_fonster_automation_control_sovdags
       - trigger: homeassistant
         event: start
 
@@ -99,3 +111,10 @@ automation:
       - action: "light.turn_{{ states('binary_sensor.kok_fonster_automation_control_film') }}"
         target:
           entity_id: light.kok_styrning_fonster_film
+
+      # -------------------------------------------------------------
+      # DEL C: Sovdags (mörker, men släck vid sovdags)
+      # -------------------------------------------------------------
+      - action: "light.turn_{{ states('binary_sensor.kok_fonster_automation_control_sovdags') }}"
+        target:
+          entity_id: light.kok_styrning_fonster_sovdags
