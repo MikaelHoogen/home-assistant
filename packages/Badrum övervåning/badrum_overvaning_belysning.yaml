@@ -1,4 +1,17 @@
 # =================================================================
+# LOGIK FÖR BADRUM ÖVERVÅNING – SPOTLIGHTS
+# =================================================================
+# Styr spotlightsen i badrummet på övervåningen via presence-sensorn.
+#
+# Styrd lampa:
+#  - light.badrum_overvaning_spotlights
+#
+# OBS! Styrparametrar hanteras via UI (Helpers):
+#  - input_number.badrum_overvaning_light_level
+# -----------------------------------------------------------------
+
+
+# =================================================================
 # ADAPTIVE LIGHTING-PROFIL
 # =================================================================
 adaptive_lighting:
@@ -9,7 +22,7 @@ adaptive_lighting:
     sleep_transition: 10
     initial_transition: 1
     interval: 90
-    min_brightness: 10
+    min_brightness: 1
     max_brightness: 100
     min_color_temp: 2000
     max_color_temp: 4000
@@ -19,3 +32,69 @@ adaptive_lighting:
     take_over_control: true
     detect_non_ha_changes: true
     adapt_only_on_bare_turn_on: true
+
+template:
+  - binary_sensor:
+      # =============================================================
+      # LJUSNIVÅ
+      # =============================================================
+      # on  = för ljust (tänd inte)
+      # off = mörkt nog (OK att tända)
+      #
+      # Spärrlogik så att lampan inte påverkar sin egen luxmätning
+      # och orsakar fladder direkt efter tändning.
+      # -------------------------------------------------------------
+      - name: badrum_overvaning_lightlevel
+        unique_id: badrum_overvaning_lightlevel
+        delay_on:
+          minutes: 5
+        state: >
+          {{
+            (
+              (states('sensor.badrum_overvaning_presence_sensor_illuminance') | float(9999))
+              > (states('input_number.badrum_overvaning_light_level') | float(0))
+              and is_state('light.badrum_overvaning_spotlights', 'off')
+            )
+            or
+            (
+              is_state('binary_sensor.badrum_overvaning_lightlevel', 'on')
+              and is_state('light.badrum_overvaning_spotlights', 'on')
+            )
+          }}
+
+      # =============================================================
+      # NÄRVARO
+      # =============================================================
+      # Occupancy används som huvudsignal, men PIR får vara med för
+      # att ge snabb direktrespons när någon kommer in.
+      # Ingen extra delay_off här, det sköts av sensorn själv.
+      # -------------------------------------------------------------
+      - name: badrum_overvaning_presence
+        unique_id: badrum_overvaning_presence
+        device_class: motion
+        state: >
+          {{ is_state('binary_sensor.badrum_overvaning_presence_sensor_presence', 'on')
+            or is_state('binary_sensor.badrum_overvaning_presence_sensor_pir_detection', 'on') }}
+
+      # =============================================================
+      # AUTOMATION CONTROL
+      # =============================================================
+      - name: badrum_overvaning_presence_light_automation_control
+        unique_id: badrum_overvaning_presence_light_automation_control
+        state: >
+          {{ is_state('binary_sensor.badrum_overvaning_presence', 'on')
+            and is_state('binary_sensor.badrum_overvaning_lightlevel', 'off') }}
+
+automation:
+  - alias: Badrum övervåning belysning
+    id: badrum_overvaning_belysning
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.badrum_overvaning_presence_light_automation_control
+      - trigger: homeassistant
+        event: start
+    actions:
+      - action: "light.turn_{{ states('binary_sensor.badrum_overvaning_presence_light_automation_control') }}"
+        target:
+          entity_id: light.badrum_overvaning_spotlights
