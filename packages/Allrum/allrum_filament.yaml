@@ -101,7 +101,7 @@ automation:
   # -----------------------------------------------------------------
   - alias: Allrum belysning
     id: allrum_belysning
-    mode: single
+    mode: queued
     triggers:
       - trigger: state
         entity_id:
