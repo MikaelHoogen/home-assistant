@@ -22,6 +22,8 @@ adaptive_lighting:
     sleep_transition: 10
     initial_transition: 1
     interval: 90
+    brightness_mode: tanh
+    brightness_mode_time_dark: 10000
     min_brightness: 1
     max_brightness: 100
     min_color_temp: 2000
@@ -76,25 +78,35 @@ template:
           {{ is_state('binary_sensor.badrum_overvaning_presence_sensor_presence', 'on')
             or is_state('binary_sensor.badrum_overvaning_presence_sensor_pir_detection', 'on') }}
 
-      # =============================================================
-      # AUTOMATION CONTROL
-      # =============================================================
-      - name: badrum_overvaning_presence_light_automation_control
-        unique_id: badrum_overvaning_presence_light_automation_control
-        state: >
-          {{ is_state('binary_sensor.badrum_overvaning_presence', 'on')
-            and is_state('binary_sensor.badrum_overvaning_lightlevel', 'off') }}
-
 automation:
   - alias: Badrum övervåning belysning
     id: badrum_overvaning_belysning
-    mode: single
+    mode: queued
     triggers:
       - trigger: state
-        entity_id: binary_sensor.badrum_overvaning_presence_light_automation_control
+        entity_id:
+          - binary_sensor.badrum_overvaning_presence
+          - binary_sensor.badrum_overvaning_lightlevel
       - trigger: homeassistant
         event: start
+
     actions:
-      - action: "light.turn_{{ states('binary_sensor.badrum_overvaning_presence_light_automation_control') }}"
-        target:
-          entity_id: light.badrum_overvaning_spotlights
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: binary_sensor.badrum_overvaning_presence
+                state: "on"
+              - condition: state
+                entity_id: binary_sensor.badrum_overvaning_lightlevel
+                state: "off"
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id: light.badrum_overvaning_spotlights
+        default:
+          - condition: state
+            entity_id: binary_sensor.badrum_overvaning_presence
+            state: "off"
+          - action: light.turn_off
+            target:
+              entity_id: light.badrum_overvaning_spotlights
