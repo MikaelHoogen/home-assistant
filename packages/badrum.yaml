@@ -14,9 +14,6 @@
 # =================================================================
 # ADAPTIVE LIGHTING-PROFIL
 # =================================================================
-# Justerar automatiskt färgtemperatur och ljusstyrka på lamporna
-# baserat på dygnsrytm (solens position).
-# -----------------------------------------------------------------
 adaptive_lighting:
   - name: Badrum
     lights:
@@ -46,8 +43,6 @@ template:
       # =============================================================
       # LJUSNIVÅ (INNE)
       # =============================================================
-      # Steg 1: Är det för ljust inne för att tända belysningen?
-      #
       # on  = för ljust (tänd inte)
       # off = mörkt nog (OK att tända)
       #
@@ -75,7 +70,7 @@ template:
       # =============================================================
       # NÄRVARO
       # =============================================================
-      # Steg 1: Närvaro med fördröjning (undviker "fladder")
+      # Närvaro med fördröjning (undviker "fladder")
       - name: badrum_presence
         unique_id: badrum_presence
         device_class: motion
@@ -83,16 +78,6 @@ template:
           minutes: 7
         state: >
           {{ is_state('binary_sensor.badrum_hue_motion_sensor_motion', 'on') }}
-
-      # =============================================================
-      # AUTOMATION CONTROL
-      # =============================================================
-      # Steg 2: Slutlig kontrollsensor som triggar automationen
-      - name: badrum_presence_light_automation_control
-        unique_id: badrum_presence_light_automation_control
-        state: >
-          {{ is_state('binary_sensor.badrum_presence', 'on')
-            and is_state('binary_sensor.badrum_lightlevel', 'off') }}
 
 
 # =================================================================
@@ -104,10 +89,32 @@ automation:
     mode: single
     triggers:
       - trigger: state
-        entity_id: binary_sensor.badrum_presence_light_automation_control
+        entity_id:
+          - binary_sensor.badrum_presence
+          - binary_sensor.badrum_lightlevel
       - trigger: homeassistant
         event: start
+
     actions:
-      - action: "light.turn_{{ states('binary_sensor.badrum_presence_light_automation_control') }}"
-        target:
-          entity_id: light.badrum_styrning
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: binary_sensor.badrum_presence
+                state: "on"
+              - condition: state
+                entity_id: binary_sensor.badrum_lightlevel
+                state: "off"
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id: light.badrum_styrning
+
+        default:
+          - condition: state
+            entity_id: binary_sensor.badrum_presence
+            state: "off"
+          - action: light.turn_off
+            target:
+              entity_id:
+                - light.badrum_styrning
+                - light.badrum_tak
