@@ -11,22 +11,22 @@
 # Dessa entiteter spårar torktumlarens elförbrukning över olika
 # tidsperioder (dag, månad, år).
 # -----------------------------------------------------------------
-utility_meter:
-  torktumlare_dag:
-    unique_id: torktumlare_dag
-    source: sensor.torktumlare_consumption
-    periodically_resetting: false
-    cycle: daily
-  torktumlare_manad:
-    unique_id: torktumlare_manad
-    source: sensor.torktumlare_consumption
-    periodically_resetting: false
-    cycle: monthly
-  torktumlare_ar:
-    unique_id: torktumlare_ar
-    source: sensor.torktumlare_consumption
-    periodically_resetting: false
-    cycle: yearly
+#utility_meter:
+#  torktumlare_dag:
+#    unique_id: torktumlare_dag
+#    source: sensor.torktumlare_consumption
+#    periodically_resetting: false
+#    cycle: daily
+#  torktumlare_manad:
+#    unique_id: torktumlare_manad
+#    source: sensor.torktumlare_consumption
+#    periodically_resetting: false
+#    cycle: monthly
+#  torktumlare_ar:
+#    unique_id: torktumlare_ar
+#    source: sensor.torktumlare_consumption
+#    periodically_resetting: false
+#    cycle: yearly
 
 # =================================================================
 # TEMPLATE-SENSORER
@@ -44,7 +44,7 @@ template:
         delay_off:
           minutes: 2
         state: >
-          {{ states('sensor.torktumlare_power') | float(0.0) > 1 }}
+          {{ states('sensor.torktumlare_power') | float(0.0) > 1.5 }}
 
 # =================================================================
 # AUTOMATIONER

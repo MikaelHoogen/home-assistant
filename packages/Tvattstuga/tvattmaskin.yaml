@@ -11,17 +11,17 @@
 # Dessa entiteter spårar tvättmaskinens elförbrukning över olika
 # tidsperioder (dag, månad, år).
 # -----------------------------------------------------------------
-utility_meter:
-  tvattmaskin_dag:
-    unique_id: tvattmaskin_dag
-    source: sensor.tvattmaskin_consumption
-    periodically_resetting: false
-    cycle: daily
-  tvattmaskin_manad:
-    unique_id: tvattmaskin_manad # Korrigerat från vattmaskin_manad
-    source: sensor.tvattmaskin_consumption
-    periodically_resetting: false
-    cycle: monthly
+#utility_meter:
+#  tvattmaskin_dag:
+#    unique_id: tvattmaskin_dag
+#    source: sensor.tvattmaskin_consumption
+#    periodically_resetting: false
+#    cycle: daily
+#  tvattmaskin_manad:
+#    unique_id: tvattmaskin_manad # Korrigerat från vattmaskin_manad
+#    source: sensor.tvattmaskin_consumption
+#    periodically_resetting: false
+#    cycle: monthly
 #  tvattmaskin_ar:
 #    source: sensor.tvattmaskin_consumption
 #    cycle: yearly
