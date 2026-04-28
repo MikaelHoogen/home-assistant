@@ -35,7 +35,7 @@ automation:
             sequence:
               # Steg 1: Vänta 10 sekunder.
               - delay:
-                  seconds: 10
+                  seconds: 1
               
               # Steg 2: Släck specificerade lampor i huset.
               - action: light.turn_off
@@ -46,14 +46,12 @@ automation:
                     - light.mikaels_rum_hue_play
                     - light.mikaels_rum_ljusslinga
                     - light.mikaels_rum_skrivbord
-                    # Gästrum
-                    - light.linas_skrivbord
                     # Barnrum
                     - light.barnrum_tak
               
               # Steg 3: Vänta 5 sekunder.
               - delay:
-                  seconds: 5
+                  seconds: 1
               
               # Steg 4: Aktivera "Sleep Mode" för de flesta Adaptive Lighting-profiler.
               - action: switch.turn_on
@@ -62,6 +60,7 @@ automation:
                     - switch.adaptive_lighting_sleep_mode_allrum
                     - switch.adaptive_lighting_sleep_mode_allrum_belysning_filament
                     - switch.adaptive_lighting_sleep_mode_badrum
+                    - switch.adaptive_lighting_sleep_mode_badrum_overvaning_spotlights
                     - switch.adaptive_lighting_sleep_mode_kok
                     - switch.adaptive_lighting_sleep_mode_kok_fonster
                     - switch.adaptive_lighting_sleep_mode_sovrum
@@ -69,11 +68,10 @@ automation:
                     - switch.adaptive_lighting_sleep_mode_vardagsrum_belysning_filament
                     - switch.adaptive_lighting_sleep_mode_vardagsrum_tak
                     - switch.adaptive_lighting_sleep_mode_hall
-                    - switch.adaptive_lighting_sleep_mode_barnrum
               
               # Steg 5: Vänta 5 sekunder.
               - delay:
-                  seconds: 5
+                  seconds: 1
               
               # Steg 6: Stäng av Adaptive Lighting helt i vissa rum.
               - action: switch.turn_off
@@ -81,18 +79,11 @@ automation:
                   entity_id:
                     - switch.adaptive_lighting_mikaels_rum
               
-              # Steg 7: Tänd en specifik lampa (troligen nattbelysning).
-              - action: light.turn_on
-                target:
-                  entity_id:
-                    - light.barnrum_fonster_1
-              
               # Steg 8: Inaktivera vissa belysningsautomationer under natten.
               - action: automation.turn_off
                 target:
                   entity_id:
                     - automation.barnrum_belysning
-                    - automation.barnrum_belysning_fonster
               
               - action: lock.lock
                 target:
@@ -113,6 +104,7 @@ automation:
                     - switch.adaptive_lighting_sleep_mode_allrum
                     - switch.adaptive_lighting_sleep_mode_allrum_belysning_filament
                     - switch.adaptive_lighting_sleep_mode_badrum
+                    - switch.adaptive_lighting_sleep_mode_badrum_overvaning_spotlights
                     - switch.adaptive_lighting_sleep_mode_kok
                     - switch.adaptive_lighting_sleep_mode_kok_fonster
                     - switch.adaptive_lighting_sleep_mode_sovrum
