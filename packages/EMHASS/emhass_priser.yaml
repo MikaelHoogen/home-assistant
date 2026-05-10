@@ -25,10 +25,22 @@ template:
 
           # KÖP (Tibber kvartar, 15-min) – rakt av
           köp: >
-            {% set t_today = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','today')    or [])
-                              | map(attribute='total') | map('float') | list %}
-            {% set t_tomor = (state_attr('sensor.electricity_price_sannesholma_2181_quarter_prices','tomorrow') or [])
-                              | map(attribute='total') | map('float') | list %}
+            {% set rows = state_attr('sensor.sannesholma_2181_diagramdataexport', 'data') or [] %}
+            {% set today = now().date() %}
+            {% set tomorrow = today + timedelta(days=1) %}
+
+            {% set t_today = rows
+              | selectattr('start_time', 'search', '^' ~ today|string)
+              | map(attribute='price_per_kwh')
+              | map('float')
+              | list %}
+
+            {% set t_tomor = rows
+              | selectattr('start_time', 'search', '^' ~ tomorrow|string)
+              | map(attribute='price_per_kwh')
+              | map('float')
+              | list %}
+
             {{ t_today + t_tomor }}
 
       # ------------------------------------------------------------
