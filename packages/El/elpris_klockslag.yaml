@@ -1,0 +1,98 @@
+###############################################################################
+# ELPRIS - KVARTSTABELL IDAG
+#
+# Skapar:
+#   sensor.elpris_idag_kvartstabell
+#
+# Sensorn har:
+#   state:
+#     Antal kvartsposter för idag, normalt 96.
+#
+#   attributes.rows:
+#     Lista med tabellrader för dashboard.
+#
+# Datakälla:
+#   sensor.sannesholma_2181_diagramdataexport
+#
+# Förväntat format på datakällan:
+#   attributes:
+#     data:
+#       - start_time: "2026-05-10T11:30:00+02:00"
+#         price_per_kwh: 0.3031
+#
+# Använder även:
+#   sensor.elpris
+#   sensor.avgift_elnat
+#   sensor.avgift_energiskatt
+#   sensor.elpris_natnytta
+#
+# Ny entity:
+#   sensor.elpris_idag_kvartstabell
+###############################################################################
+
+template:
+  - sensor:
+      - name: Elpris idag kvartstabell
+        unique_id: elpris_idag_kvartstabell
+        icon: mdi:table-clock
+
+        # Antal kvartsvärden för dagens datum.
+        state: >
+          {% set data = state_attr('sensor.sannesholma_2181_diagramdataexport', 'data') or [] %}
+          {% set dag = now().strftime('%Y-%m-%d') %}
+          {{ data | selectattr('start_time', 'search', dag) | list | count }}
+
+        attributes:
+          # Tabellrader för dashboard.
+          rows: >
+            {% set data = state_attr('sensor.sannesholma_2181_diagramdataexport', 'data') or [] %}
+            {% set spot = state_attr('sensor.elpris', 'today') or [] %}
+            {% set dag = now().strftime('%Y-%m-%d') %}
+
+            {% set elnat = states('sensor.avgift_elnat') | float(0) / 100 %}
+            {% set energiskatt = states('sensor.avgift_energiskatt') | float(0) / 100 %}
+            {% set natnytta = states('sensor.elpris_natnytta') | float(0) %}
+
+            {% set spot_mean = (spot | sum / spot | length) if spot | length > 0 else none %}
+            {% set spot_max = (spot | max) if spot | length > 0 else none %}
+
+            {% set ns = namespace(rows=[]) %}
+
+            {% for x in data if x.start_time[:10] == dag %}
+              {% set i = loop.index0 %}
+              {% set h = (i / 4) | int %}
+              {% set s = as_datetime(x.start_time) %}
+              {% set e = s + timedelta(minutes=15) %}
+              {% set tibber = x.price_per_kwh | float(0) %}
+
+              {% if spot | length == 96 %}
+                {% set pris = spot[i] | float(0) %}
+              {% elif spot | length == 24 %}
+                {% set pris = spot[h] | float(0) %}
+              {% else %}
+                {% set pris = none %}
+              {% endif %}
+
+              {% if pris is none %}
+                {% set kommentar = 'Pris saknas' %}
+              {% elif spot_max is not none and pris == spot_max %}
+                {% set kommentar = 'Högsta pris' %}
+              {% elif spot_mean is not none and pris < spot_mean %}
+                {% set kommentar = 'Under medel' %}
+              {% else %}
+                {% set kommentar = '' %}
+              {% endif %}
+
+              {% set ns.rows = ns.rows + [{
+                'index': i,
+                'quarter': 'q%02d' | format(i),
+                'timme': s.strftime('%H:%M') ~ ' - ' ~ e.strftime('%H:%M'),
+                'pris': (pris | round(3)) if pris is not none else none,
+                'tibber': tibber | round(3),
+                'köp': (tibber + elnat + energiskatt) | round(3),
+                'sälj': (pris + natnytta) | round(3) if pris is not none else none,
+                'kommentar': kommentar
+              }] %}
+            {% endfor %}
+
+            {{ ns.rows }}
