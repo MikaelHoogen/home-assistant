@@ -59,15 +59,37 @@ template:
       # =============================================================
       # NÄRVARO
       # =============================================================
-      # Kombinerar rörelse + dörrtrigger till en närvarosensor
+      # Faktisk närvaro i hallen.
+      # Används för att indikera om någon är i hallen.
+      # -------------------------------------------------------------
       - name: hall_presence
         unique_id: hall_presence
         device_class: motion
         delay_off:
-          minutes: 10
+          minutes: 2
         state: >
           {{ is_state('binary_sensor.hall_hue_motion_sensor_motion', 'on')
             or is_state('binary_sensor.hall_dorrtrigger', 'on') }}
+
+      # =============================================================
+      # BELYSNINGSNÄRVARO
+      # =============================================================
+      # Närvarosignal enbart för hallbelysningen.
+      #
+      # Hallbelysningen får hjälp av rå rörelse i kök/vardagsrum
+      # eftersom hallsensorn sitter dumt till, men den ärver inte
+      # kökets/vardagsrummets långa delay_off.
+      #
+      # OBS! Köksentrédörren ingår inte här. Den ska inte tända hallen.
+      # -------------------------------------------------------------
+      - name: hall_belysning_presence
+        unique_id: hall_belysning_presence
+        device_class: motion
+        delay_off:
+          minutes: 2
+        state: >
+          {{ is_state('binary_sensor.hall_presence', 'on')
+            or is_state('binary_sensor.kok_hue_motion_sensor_motion', 'on') }}
 
       # =============================================================
       # LJUSNIVÅ (INNE)
@@ -99,14 +121,13 @@ template:
       # =============================================================
       # AUTOMATION CONTROL
       # =============================================================
-      # Trigger när det finns närvaro i "huset" (hall/kök/vardagsrum)
-      # och det är mörkt nog i hallen.
+      # Slutlig kontrollsensor som triggar hallbelysningen.
+      #
+      # -------------------------------------------------------------
       - name: hall_presence_light_automation_control
         unique_id: hall_presence_light_automation_control
         state: >
-          {{ ( is_state('binary_sensor.vardagsrum_presence', 'on')
-              or is_state('binary_sensor.kok_presence', 'on')
-              or is_state('binary_sensor.hall_presence', 'on') )
+          {{ is_state('binary_sensor.hall_presence', 'on')
             and is_state('input_boolean.film_spelar', 'off')
             and is_state('binary_sensor.hall_lightlevel', 'off') }}
 
@@ -118,11 +139,14 @@ automation:
   - alias: Hall belysning
     id: hall_belysning
     mode: single
+
     triggers:
       - trigger: state
         entity_id: binary_sensor.hall_presence_light_automation_control
+
       - trigger: homeassistant
         event: start
+
     actions:
       - action: "light.turn_{{ states('binary_sensor.hall_presence_light_automation_control') }}"
         target:
