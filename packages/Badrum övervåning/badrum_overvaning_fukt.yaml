@@ -1,0 +1,20 @@
+# =================================================================
+# INTELLIVENT SKY – FUKTSTYRNING EFTER NÄRVARO
+# BADRUM ÖVERVÅNING
+# =================================================================
+automation:
+  - alias: Badrum övervåning Intellivent humidity detection
+    id: badrum_overvaning_intellivent_humidity_detection_presence
+    mode: restart
+
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.badrum_overvaning_presence
+
+    actions:
+      - action: select.select_option
+        target:
+          entity_id: select.badrum_uppe_intellivent_sky_humidity_detection
+        data:
+          option: >
+            {{ 'Off' if is_state('binary_sensor.badrum_overvaning_presence', 'on') else 'High' }}

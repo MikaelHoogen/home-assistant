@@ -1,0 +1,48 @@
+# =================================================================
+# BADRUM ÖVERVÅNING - FLÄKT PAUS
+# =================================================================
+# Använder befintlig timer:
+#   timer.badrum_overvaning_flakt_paus
+#
+# När timern startar:
+#   - stängs fläkten av
+#
+# När timern är klar:
+#   - startas fläkten igen
+# -----------------------------------------------------------------
+
+automation:
+  - alias: Badrum övervåning fläkt paus
+    id: badrum_overvaning_flakt_paus
+    mode: single
+
+    triggers:
+      - trigger: event
+        id: timer_startad
+        event_type: timer.started
+        event_data:
+          entity_id: timer.badrum_overvaning_flakt_paus
+
+      - trigger: event
+        id: timer_klar
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.badrum_overvaning_flakt_paus
+
+    actions:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: timer_startad
+            sequence:
+              - action: fan.turn_off
+                target:
+                  entity_id: fan.badrum_uppe_intellivent_sky_constant_speed
+
+          - conditions:
+              - condition: trigger
+                id: timer_klar
+            sequence:
+              - action: fan.turn_on
+                target:
+                  entity_id: fan.badrum_uppe_intellivent_sky_constant_speed
