@@ -81,32 +81,72 @@ template:
 automation:
   - alias: Badrum övervåning belysning
     id: badrum_overvaning_belysning
-    mode: queued
+    mode: restart
+
     triggers:
       - trigger: state
         entity_id:
           - binary_sensor.badrum_overvaning_presence
           - binary_sensor.badrum_overvaning_lightlevel
+
       - trigger: homeassistant
         event: start
 
     actions:
       - choose:
+          # =========================================================
+          # TÄND VID NÄRVARO OCH MÖRKT NOG
+          # =========================================================
           - conditions:
               - condition: state
                 entity_id: binary_sensor.badrum_overvaning_presence
                 state: "on"
+
               - condition: state
                 entity_id: binary_sensor.badrum_overvaning_lightlevel
                 state: "off"
+
             sequence:
-              - action: light.turn_on
-                target:
-                  entity_id: light.badrum_overvaning_spotlights
+              - choose:
+                  # -------------------------------------------------
+                  # Sovdags: använd HA-scen och hindra Adaptive Lighting
+                  # från att direkt skriva över scenen.
+                  # -------------------------------------------------
+                  - conditions:
+                      - condition: state
+                        entity_id: input_boolean.sovdags
+                        state: "on"
+
+                    sequence:
+                      - action: adaptive_lighting.set_manual_control
+                        data:
+                          manual_control: true
+                          lights:
+                            - light.badrum_overvaning_spotlights
+
+                      - action: scene.turn_on
+                        target:
+                          entity_id: scene.badrum_overvaning_nattlampa_2
+                        data:
+                          transition: 3
+
+                # ---------------------------------------------------
+                # Normalt läge: bare light.turn_on, så Adaptive Lighting
+                # får adaptera som vanligt.
+                # ---------------------------------------------------
+                default:
+                  - action: light.turn_on
+                    target:
+                      entity_id: light.badrum_overvaning_spotlights
+
+        # ===========================================================
+        # SLÄCK NÄR INGEN ÄR KVAR
+        # ===========================================================
         default:
           - condition: state
             entity_id: binary_sensor.badrum_overvaning_presence
             state: "off"
+
           - action: light.turn_off
             target:
               entity_id: light.badrum_overvaning_spotlights
