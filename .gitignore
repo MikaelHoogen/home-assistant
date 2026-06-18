@@ -9,7 +9,13 @@
 !.gitignore
 !*.md
 !/packages*
-
+!/packages/**
+# AppDaemon Hydromet
+!/appdaemon/
+!/appdaemon/apps/
+!/appdaemon/apps/hydromet/
+!/appdaemon/apps/hydromet/*.py
+/appdaemon/apps/hydromet/*.yaml
 ## Below ignores are for safety
 # Generic ignores
 *.pid
@@ -67,3 +73,4 @@ nest.conf
 ipchange.yaml
 ip_bans.yaml
 production_auth.json
+packages/Arkiv/*
