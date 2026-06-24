@@ -15,7 +15,15 @@ template:
         state: >
           {{ is_state('binary_sensor.carport_person', 'on')
             or is_state('binary_sensor.carport_vehicle', 'on') }}
-
+#
+      - name: carport_presence_person
+        unique_id: carport_presence_person
+        device_class: motion
+        delay_off:
+          minutes: 3
+        state: >
+          {{ is_state('binary_sensor.carport_person', 'on') }}
+#
       - name: entre_presence_animal
         unique_id: entre_presence_animal
         device_class: motion

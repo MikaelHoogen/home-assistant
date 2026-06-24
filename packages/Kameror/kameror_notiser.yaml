@@ -31,7 +31,8 @@ automation:
     triggers:
       - trigger: state
         entity_id: binary_sensor.carport_presence_person
-        to: 'on'
+        to: "on"
+
     actions:
       - delay: 1
       - action: camera.snapshot
@@ -42,21 +43,27 @@ automation:
       - delay: 1
       - action: notify.mobile_app_mikael_iphone
         data:
-          message: Någon rör sig
           title: Rörelse person
+          message: Någon rör sig
           data:
             image: /media/local/notify.jpg
             url: /lovelace/cam
-            push:
-              sound:
-                name: "default"
-                critical: 1
-                volume: 1.0
-            
+            push: >
+              {{
+                {} if is_state('timer.carport_rorelse_person_notifiering_kritisk', 'active')
+                else {
+                  "sound": {
+                    "name": "default",
+                    "critical": 1,
+                    "volume": 1.0
+                  }
+                }
+              }}
+
       - action: notify.mobile_app_lina_iphone
         data:
-          message: Någon rör sig
           title: Rörelse person
+          message: Någon rör sig
           data:
             image: /media/local/notify.jpg
 
@@ -128,7 +135,7 @@ automation:
         entity_id: binary_sensor.carport_vehicle
         to: 'on'
     actions:
-      - delay: 2
+      - delay: 1
       - action: camera.snapshot
         target:
           entity_id: camera.carport_main
@@ -150,7 +157,7 @@ automation:
           data:
             image: /media/local/notify_car.jpg
       - delay:
-          minutes: 5
+          minutes: 2
 
   # --- Rörelse vid kattkamera ---
   - alias: Kattkamera rörelse notifiering
