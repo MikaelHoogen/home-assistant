@@ -1,0 +1,34 @@
+template:
+  - triggers:
+      - trigger: time_pattern
+        minutes: "/5"
+
+    actions:
+      - action: ipmi.send_command
+        data:
+          server: 7886b5d2be08eb6409e37ce188441b5a
+          command: "-I lanplus -H $host$ -U $username$ -P $password$ raw 0x30 0x45 0x00"
+        response_variable: fanmode_response
+
+    sensor:
+      - name: Superserver fan mode
+        unique_id: superserver_fan_mode
+        icon: mdi:fan
+        state: >
+          {% set raw = fanmode_response.message | default('') | trim %}
+          {% if raw == '00' %}
+            Standard
+          {% elif raw == '01' %}
+            Full
+          {% elif raw == '02' %}
+            Optimal
+          {% elif raw == '04' %}
+            Heavy I/O
+          {% else %}
+            Unknown
+          {% endif %}
+        attributes:
+          raw_code: >
+            {{ fanmode_response.message | default('') | trim }}
+          last_polled: >
+            {{ now().isoformat() }}
