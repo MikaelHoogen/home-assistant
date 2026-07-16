@@ -26,4 +26,3 @@ ethernet:
   miso_pin: GPIO14
   mosi_pin: GPIO13
   type: W5500
-s
