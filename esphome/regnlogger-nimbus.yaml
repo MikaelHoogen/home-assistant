@@ -10,10 +10,10 @@
 #
 # Installation:
 #   rain_1 -> DI1 / IN1
-#tr
+#
 # Hårdvarumappning:
 #   DI1 -> GPIO4
-h
+
 substitutions:
   site_id: sannesholma
   logger_id: nimbus
