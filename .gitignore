@@ -16,6 +16,12 @@
 !/appdaemon/apps/hydromet/
 !/appdaemon/apps/hydromet/*.py
 /appdaemon/apps/hydromet/*.yaml
+
+# ESPHome – versionshantera endast Nimbus-konfigurationen
+!/esphome/
+/esphome/**
+!/esphome/regnlogger-nimbus.yaml
+
 ## Below ignores are for safety
 # Generic ignores
 *.pid
