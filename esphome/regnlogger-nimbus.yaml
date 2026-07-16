@@ -1,29 +1,543 @@
-# Board: WAVESHARE ESP32-S3-ETH-8DI-8DO
-# Definition: definitions/boards/waveshare_esp32_s3_eth_8di_8do/manifest.yaml
+# Board: WAVESHARE ESP32-S3-POE-ETH-8DI-8DO
+# Definition:
+# definitions/boards/waveshare_esp32_s3_eth_8di_8do/manifest.yaml
+#
+# RainLens/Hydromet:
+#   site_id: sannesholma
+#   logger_id: nimbus
+#   channel_id: rain_1
+#   sensor_id: tb4_0p2
+#
+# Installation:
+#   rain_1 -> DI1 / IN1
+#
+# Hårdvarumappning:
+#   DI1 -> GPIO4
+
+substitutions:
+  site_id: sannesholma
+  logger_id: nimbus
+  channel_id: rain_1
+
+  sensor_id: tb4_0p2
+  sensor_type: tipping_bucket
+
+  physical_input: DI1
+  hardware_model: waveshare_esp32_s3_poe_eth_8di_8do
+
+  mm_per_tip: "0.2"
+  debounce_ms: "250"
+
+  # Waveshares optokopplade ingång antas vara aktiv låg.
+  # Verifieras vid första inkoppling av DI1.
+  input_inverted: "true"
+
+  firmware_version: rainlens-level1-0.1.0
+  mqtt_root: regnlogger
+
 
 esphome:
   name: regnlogger-nimbus
-  friendly_name: Regnlogger_nimbus
+  friendly_name: Regnlogger Nimbus
+  comment: RainLens Nivå 1-regnlogger för Sännesholma
+
+  project:
+    name: rainlens.level1_rain_logger
+    version: ${firmware_version}
+
+  on_boot:
+    - priority: -100
+      then:
+        - lambda: |-
+            id(boot_count) += 1;
+            id(input_armed) = false;
+
+        # Förhindrar att ingångens initiala tillstånd räknas som en puls.
+        - delay: 2s
+
+        - lambda: |-
+            id(input_armed) = true;
+            ESP_LOGI(
+              "rainlens",
+              "${physical_input} är aktiverad för pulsräkning"
+            );
+
 
 esp32:
   variant: esp32s3
   framework:
     type: esp-idf
 
-logger:
 
+logger:
+  level: INFO
+
+
+# API används för administration, OTA och eventuell visning i Home Assistant.
+# Loggerns datatransport och återhämtning bygger däremot på MQTT.
 api:
+  reboot_timeout: 0s
+
   encryption:
     key: !secret regnlogger_nimbus_api_encryption_key
+
 
 ota:
   - platform: esphome
 
+
+# Persistent lagring samlas i RAM och skrivs högst ungefär en gång per minut.
+preferences:
+  flash_write_interval: 1min
+
+
 ethernet:
+  type: W5500
+
   clk_pin: GPIO15
   cs_pin: GPIO16
   interrupt_pin: GPIO12
   miso_pin: GPIO14
   mosi_pin: GPIO13
-  type: W5500
-s
+
+  # W5500 reset enligt Waveshares hårdvarumappning.
+  reset_pin: GPIO39
+
+
+mqtt:
+  id: mqtt_client
+
+  broker: !secret mqtt_broker
+  port: 1883
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+
+  client_id: regnlogger-nimbus
+
+  # MQTT-bortfall får inte starta om loggern.
+  # Loggern ska fortsätta räkna lokalt.
+  reboot_timeout: 0s
+
+  # Undvik att MQTT-publicering blockerar loggerns huvudloop.
+  idf_send_async: true
+
+  # Endast uttryckligen definierade RainLens-topics ska publiceras.
+  topic_prefix: null
+  log_topic: null
+
+  discovery: false
+  discover_ip: false
+
+  birth_message:
+    topic: ${mqtt_root}/${site_id}/${logger_id}/status
+    payload: online
+    qos: 1
+    retain: true
+
+  will_message:
+    topic: ${mqtt_root}/${site_id}/${logger_id}/status
+    payload: offline
+    qos: 1
+    retain: true
+
+  shutdown_message:
+    topic: ${mqtt_root}/${site_id}/${logger_id}/status
+    payload: offline
+    qos: 1
+    retain: true
+
+  on_connect:
+    - delay: 1s
+    - script.execute: publish_channel_state
+    - script.execute: publish_heartbeat
+
+
+time:
+  - platform: sntp
+    id: network_time
+    timezone: Europe/Stockholm
+
+    on_time_sync:
+      - script.execute: publish_channel_state
+      - script.execute: publish_heartbeat
+
+
+globals:
+  # Alla registrerade aktiveringar av DI1, även sådana som senare filtreras.
+  - id: raw_pulse_total
+    type: uint64_t
+    restore_value: true
+    update_interval: 1min
+    initial_value: "0"
+
+  # Accepterade regnpulser. Detta är loggerns primära lokala räknare.
+  - id: pulse_total
+    type: uint64_t
+    restore_value: true
+    update_interval: 1min
+    initial_value: "0"
+
+  # Aktiveringar som avvisats av debounce-filtret.
+  - id: ignored_pulse_total
+    type: uint64_t
+    restore_value: true
+    update_interval: 1min
+    initial_value: "0"
+
+  # Antal registrerade starter av loggern.
+  - id: boot_count
+    type: uint32_t
+    restore_value: true
+    update_interval: 1min
+    initial_value: "0"
+
+  # Monoton tid för senast registrerade råflank.
+  - id: last_raw_edge_uptime_ms
+    type: uint64_t
+    restore_value: false
+    initial_value: "0"
+
+  # Monoton tid för senast accepterade puls.
+  - id: last_tip_uptime_ms
+    type: uint64_t
+    restore_value: false
+    initial_value: "0"
+
+  # UTC-tid för senast accepterade puls, när giltig tid fanns.
+  - id: last_tip_epoch_s
+    type: int64_t
+    restore_value: true
+    update_interval: 1min
+    initial_value: "0"
+
+  # Tid mellan de två senaste accepterade pulserna.
+  - id: last_tip_interval_ms
+    type: uint64_t
+    restore_value: false
+    initial_value: "0"
+
+  # Resultat från senaste behandlade flank.
+  - id: edge_accepted
+    type: bool
+    restore_value: false
+    initial_value: "false"
+
+  # Blockerar falska pulser medan ingången initieras.
+  - id: input_armed
+    type: bool
+    restore_value: false
+    initial_value: "false"
+
+
+binary_sensor:
+  # Installationens logiska kanal:
+  # rain_1 -> DI1 / IN1 -> GPIO4
+  - platform: gpio
+    id: rain_input_di1
+    name: Regnlogger Nimbus DI1
+    internal: true
+
+    pin:
+      number: GPIO4
+      mode:
+        input: true
+      inverted: ${input_inverted}
+
+    on_press:
+      - script.execute: process_rain_edge
+
+  - platform: status
+    name: Regnlogger Nimbus online
+    entity_category: diagnostic
+
+
+script:
+  # ------------------------------------------------------------
+  # Behandla fysisk ingångsflank
+  # ------------------------------------------------------------
+
+  - id: process_rain_edge
+    mode: queued
+    max_runs: 20
+
+    then:
+      - lambda: |-
+          id(edge_accepted) = false;
+
+          if (!id(input_armed)) {
+            ESP_LOGW(
+              "rainlens",
+              "Ignorerar ingångsändring innan ${physical_input} är aktiverad"
+            );
+            return;
+          }
+
+          const uint64_t now_ms =
+              static_cast<uint64_t>(esp_timer_get_time() / 1000ULL);
+
+          const uint64_t previous_raw_ms =
+              id(last_raw_edge_uptime_ms);
+
+          id(raw_pulse_total) += 1;
+          id(last_raw_edge_uptime_ms) = now_ms;
+
+          // Eget debounce-filter.
+          if (
+            previous_raw_ms != 0 &&
+            (now_ms - previous_raw_ms) < ${debounce_ms}
+          ) {
+            id(ignored_pulse_total) += 1;
+
+            ESP_LOGW(
+              "rainlens",
+              "Filtrerad puls på ${physical_input}: %llu ms "
+              "sedan föregående flank",
+              static_cast<unsigned long long>(
+                now_ms - previous_raw_ms
+              )
+            );
+
+            return;
+          }
+
+          const uint64_t previous_tip_ms =
+              id(last_tip_uptime_ms);
+
+          id(last_tip_interval_ms) =
+              previous_tip_ms == 0
+                ? 0
+                : now_ms - previous_tip_ms;
+
+          id(last_tip_uptime_ms) = now_ms;
+          id(pulse_total) += 1;
+
+          const auto now = id(network_time).now();
+
+          if (now.is_valid()) {
+            id(last_tip_epoch_s) = now.timestamp;
+          } else {
+            id(last_tip_epoch_s) = 0;
+          }
+
+          id(edge_accepted) = true;
+
+          ESP_LOGI(
+            "rainlens",
+            "Accepterad regnpuls: pulse_total=%llu, "
+            "raw_pulse_total=%llu, ignored_pulse_total=%llu",
+            static_cast<unsigned long long>(id(pulse_total)),
+            static_cast<unsigned long long>(id(raw_pulse_total)),
+            static_cast<unsigned long long>(id(ignored_pulse_total))
+          );
+
+      - if:
+          condition:
+            lambda: return id(edge_accepted);
+
+          then:
+            # State publiceras först så att retained-läget uppdateras
+            # även om live-eventet senare skulle missas.
+            - script.execute: publish_channel_state
+            - script.execute: publish_tip_event
+
+
+  # ------------------------------------------------------------
+  # Retained channel state
+  # ------------------------------------------------------------
+
+  - id: publish_channel_state
+    mode: queued
+    max_runs: 5
+
+    then:
+      - if:
+          condition:
+            mqtt.connected:
+
+          then:
+            - mqtt.publish_json:
+                topic: >-
+                  ${mqtt_root}/${site_id}/${logger_id}/${channel_id}/state
+                qos: 1
+                retain: true
+
+                payload: |-
+                  const uint64_t uptime_ms =
+                      static_cast<uint64_t>(
+                        esp_timer_get_time() / 1000ULL
+                      );
+
+                  const auto now = id(network_time).now();
+
+                  root["schema"] =
+                      "rainlens.logger.channel_state.v1";
+
+                  root["site_id"] = "${site_id}";
+                  root["logger_id"] = "${logger_id}";
+                  root["channel_id"] = "${channel_id}";
+
+                  root["sensor_id"] = "${sensor_id}";
+                  root["sensor_type"] = "${sensor_type}";
+                  root["mm_per_tip"] = ${mm_per_tip};
+
+                  root["pulse_total"] = id(pulse_total);
+                  root["raw_pulse_total"] =
+                      id(raw_pulse_total);
+                  root["ignored_pulse_total"] =
+                      id(ignored_pulse_total);
+
+                  root["rain_total_mm"] =
+                      static_cast<double>(id(pulse_total))
+                      * ${mm_per_tip};
+
+                  root["last_tip_uptime_ms"] =
+                      id(last_tip_uptime_ms);
+
+                  if (id(last_tip_epoch_s) > 0) {
+                    root["last_tip_epoch_s"] =
+                        id(last_tip_epoch_s);
+                  }
+
+                  root["time_valid"] = now.is_valid();
+                  root["uptime_ms"] = uptime_ms;
+                  root["boot_count"] = id(boot_count);
+                  root["firmware"] = "${firmware_version}";
+
+                  root["faults"].to<JsonArray>();
+
+
+  # ------------------------------------------------------------
+  # Live tip-event
+  # ------------------------------------------------------------
+
+  - id: publish_tip_event
+    mode: queued
+    max_runs: 20
+
+    then:
+      - if:
+          condition:
+            mqtt.connected:
+
+          then:
+            - mqtt.publish_json:
+                topic: >-
+                  ${mqtt_root}/${site_id}/${logger_id}/${channel_id}/tip
+                qos: 1
+                retain: false
+
+                payload: |-
+                  const bool tip_time_valid =
+                      id(last_tip_epoch_s) > 0;
+
+                  root["schema"] =
+                      "rainlens.logger.tip_event.v1";
+
+                  root["site_id"] = "${site_id}";
+                  root["logger_id"] = "${logger_id}";
+                  root["channel_id"] = "${channel_id}";
+
+                  root["sensor_id"] = "${sensor_id}";
+                  root["sensor_type"] = "${sensor_type}";
+
+                  root["event"] = "rain_tip";
+                  root["mm"] = ${mm_per_tip};
+
+                  root["pulse_total"] = id(pulse_total);
+                  root["raw_pulse_total"] =
+                      id(raw_pulse_total);
+                  root["ignored_pulse_total"] =
+                      id(ignored_pulse_total);
+
+                  root["interval_ms"] =
+                      id(last_tip_interval_ms);
+
+                  root["uptime_ms"] =
+                      id(last_tip_uptime_ms);
+
+                  root["time_valid"] =
+                      tip_time_valid;
+
+                  if (tip_time_valid) {
+                    root["epoch_s"] =
+                        id(last_tip_epoch_s);
+                  }
+
+
+  # ------------------------------------------------------------
+  # Logger heartbeat
+  # ------------------------------------------------------------
+
+  - id: publish_heartbeat
+    mode: queued
+    max_runs: 5
+
+    then:
+      - if:
+          condition:
+            mqtt.connected:
+
+          then:
+            - mqtt.publish_json:
+                topic: >-
+                  ${mqtt_root}/${site_id}/${logger_id}/heartbeat
+                qos: 1
+                retain: false
+
+                payload: |-
+                  const uint64_t uptime_ms =
+                      static_cast<uint64_t>(
+                        esp_timer_get_time() / 1000ULL
+                      );
+
+                  const auto now = id(network_time).now();
+
+                  root["schema"] =
+                      "rainlens.logger.heartbeat.v1";
+
+                  root["site_id"] = "${site_id}";
+                  root["logger_id"] = "${logger_id}";
+
+                  root["status"] = "online";
+                  root["uptime_ms"] = uptime_ms;
+                  root["boot_count"] = id(boot_count);
+                  root["time_valid"] = now.is_valid();
+
+                  root["network"] = "ethernet";
+                  root["hardware_model"] =
+                      "${hardware_model}";
+                  root["firmware"] =
+                      "${firmware_version}";
+
+                  JsonObject channels =
+                      root["channels"].to<JsonObject>();
+
+                  JsonObject channel =
+                      channels["${channel_id}"].to<JsonObject>();
+
+                  channel["sensor_id"] = "${sensor_id}";
+                  channel["pulse_total"] =
+                      id(pulse_total);
+                  channel["raw_pulse_total"] =
+                      id(raw_pulse_total);
+                  channel["ignored_pulse_total"] =
+                      id(ignored_pulse_total);
+                  channel["last_tip_uptime_ms"] =
+                      id(last_tip_uptime_ms);
+
+                  if (id(last_tip_epoch_s) > 0) {
+                    channel["last_tip_epoch_s"] =
+                        id(last_tip_epoch_s);
+                  }
+
+                  root["faults"].to<JsonArray>();
+
+
+# Retained state och heartbeat publiceras regelbundet även när det inte regnar.
+interval:
+  - interval: 60s
+    startup_delay: 30s
+
+    then:
+      - script.execute: publish_channel_state
+      - script.execute: publish_heartbeat
