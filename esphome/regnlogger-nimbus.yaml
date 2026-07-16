@@ -13,7 +13,7 @@
 #
 # Hårdvarumappning:
 #   DI1 -> GPIO4
-ö
+
 substitutions:
   site_id: sannesholma
   logger_id: nimbus
