@@ -9,10 +9,19 @@
 #   sensor_id: tb4_0p2
 #
 # Installation:
-#   rain_1 -> DI1 / IN1
+#   KISTERS TB4 potentialfri kontakt
+#   TB4 ledare 1 -> DI1 / IN1
+#   TB4 ledare 2 -> GND under Digital Inputs (= DGND i dokumentationen)
+#   COM/DICOM används inte för TB4
+#   ESP32-GND används inte för TB4
 #
 # Hårdvarumappning:
-#   DI1 -> GPIO4
+#   DI1 -> isolerad ingång -> GPIO4
+#
+# Den kritiska observationskedjan är lokal:
+#   fysisk ingång -> debounce -> lokala räknare -> MQTT state/event
+#
+# Home Assistant-entiteterna nedan är endast skrivskyddad diagnostik.
 
 substitutions:
   site_id: sannesholma
@@ -23,12 +32,15 @@ substitutions:
   sensor_type: tipping_bucket
 
   physical_input: DI1
+  field_return: DGND
   hardware_model: waveshare_esp32_s3_poe_eth_8di_8do
 
   mm_per_tip: "0.2"
   debounce_ms: "250"
 
-  # Waveshares optokopplade ingång är aktiv låg mot ESP32.
+  # Waveshares isolerade DI-ingång presenteras aktiv låg mot ESP32-sidan.
+  # Målkonfigurationen är därför INPUT_PULLUP + inverted.
+  # Polaritet och funktion ska verifieras enligt Nimbus DI1-runbooken.
   input_inverted: "true"
 
   firmware_version: rainlens-level1-0.1.1
@@ -51,12 +63,11 @@ esphome:
             id(boot_count) += 1;
             id(input_armed) = false;
 
-        # Förhindrar att ingångens initiala tillstånd räknas som puls.
+        # Förhindrar att ingångens initiala tillstånd räknas som en puls.
         - delay: 2s
 
         - lambda: |-
             id(input_armed) = true;
-
             ESP_LOGI(
               "rainlens",
               "${physical_input} är aktiverad för pulsräkning"
@@ -65,7 +76,6 @@ esphome:
 
 esp32:
   variant: esp32s3
-
   framework:
     type: esp-idf
 
@@ -74,8 +84,8 @@ logger:
   level: INFO
 
 
-# Native API används endast för administration och skrivskyddad diagnostik.
-# Loggerns Nivå 1-funktion får inte vara beroende av Home Assistant.
+# API används för administration, OTA och skrivskyddad diagnostik i Home Assistant.
+# Loggerns datatransport och återhämtning bygger däremot på MQTT.
 api:
   reboot_timeout: 0s
 
@@ -87,7 +97,7 @@ ota:
   - platform: esphome
 
 
-# Persistent lagring kontrolleras en gång per minut.
+# Persistent lagring samlas i RAM och skrivs högst ungefär en gång per minut.
 preferences:
   flash_write_interval: 1min
 
@@ -101,6 +111,7 @@ ethernet:
   miso_pin: GPIO14
   mosi_pin: GPIO13
 
+  # W5500 reset enligt Waveshares hårdvarumappning.
   reset_pin: GPIO39
 
 
@@ -115,13 +126,13 @@ mqtt:
   client_id: regnlogger-nimbus
 
   # MQTT-bortfall får inte starta om loggern.
-  # Lokal pulsräkning ska fortsätta.
+  # Loggern ska fortsätta räkna lokalt.
   reboot_timeout: 0s
 
-  # Undvik att MQTT-publicering blockerar huvudloopen under ESP-IDF.
+  # Undvik att MQTT-publicering blockerar loggerns huvudloop.
   idf_send_async: true
 
-  # Endast uttryckligen definierade RainLens-topics används.
+  # Endast uttryckligen definierade RainLens-topics ska publiceras.
   topic_prefix: null
   log_topic: null
 
@@ -163,16 +174,14 @@ time:
 
 
 globals:
-  # Alla registrerade aktiveringar av DI1,
-  # även sådana som senare filtreras.
+  # Alla registrerade aktiveringar av DI1, även sådana som senare filtreras.
   - id: raw_pulse_total
     type: uint64_t
     restore_value: true
     update_interval: 1min
     initial_value: "0"
 
-  # Accepterade regnpulser.
-  # Detta är loggerns primära lokala räknare.
+  # Accepterade regnpulser. Detta är loggerns primära lokala räknare.
   - id: pulse_total
     type: uint64_t
     restore_value: true
@@ -205,8 +214,7 @@ globals:
     restore_value: false
     initial_value: "0"
 
-  # UTC-tid för senast accepterade puls,
-  # när giltig tid fanns.
+  # UTC-tid för senast accepterade puls, när giltig tid fanns.
   - id: last_tip_epoch_s
     type: int64_t
     restore_value: true
@@ -219,13 +227,13 @@ globals:
     restore_value: false
     initial_value: "0"
 
-  # Resultat från senast behandlade flank.
+  # Resultat från senaste behandlade flank.
   - id: edge_accepted
     type: bool
     restore_value: false
     initial_value: "false"
 
-  # Blockerar falska pulser under initiering.
+  # Blockerar falska pulser medan ingången initieras.
   - id: input_armed
     type: bool
     restore_value: false
@@ -233,191 +241,156 @@ globals:
 
 
 binary_sensor:
-  # ------------------------------------------------------------
-  # Kritisk fysisk ingång
-  # ------------------------------------------------------------
-
-  # Denna komponent äger ingångsläsningen och pulstriggern.
-  # Den är intern och exponeras inte direkt till HA.
+  # Kritisk fysisk ingång:
+  # KISTERS TB4 -> DI1 + fysisk GND-plint under Digital Inputs
+  #              (= DGND i dokumentationen)
+  # DI1 -> isolerad ingång -> GPIO4
   - platform: gpio
     id: rain_input_di1
     internal: true
 
     pin:
       number: GPIO4
-
       mode:
         input: true
-
+        pullup: true
       inverted: ${input_inverted}
 
     on_press:
       - script.execute: process_rain_edge
 
-
   # ------------------------------------------------------------
-  # Skrivskyddad Home Assistant-diagnostik
+  # Skrivskyddad diagnostik till Home Assistant
   # ------------------------------------------------------------
 
-  - platform: status
-    name: Online
-    entity_category: diagnostic
-    device_class: connectivity
-
-
-  # Speglar den interna DI1-komponentens aktuella tillstånd.
-  # Den deltar inte i pulsräkningen.
   - platform: template
-    name: DI1 aktiv
+    name: Regnlogger Nimbus DI1 aktiv
     entity_category: diagnostic
-
+    icon: mdi:electric-switch
     lambda: |-
       return id(rain_input_di1).state;
 
+  - platform: status
+    name: Regnlogger Nimbus online
+    entity_category: diagnostic
 
   - platform: template
-    name: MQTT ansluten
-    entity_category: diagnostic
+    name: Regnlogger Nimbus MQTT ansluten
     device_class: connectivity
-
+    entity_category: diagnostic
     lambda: |-
       return id(mqtt_client)->is_connected();
 
-
   - platform: template
-    name: Tid giltig
+    name: Regnlogger Nimbus tid giltig
     entity_category: diagnostic
-    device_class: connectivity
-
+    icon: mdi:clock-check-outline
     lambda: |-
       return id(network_time).now().is_valid();
 
 
 sensor:
-  # ------------------------------------------------------------
-  # Skrivskyddad Home Assistant-diagnostik
-  # ------------------------------------------------------------
+  # Diagnostikentiteterna speglar bara loggerns befintliga lokala värden.
+  # De äger, återställer eller korrigerar aldrig observationsräknarna.
+
+  - platform: uptime
+    name: Regnlogger Nimbus uptime
+    type: seconds
+    update_interval: 30s
+    entity_category: diagnostic
 
   - platform: template
-    name: Accepterade pulser
-    entity_category: diagnostic
+    name: Regnlogger Nimbus accepterade pulser
     icon: mdi:counter
     accuracy_decimals: 0
-    update_interval: 10s
-
+    update_interval: 30s
+    entity_category: diagnostic
     lambda: |-
       return static_cast<double>(id(pulse_total));
 
-
   - platform: template
-    name: Registrerade råpulser
-    entity_category: diagnostic
+    name: Regnlogger Nimbus råpulser
     icon: mdi:pulse
     accuracy_decimals: 0
-    update_interval: 10s
-
+    update_interval: 30s
+    entity_category: diagnostic
     lambda: |-
       return static_cast<double>(id(raw_pulse_total));
 
-
   - platform: template
-    name: Filtrerade pulser
-    entity_category: diagnostic
-    icon: mdi:filter-outline
+    name: Regnlogger Nimbus filtrerade pulser
+    icon: mdi:filter-minus-outline
     accuracy_decimals: 0
-    update_interval: 10s
-
+    update_interval: 30s
+    entity_category: diagnostic
     lambda: |-
       return static_cast<double>(id(ignored_pulse_total));
 
-
   - platform: template
-    name: Lokal regnmängd
-    entity_category: diagnostic
-    icon: mdi:weather-rainy
+    name: Regnlogger Nimbus lokal regnmängd
+    icon: mdi:weather-pouring
     unit_of_measurement: mm
     accuracy_decimals: 1
-    update_interval: 10s
-
+    update_interval: 30s
+    entity_category: diagnostic
     lambda: |-
-      return static_cast<double>(id(pulse_total))
-          * ${mm_per_tip};
-
+      return static_cast<double>(id(pulse_total)) * ${mm_per_tip};
 
   - platform: template
-    name: Boot count
-    entity_category: diagnostic
+    name: Regnlogger Nimbus boot count
     icon: mdi:restart
     accuracy_decimals: 0
     update_interval: 30s
-
+    entity_category: diagnostic
     lambda: |-
       return static_cast<double>(id(boot_count));
 
-
-  - platform: uptime
-    name: Uptime
-    type: seconds
-    entity_category: diagnostic
-    icon: mdi:timer-outline
-    update_interval: 30s
-
-
   - platform: template
-    name: Senaste pulsintervall
+    name: Regnlogger Nimbus senaste pulsintervall
+    icon: mdi:timer-outline
+    unit_of_measurement: ms
+    accuracy_decimals: 0
+    update_interval: 30s
     entity_category: diagnostic
-    icon: mdi:timer-sand
-    unit_of_measurement: s
-    accuracy_decimals: 3
-    update_interval: 10s
-
     lambda: |-
       if (id(last_tip_interval_ms) == 0) {
         return NAN;
       }
 
-      return static_cast<double>(id(last_tip_interval_ms))
-          / 1000.0;
-
+      return static_cast<double>(id(last_tip_interval_ms));
 
   - platform: template
-    name: Tid sedan senaste puls
+    name: Regnlogger Nimbus sekunder sedan senaste puls
+    icon: mdi:timer-sand
+    unit_of_measurement: s
+    accuracy_decimals: 0
+    update_interval: 30s
     entity_category: diagnostic
+    lambda: |-
+      if (id(last_tip_uptime_ms) == 0) {
+        return NAN;
+      }
+
+      const uint64_t now_ms =
+          static_cast<uint64_t>(esp_timer_get_time() / 1000ULL);
+
+      if (now_ms < id(last_tip_uptime_ms)) {
+        return NAN;
+      }
+
+      return static_cast<double>(
+        now_ms - id(last_tip_uptime_ms)
+      ) / 1000.0;
+
+  # Råvärden för djup felsökning. Avstängda som standard i Home Assistant.
+  - platform: template
+    name: Regnlogger Nimbus senaste puls epoch
     icon: mdi:clock-outline
     unit_of_measurement: s
     accuracy_decimals: 0
-    update_interval: 10s
-
-    lambda: |-
-      const auto now = id(network_time).now();
-
-      if (
-        !now.is_valid() ||
-        id(last_tip_epoch_s) <= 0
-      ) {
-        return NAN;
-      }
-
-      const int64_t elapsed_s =
-          static_cast<int64_t>(now.timestamp)
-          - id(last_tip_epoch_s);
-
-      if (elapsed_s < 0) {
-        return NAN;
-      }
-
-      return static_cast<double>(elapsed_s);
-
-
-  - platform: template
-    name: Senaste puls epoch
+    update_interval: 30s
     entity_category: diagnostic
-    icon: mdi:clock-check-outline
-    unit_of_measurement: s
-    accuracy_decimals: 0
-    update_interval: 10s
     disabled_by_default: true
-
     lambda: |-
       if (id(last_tip_epoch_s) <= 0) {
         return NAN;
@@ -425,16 +398,14 @@ sensor:
 
       return static_cast<double>(id(last_tip_epoch_s));
 
-
   - platform: template
-    name: Senaste puls uptime
-    entity_category: diagnostic
-    icon: mdi:timer-marker-outline
+    name: Regnlogger Nimbus senaste puls uptime
+    icon: mdi:timeline-clock-outline
     unit_of_measurement: ms
     accuracy_decimals: 0
-    update_interval: 10s
+    update_interval: 30s
+    entity_category: diagnostic
     disabled_by_default: true
-
     lambda: |-
       if (id(last_tip_uptime_ms) == 0) {
         return NAN;
@@ -445,11 +416,10 @@ sensor:
 
 text_sensor:
   - platform: template
-    name: Firmware
+    name: Regnlogger Nimbus firmware
+    icon: mdi:information-outline
     entity_category: diagnostic
-    icon: mdi:chip
     update_interval: 10min
-
     lambda: |-
       return {"${firmware_version}"};
 
@@ -472,14 +442,11 @@ script:
               "rainlens",
               "Ignorerar ingångsändring innan ${physical_input} är aktiverad"
             );
-
             return;
           }
 
           const uint64_t now_ms =
-              static_cast<uint64_t>(
-                esp_timer_get_time() / 1000ULL
-              );
+              static_cast<uint64_t>(esp_timer_get_time() / 1000ULL);
 
           const uint64_t previous_raw_ms =
               id(last_raw_edge_uptime_ms);
@@ -531,21 +498,14 @@ script:
             "rainlens",
             "Accepterad regnpuls: pulse_total=%llu, "
             "raw_pulse_total=%llu, ignored_pulse_total=%llu",
-            static_cast<unsigned long long>(
-              id(pulse_total)
-            ),
-            static_cast<unsigned long long>(
-              id(raw_pulse_total)
-            ),
-            static_cast<unsigned long long>(
-              id(ignored_pulse_total)
-            )
+            static_cast<unsigned long long>(id(pulse_total)),
+            static_cast<unsigned long long>(id(raw_pulse_total)),
+            static_cast<unsigned long long>(id(ignored_pulse_total))
           );
 
       - if:
           condition:
-            lambda: |-
-              return id(edge_accepted);
+            lambda: return id(edge_accepted);
 
           then:
             # State publiceras först så att retained-läget uppdateras
@@ -571,7 +531,6 @@ script:
             - mqtt.publish_json:
                 topic: >-
                   ${mqtt_root}/${site_id}/${logger_id}/${channel_id}/state
-
                 qos: 1
                 retain: true
 
@@ -581,43 +540,28 @@ script:
                         esp_timer_get_time() / 1000ULL
                       );
 
-                  const auto now =
-                      id(network_time).now();
+                  const auto now = id(network_time).now();
 
                   root["schema"] =
                       "rainlens.logger.channel_state.v1";
 
-                  root["site_id"] =
-                      "${site_id}";
+                  root["site_id"] = "${site_id}";
+                  root["logger_id"] = "${logger_id}";
+                  root["channel_id"] = "${channel_id}";
 
-                  root["logger_id"] =
-                      "${logger_id}";
+                  root["sensor_id"] = "${sensor_id}";
+                  root["sensor_type"] = "${sensor_type}";
+                  root["mm_per_tip"] = ${mm_per_tip};
 
-                  root["channel_id"] =
-                      "${channel_id}";
-
-                  root["sensor_id"] =
-                      "${sensor_id}";
-
-                  root["sensor_type"] =
-                      "${sensor_type}";
-
-                  root["mm_per_tip"] =
-                      ${mm_per_tip};
-
-                  root["pulse_total"] =
-                      id(pulse_total);
-
+                  root["pulse_total"] = id(pulse_total);
                   root["raw_pulse_total"] =
                       id(raw_pulse_total);
-
                   root["ignored_pulse_total"] =
                       id(ignored_pulse_total);
 
                   root["rain_total_mm"] =
-                      static_cast<double>(
-                        id(pulse_total)
-                      ) * ${mm_per_tip};
+                      static_cast<double>(id(pulse_total))
+                      * ${mm_per_tip};
 
                   root["last_tip_uptime_ms"] =
                       id(last_tip_uptime_ms);
@@ -627,17 +571,10 @@ script:
                         id(last_tip_epoch_s);
                   }
 
-                  root["time_valid"] =
-                      now.is_valid();
-
-                  root["uptime_ms"] =
-                      uptime_ms;
-
-                  root["boot_count"] =
-                      id(boot_count);
-
-                  root["firmware"] =
-                      "${firmware_version}";
+                  root["time_valid"] = now.is_valid();
+                  root["uptime_ms"] = uptime_ms;
+                  root["boot_count"] = id(boot_count);
+                  root["firmware"] = "${firmware_version}";
 
                   root["faults"].to<JsonArray>();
 
@@ -659,7 +596,6 @@ script:
             - mqtt.publish_json:
                 topic: >-
                   ${mqtt_root}/${site_id}/${logger_id}/${channel_id}/tip
-
                 qos: 1
                 retain: false
 
@@ -670,33 +606,19 @@ script:
                   root["schema"] =
                       "rainlens.logger.tip_event.v1";
 
-                  root["site_id"] =
-                      "${site_id}";
+                  root["site_id"] = "${site_id}";
+                  root["logger_id"] = "${logger_id}";
+                  root["channel_id"] = "${channel_id}";
 
-                  root["logger_id"] =
-                      "${logger_id}";
+                  root["sensor_id"] = "${sensor_id}";
+                  root["sensor_type"] = "${sensor_type}";
 
-                  root["channel_id"] =
-                      "${channel_id}";
+                  root["event"] = "rain_tip";
+                  root["mm"] = ${mm_per_tip};
 
-                  root["sensor_id"] =
-                      "${sensor_id}";
-
-                  root["sensor_type"] =
-                      "${sensor_type}";
-
-                  root["event"] =
-                      "rain_tip";
-
-                  root["mm"] =
-                      ${mm_per_tip};
-
-                  root["pulse_total"] =
-                      id(pulse_total);
-
+                  root["pulse_total"] = id(pulse_total);
                   root["raw_pulse_total"] =
                       id(raw_pulse_total);
-
                   root["ignored_pulse_total"] =
                       id(ignored_pulse_total);
 
@@ -732,7 +654,6 @@ script:
             - mqtt.publish_json:
                 topic: >-
                   ${mqtt_root}/${site_id}/${logger_id}/heartbeat
-
                 qos: 1
                 retain: false
 
@@ -742,36 +663,22 @@ script:
                         esp_timer_get_time() / 1000ULL
                       );
 
-                  const auto now =
-                      id(network_time).now();
+                  const auto now = id(network_time).now();
 
                   root["schema"] =
                       "rainlens.logger.heartbeat.v1";
 
-                  root["site_id"] =
-                      "${site_id}";
+                  root["site_id"] = "${site_id}";
+                  root["logger_id"] = "${logger_id}";
 
-                  root["logger_id"] =
-                      "${logger_id}";
+                  root["status"] = "online";
+                  root["uptime_ms"] = uptime_ms;
+                  root["boot_count"] = id(boot_count);
+                  root["time_valid"] = now.is_valid();
 
-                  root["status"] =
-                      "online";
-
-                  root["uptime_ms"] =
-                      uptime_ms;
-
-                  root["boot_count"] =
-                      id(boot_count);
-
-                  root["time_valid"] =
-                      now.is_valid();
-
-                  root["network"] =
-                      "ethernet";
-
+                  root["network"] = "ethernet";
                   root["hardware_model"] =
                       "${hardware_model}";
-
                   root["firmware"] =
                       "${firmware_version}";
 
@@ -781,18 +688,13 @@ script:
                   JsonObject channel =
                       channels["${channel_id}"].to<JsonObject>();
 
-                  channel["sensor_id"] =
-                      "${sensor_id}";
-
+                  channel["sensor_id"] = "${sensor_id}";
                   channel["pulse_total"] =
                       id(pulse_total);
-
                   channel["raw_pulse_total"] =
                       id(raw_pulse_total);
-
                   channel["ignored_pulse_total"] =
                       id(ignored_pulse_total);
-
                   channel["last_tip_uptime_ms"] =
                       id(last_tip_uptime_ms);
 
@@ -804,8 +706,7 @@ script:
                   root["faults"].to<JsonArray>();
 
 
-# Retained state och heartbeat publiceras regelbundet
-# även när det inte regnar.
+# Retained state och heartbeat publiceras regelbundet även när det inte regnar.
 interval:
   - interval: 60s
     startup_delay: 30s
