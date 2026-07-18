@@ -1,4 +1,4 @@
-"""Real Nimbus Level 1 MQTT -> Hydromet event ingest.
+"""Generic Level 1 rain logger MQTT -> Hydromet event ingest.
 
 One class is instantiated twice:
 - test:       hydromet.rain_logger_test_events
@@ -23,8 +23,8 @@ import psycopg
 from psycopg import sql
 
 
-class NimbusRainIngest(mqtt.Mqtt):
-    APP_VERSION = "nimbus-rain-ingest-0.2.0"
+class RainLoggerLevel1Ingest(mqtt.Mqtt):
+    APP_VERSION = "rain-logger-level1-ingest-0.2.0"
 
     ALLOWED_TARGETS = {
         "hydromet.event_observations",
@@ -70,7 +70,7 @@ class NimbusRainIngest(mqtt.Mqtt):
             "application_name": str(
                 self.args.get(
                     "db_application_name",
-                    "appdaemon-nimbus-level1-ingest",
+                    "appdaemon-rain-logger-level1-ingest",
                 )
             ),
         }
@@ -93,7 +93,7 @@ class NimbusRainIngest(mqtt.Mqtt):
         )
 
         self.log(
-            "NimbusRainIngest startad: version=%s target=%s "
+            "RainLoggerLevel1Ingest startad: version=%s target=%s "
             "series_id=%s setup_id=%s last_seen=%s",
             self.APP_VERSION,
             self.target_table,
@@ -124,7 +124,7 @@ class NimbusRainIngest(mqtt.Mqtt):
 
         if row is None:
             raise RuntimeError(
-                "Nimbus series/setup saknas. Kör "
+                "Loggerns series/setup saknas. Kör "
                 "004_seed_nimbus_series.sql först."
             )
 
@@ -211,14 +211,14 @@ class NimbusRainIngest(mqtt.Mqtt):
 
         except (TypeError, ValueError, json.JSONDecodeError) as exc:
             self.log(
-                "Ogiltigt Nimbus-meddelande på %s: %s",
+                "Ogiltigt logger-meddelande på %s: %s",
                 topic,
                 exc,
                 level="ERROR",
             )
         except Exception as exc:
             self.log(
-                "Fel i Nimbus-ingest target=%s topic=%s: %s",
+                "Fel i Level 1-ingest target=%s topic=%s: %s",
                 self.target_table,
                 topic,
                 exc,
