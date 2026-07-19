@@ -24,7 +24,9 @@ from psycopg import sql
 
 
 class RainLoggerLevel1Ingest(mqtt.Mqtt):
-    APP_VERSION = "rain-logger-level1-ingest-0.2.0"
+    APP_VERSION = "rain-logger-level1-ingest-0.3.0"
+    TIP_SCHEMA = "rainlens.logger.tip_event.v1"
+    STATE_SCHEMA = "rainlens.logger.channel_state.v1"
 
     ALLOWED_TARGETS = {
         "hydromet.event_observations",
@@ -85,21 +87,41 @@ class RainLoggerLevel1Ingest(mqtt.Mqtt):
             self._load_ingest_state()
         )
 
-        self.listen_event(
+        # Register exact event filters before subscribing. This ordering is
+        # deliberate: a retained state can be delivered immediately when the
+        # MQTT subscription is created and must not arrive before the listener.
+        self._tip_listener = self.listen_event(
             self._on_mqtt_message,
             self.event_name,
-            wildcard=self.topic_wildcard,
+            topic=self.tip_topic,
+            namespace=self.mqtt_namespace,
+        )
+        self._state_listener = self.listen_event(
+            self._on_mqtt_message,
+            self.event_name,
+            topic=self.state_topic,
+            namespace=self.mqtt_namespace,
+        )
+
+        # The operational runbook uses the channel wildcard. The callbacks
+        # still filter on the two canonical exact topics above.
+        self.mqtt_subscribe(
+            self.topic_wildcard,
             namespace=self.mqtt_namespace,
         )
 
         self.log(
             "RainLoggerLevel1Ingest startad: version=%s target=%s "
-            "series_id=%s setup_id=%s last_seen=%s",
+            "series_id=%s setup_id=%s last_seen=%s mqtt_namespace=%s "
+            "subscription=%s mqtt_connected=%s",
             self.APP_VERSION,
             self.target_table,
             self._series_id,
             self._setup_id,
             self._last_seen_total,
+            self.mqtt_namespace,
+            self.topic_wildcard,
+            self.is_client_connected(namespace=self.mqtt_namespace),
         )
 
     def get_connection(self):
@@ -124,8 +146,8 @@ class RainLoggerLevel1Ingest(mqtt.Mqtt):
 
         if row is None:
             raise RuntimeError(
-                "Loggerns series/setup saknas. Kör "
-                "004_seed_nimbus_series.sql först."
+                "Loggerns aktiva series/setup saknas för series_key="
+                f"{self.series_key!r}."
             )
 
         return row[0], row[1]
@@ -188,25 +210,13 @@ class RainLoggerLevel1Ingest(mqtt.Mqtt):
             return
 
         try:
-            payload = (
-                dict(payload_raw)
-                if isinstance(payload_raw, dict)
-                else json.loads(payload_raw)
-            )
-            if not isinstance(payload, dict):
-                raise ValueError("payload är inte ett JSON-objekt")
-
-            if not self._payload_identity_matches(payload):
-                self.log(
-                    "Ignorerar identitetsavvikelse på %s",
-                    topic,
-                    level="WARNING",
-                )
-                return
+            payload = self._parse_payload(payload_raw)
 
             if topic == self.tip_topic:
+                self._validate_tip_payload(payload)
                 self._handle_tip(payload)
             elif topic == self.state_topic:
+                self._validate_state_payload(payload)
                 self._handle_state(payload)
 
         except (TypeError, ValueError, json.JSONDecodeError) as exc:
@@ -225,18 +235,106 @@ class RainLoggerLevel1Ingest(mqtt.Mqtt):
                 level="ERROR",
             )
 
-    def _payload_identity_matches(self, payload: Dict[str, Any]) -> bool:
+    @staticmethod
+    def _parse_payload(payload_raw: Any) -> Dict[str, Any]:
+        payload = (
+            dict(payload_raw)
+            if isinstance(payload_raw, dict)
+            else json.loads(payload_raw)
+        )
+        if not isinstance(payload, dict):
+            raise ValueError("payload är inte ett JSON-objekt")
+        return payload
+
+    def _validate_identity(self, payload: Dict[str, Any]) -> None:
         expected = {
             "site_id": self.site_id,
             "logger_id": self.logger_id,
             "channel_id": self.channel_id,
             "sensor_id": self.sensor_id,
         }
-        return all(
-            payload.get(field) is not None
-            and str(payload[field]) == expected_value
+        mismatches = {
+            field: (payload.get(field), expected_value)
             for field, expected_value in expected.items()
+            if payload.get(field) is None
+            or str(payload[field]) != expected_value
+        }
+        if mismatches:
+            raise ValueError(f"identitetsavvikelse: {mismatches}")
+
+    def _validate_tip_payload(self, payload: Dict[str, Any]) -> None:
+        self._validate_identity(payload)
+
+        if payload.get("schema") != self.TIP_SCHEMA:
+            raise ValueError(
+                f"fel tip-schema: {payload.get('schema')!r}"
+            )
+        if payload.get("event") != "rain_tip":
+            raise ValueError(
+                f"fel tip-event: {payload.get('event')!r}"
+            )
+
+        pulse_total = self._required_nonnegative_int(
+            payload,
+            "pulse_total",
         )
+        self._required_nonnegative_int(payload, "uptime_ms")
+        self._required_bool(payload, "time_valid")
+
+        mm = self._required_nonnegative_number(payload, "mm")
+        if not self._numbers_equal(mm, self.mm_per_tip):
+            raise ValueError(
+                f"tip.mm={mm} stämmer inte med mm_per_tip="
+                f"{self.mm_per_tip}"
+            )
+
+        # Parsing here gives a precise validation error before DB handling.
+        if pulse_total < 0:
+            raise ValueError("pulse_total får inte vara negativ")
+
+    def _validate_state_payload(self, payload: Dict[str, Any]) -> None:
+        self._validate_identity(payload)
+
+        if payload.get("schema") != self.STATE_SCHEMA:
+            raise ValueError(
+                f"fel state-schema: {payload.get('schema')!r}"
+            )
+
+        pulse_total = self._required_nonnegative_int(
+            payload,
+            "pulse_total",
+        )
+        self._required_nonnegative_int(payload, "uptime_ms")
+        self._required_bool(payload, "time_valid")
+
+        payload_mm_per_tip = self._required_nonnegative_number(
+            payload,
+            "mm_per_tip",
+        )
+        if not self._numbers_equal(
+            payload_mm_per_tip,
+            self.mm_per_tip,
+        ):
+            raise ValueError(
+                f"state.mm_per_tip={payload_mm_per_tip} stämmer inte "
+                f"med konfigurationen {self.mm_per_tip}"
+            )
+
+        if "rain_total_mm" in payload:
+            rain_total_mm = self._required_nonnegative_number(
+                payload,
+                "rain_total_mm",
+            )
+            expected_total = pulse_total * self.mm_per_tip
+            if not self._numbers_equal(
+                rain_total_mm,
+                expected_total,
+                abs_tol=1e-6,
+            ):
+                raise ValueError(
+                    f"state.rain_total_mm={rain_total_mm} stämmer inte "
+                    f"med pulse_total×mm_per_tip={expected_total}"
+                )
 
     def _handle_tip(self, payload: Dict[str, Any]) -> None:
         pulse_total = self._required_nonnegative_int(
@@ -273,6 +371,14 @@ class RainLoggerLevel1Ingest(mqtt.Mqtt):
                 missing_before,
             )
             self._last_seen_total = pulse_total
+            self.log(
+                "Rain tip lagrad: target=%s counter=%s value=%s mm "
+                "gap_before=%s",
+                self.target_table,
+                pulse_total,
+                self.mm_per_tip,
+                missing_before,
+            )
 
     def _handle_state(self, payload: Dict[str, Any]) -> None:
         pulse_total = self._required_nonnegative_int(
@@ -349,6 +455,13 @@ class RainLoggerLevel1Ingest(mqtt.Mqtt):
                 )
                 self._last_seen_total = pulse_total
                 self._last_boot_count = boot_count
+                self.log(
+                    "Retained baseline satt: target=%s pulse_total=%s "
+                    "boot_count=%s",
+                    self.target_table,
+                    pulse_total,
+                    boot_count,
+                )
                 return
 
             if pulse_total < previous:
@@ -381,6 +494,16 @@ class RainLoggerLevel1Ingest(mqtt.Mqtt):
             )
             self._last_seen_total = pulse_total
             self._last_boot_count = boot_count
+            self.log(
+                "Rain recovery lagrad: target=%s previous=%s "
+                "pulse_total=%s recovered_tips=%s recovered_mm=%s",
+                self.target_table,
+                previous,
+                pulse_total,
+                pulse_total - previous,
+                (pulse_total - previous) * self.mm_per_tip,
+                level="WARNING",
+            )
 
     def _store_tip_transaction(
         self,
@@ -724,7 +847,7 @@ class RainLoggerLevel1Ingest(mqtt.Mqtt):
         payload: Dict[str, Any],
         received_at: datetime,
     ) -> Tuple[datetime, str]:
-        time_valid = bool(payload.get("time_valid", False))
+        time_valid = self._required_bool(payload, "time_valid")
         epoch_s = self._optional_nonnegative_int(payload.get("epoch_s"))
 
         if time_valid and epoch_s is not None and epoch_s > 0:
@@ -769,6 +892,49 @@ class RainLoggerLevel1Ingest(mqtt.Mqtt):
             f"{self.sensor_id}|recovery|"
             f"from={counter_from}|to={counter_to}"
         )
+
+    @staticmethod
+    def _numbers_equal(
+        left: float,
+        right: float,
+        *,
+        abs_tol: float = 1e-9,
+    ) -> bool:
+        return abs(float(left) - float(right)) <= abs_tol
+
+    def _required_nonnegative_number(
+        self,
+        payload: Dict[str, Any],
+        field: str,
+    ) -> float:
+        value = payload.get(field)
+        if value is None or isinstance(value, bool):
+            raise ValueError(
+                f"Payload saknar giltigt icke-negativt tal: {field}"
+            )
+        try:
+            numeric = float(value)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                f"Payload saknar giltigt icke-negativt tal: {field}"
+            ) from exc
+        if numeric < 0:
+            raise ValueError(
+                f"Payload saknar giltigt icke-negativt tal: {field}"
+            )
+        return numeric
+
+    @staticmethod
+    def _required_bool(
+        payload: Dict[str, Any],
+        field: str,
+    ) -> bool:
+        value = payload.get(field)
+        if not isinstance(value, bool):
+            raise ValueError(
+                f"Payload saknar giltigt booleskt värde: {field}"
+            )
+        return value
 
     def _required_nonnegative_int(
         self,
