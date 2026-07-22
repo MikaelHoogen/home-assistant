@@ -113,8 +113,11 @@ ethernet:
 
   # W5500 reset enligt Waveshares hårdvarumappning.
   reset_pin: GPIO39
-
-
+  manual_ip:
+    gateway: 192.168.88.1
+    static_ip: 192.168.88.94
+    subnet: 255.255.255.0
+    dns1: 192.168.88.1
 mqtt:
   id: mqtt_client
 
